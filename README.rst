@@ -25,6 +25,6 @@ Maven is used to manage the build process. The default configuration build the p
 
   $ mvn clean install
 
-Two other profiles are provided: scala-ide-master-scala-2.9 and scala-ide-master-scala-trunk.
+Two other profiles are provided: scala-ide-master-scala-2.9 and scala-ide-master-scala-trunk (for Scala 2.10 support. Not available right now).
 
   $ mvn clean install -P scala-ide-master-scala-trunk

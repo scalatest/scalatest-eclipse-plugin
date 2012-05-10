@@ -14,6 +14,7 @@
   </modules>
 
   <properties>
+        <testProp>true</testProp>
     <encoding>UTF-8</encoding>
     <tycho.version>0.12.0</tycho.version>
     <repo.indigo>http://download.eclipse.org/releases/indigo/</repo.indigo>
@@ -24,14 +25,36 @@
     <scala.version.short>2.9</scala.version.short>
     <version.tag>local</version.tag>
     <repo.scala-ide>http://download.scala-ide.org/releases-29/stable/site</repo.scala-ide>
-    <!-- to compute -->
-   <!-- <git.hash>someHash</git.hash> -->
   </properties>
 
   <profiles>
     <profile>
       <!-- this is the default profile, using the stable builds-->
       <id>scala-ide-2.0-scala-2.9</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-enforcer-plugin</artifactId>
+            <version>1.0.1</version>
+            <executions>
+              <execution>
+                <id>enforce</id>
+                <phase>validate</phase>
+                <goals>
+                  <goal>enforce</goal>
+                </goals>
+                <configuration>
+                  <rules>
+                    <AlwaysFail/>
+                  </rules>
+                  <fail>true</fail>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
     <profile>
       <!-- nightly Scala IDE with Scala 2.9 -->
@@ -41,14 +64,39 @@
       </properties>
     </profile>
     <profile>
-      <!-- nightly Scala IDE with Scala trunk -->
+      <!-- nightly Scala IDE with Scala trunk, currently always fails as dependencies are not available -->
       <id>scala-ide-master-scala-trunk</id>
       <properties>
         <scala.version>2.10.0-SNAPSHOT</scala.version>
         <version.suffix>2_10</version.suffix>
         <scala.version.short>2.10</scala.version.short>
         <repo.scala-ide>http://download.scala-ide.org/nightly-update-master-trunk</repo.scala-ide>
+        <scala.2.10>true</scala.2.10>
       </properties>
+      <build>
+        <plugins>
+          <!-- plugin to make it fail -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-enforcer-plugin</artifactId>
+            <version>1.0.1</version>
+            <executions>
+              <execution>
+                <id>enforce</id>
+                <goals>
+                  <goal>enforce</goal>
+                </goals>
+                <configuration>
+                  <rules>
+                    <AlwaysFail/>
+                  </rules>
+                  <fail>true</fail>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
   </profiles>
 
