@@ -11,6 +11,9 @@
   <modules>
     <module>org.scala-ide.sdt.scalatest</module>
     <module>org.scala-ide.sdt.scalatest.tests</module>
+    <module>org.scala-ide.sdt.scalatest.feature</module>
+    <module>org.scala-ide.sdt.scalatest.source.feature</module>
+    <module>org.scala-ide.sdt.scalatest.update-site</module>
   </modules>
 
   <properties>

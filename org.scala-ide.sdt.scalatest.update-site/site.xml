@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/org.scala-ide.sdt.scalatest.feature_0.0.0.jar" id="org.scala-ide.sdt.scalatest.feature" version="0.0.0">
+      <category name="sdt.scalatest"/>
+   </feature>
+   <feature url="features/org.scala-ide.sdt.scalatest.source.feature_0.0.0.jar" id="org.scala-ide.sdt.scalatest.source.feature" version="0.0.0">
+      <category name="sdt.scalatest-source"/>
+   </feature>
+   <category-def name="sdt.scalatest" label="ScalaTest for Scala IDE"/>
+   <category-def name="sdt.scalatest-source" label="ScalaTest for Scala IDE Source"/> -->
+</site>
