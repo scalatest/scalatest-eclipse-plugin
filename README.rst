@@ -1,30 +1,29 @@
 ScalaTest support in Scala IDE
 ==============================
 
-This project contains plugins for seamless support of `scalatest`__ in `Scala IDE`__.
+This project contains plugins for seamless support of `scalatest`_ in `Scala IDE`_.
 
-__ http://scalatest.org
-__ http://scala-ide.org
+*This is a work in progress. Please file `tickets`_ if you encounter problems.*
 
 building
 --------
 
-Pre-requisite
-.............
-
-To successfully build this project, org.scala-ide:scala-ide-for-eclipse:1 is required, but it is not publish.
-
-To install it locally, clone `scala-ide/scala-ide`__ and run ``mvn install`` from the ``org.scala-ide`` folder.
-
-__ http://github.com/scala-ide/scala-ide
-
-building the project
-....................
-
-Maven is used to manage the build process. The default configuration build the project for Scala IDE 2.0.x with Scala 2.9.x.
+Maven is used to manage the build process. The default configuration build the project for Scala IDE 2.0.1 with Scala 2.9.2.
 
   $ mvn clean install
 
-Two other profiles are provided: scala-ide-master-scala-2.9 and scala-ide-master-scala-trunk (for Scala 2.10 support. Not available right now).
+*Until the build process is merged in scala-ide trunk, some extra parameters are needed:*
 
-  $ mvn clean install -P scala-ide-master-scala-trunk
+  $ mvn clean install -Drepo.scala-ide=http://download.scala-ide.org/luc-scala-ide-1001056/site/ -P scala-ide-master-scala-2.9 
+
+The available profiles are:
+
+* **scala-ide-2.0-scala-2.9** (default): stable Scala IDE (2.0.1) - stable Scala (2.9.2)
+* **scala-ide-2.0.x-scala-2.9**: maintenance Scala IDE (2.0.x) - stable Scala (2.9.2)
+* **scala-ide-master-scala-2.9**: master Scala IDE (2.1.x) - stable Scala (2.9.2)
+* **scala-ide-master-scala-trunk**: master Scala IDE (2.1.x) - trunk Scala (2.10.x) *disabled right now. Need to find the right library versions*
+
+.. _scalatest: http://scalatest.org
+.. _Scala IDE: http://scala-ide.org
+.. _tickets: http://scala-ide.org/docs/user/community.html
+.. _scala-ide/scala-ide: http://github.com/scala-ide/scala-ide

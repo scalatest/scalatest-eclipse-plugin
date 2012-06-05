@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ScalaTest Plugin
 Bundle-SymbolicName: org.scala-ide.sdt.scalatest;singleton:=true
-Bundle-Version: 2.1.0.qualifier
+Bundle-Version: 0.1.0.qualifier
 Bundle-Vendor: scala-ide.org
 Bundle-ActivationPolicy: lazy
 Bundle-Localization: plugin
@@ -69,5 +69,5 @@ Export-Package:
  scala.tools.eclipse.scalatest.launching, 
  scala.tools.eclipse.scalatest.ui
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Bundle-ClassPath: lib/scalatest-finders_2.9.0-0.9.1-SNAPSHOT.jar,
- .
+Bundle-ClassPath: .,
+ target/lib/scalatest-finders_2.9.0-0.9.1-SNAPSHOT.jar
