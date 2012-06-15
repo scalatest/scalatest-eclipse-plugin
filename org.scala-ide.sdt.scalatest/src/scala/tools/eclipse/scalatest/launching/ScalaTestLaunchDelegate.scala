@@ -184,7 +184,27 @@ class ScalaTestLaunchDelegate extends AbstractJavaLaunchConfigurationDelegate {
     bootEntry.toList.map(_.getLocation())
   }
   
-  private def getScalaTestArgs(configuration: ILaunchConfiguration): String = {
+  /**
+   * Simple utility function that processes a classpath element for the ScalaTest Runner class.
+   * 
+   * <p>
+   * Basically, the only task to do here is to escape each whitespace and double quote characters. 
+   * </p>
+   * 
+   * @param comp a classpath component as a string 
+   * @return a properly escaped version of parameter <code>comp</code> 
+   * @see <a href="http://www.scalatest.org/scaladoc/1.8/org/scalatest/tools/Runner$.html">Runner</a> (see section "Specifying a runpath")
+   * @author rlegendi
+   */
+  // TODO Needs an expert's review
+  private[launching] def escapeScalaTestClasspathComponent(comp: String): String = {
+    require(comp != null)
+    comp.replaceAll("""\s""", """\\ """).replaceAll(""""""", """\\"""")
+  }
+  
+  private[launching] def getScalaTestArgs(configuration: ILaunchConfiguration): String = {
+    require(configuration != null)
+    
     val launchType = configuration.getAttribute(SCALATEST_LAUNCH_TYPE_NAME, TYPE_SUITE)
     launchType match {
       case TYPE_SUITE => 
@@ -214,7 +234,7 @@ class ScalaTestLaunchDelegate extends AbstractJavaLaunchConfigurationDelegate {
       case TYPE_PACKAGE =>
         val packageName = configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, "")
         val workspace = ResourcesPlugin.getWorkspace()
-        val outputDir = new File(workspace.getRoot.getLocation.toFile, JavaRuntime.getProjectOutputDirectory(configuration)).getAbsolutePath
+        val outputDir = getClasspath(configuration).foldLeft("")((acc, act) => acc + " " + escapeScalaTestClasspathComponent(act)).trim
         if (packageName.length > 0) {
           val includeNested = configuration.getAttribute(SCALATEST_LAUNCH_INCLUDE_NESTED_NAME, INCLUDE_NESTED_FALSE)
           if (includeNested == INCLUDE_NESTED_TRUE) 
