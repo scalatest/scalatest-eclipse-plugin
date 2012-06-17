@@ -10,17 +10,12 @@ import org.eclipse.debug.internal.core.LaunchConfiguration
 import org.mockito.Matchers
 import org.mockito.Mockito
 import org.junit.runner.RunWith
-//import org.powermock.modules.junit4.PowerMockRunner
-//import org.powermock.core.classloader.annotations.PrepareForTest
-//import org.powermock.api.mockito.PowerMockito
 
 /**
  * We need PowerMock because <code>ScalaTestLaunchDelegate</code> cannot be mocked with Mockito (its superclass is in a signed Jar file).
  *
  * @author rlegendi
  */
-//@RunWith(classOf[PowerMockRunner])
-//@PrepareForTest(Array(classOf[ScalaTestLaunchDelegate]))
 class ScalaTestLaunchDelegateTest {
 
   // --------------------------------------------------------------------------
@@ -54,7 +49,7 @@ class ScalaTestLaunchDelegateTest {
     def res = delegate.escapeScalaTestClasspathComponent("Program files")
     assertEquals("Program\\ files", res)
   }
-  
+
   @Test
   def testEscapingForClassPathEntryWithDoubleSpaces() {
     def delegate = new ScalaTestLaunchDelegate
@@ -87,11 +82,9 @@ class ScalaTestLaunchDelegateTest {
     when(config.getAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, "")).thenReturn("testpkg")
     when(config.getAttribute(SCALATEST_LAUNCH_INCLUDE_NESTED_NAME, INCLUDE_NESTED_FALSE)).thenReturn(INCLUDE_NESTED_TRUE)
 
-    //val delegate = mock(classOf[ScalaTestLaunchDelegate])
     val delegate = new ScalaTestLaunchDelegate() {
       override def getClasspath(configuration: ILaunchConfiguration): Array[String] = cps.toArray
     }
-    //doReturn(cps.toArray[String]).when(delegate).getClasspath(config)
 
     delegate.getScalaTestArgs(config)
   }
