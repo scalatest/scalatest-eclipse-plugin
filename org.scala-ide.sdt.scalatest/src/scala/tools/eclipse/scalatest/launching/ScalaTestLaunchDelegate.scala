@@ -233,7 +233,8 @@ class ScalaTestLaunchDelegate extends AbstractJavaLaunchConfigurationDelegate {
           ""
       case TYPE_PACKAGE =>
         val packageName = configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, "")
-        val workspace = ResourcesPlugin.getWorkspace()
+        // Reference for the workspace should be omitted, tests fail with an java.lang.IllegalStateException: Workspace is closed. error message
+        //val workspace = ResourcesPlugin.getWorkspace()
         val outputDir = getClasspath(configuration).foldLeft("")((acc, act) => acc + " " + escapeScalaTestClasspathComponent(act)).trim
         if (packageName.length > 0) {
           val includeNested = configuration.getAttribute(SCALATEST_LAUNCH_INCLUDE_NESTED_NAME, INCLUDE_NESTED_FALSE)
