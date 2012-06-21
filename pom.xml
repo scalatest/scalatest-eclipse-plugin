@@ -28,7 +28,7 @@
     <repo.scala-ide.root>http://download.scala-ide.org</repo.scala-ide.root>
 
     <!-- fixed versions -->
-    <tycho.version>0.14.1</tycho.version>
+    <tycho.version>0.15.0</tycho.version>
     <scalatest-finders.version>0.9.1-SNAPSHOT</scalatest-finders.version>
     <scala.plugin.version>3.0.2</scala.plugin.version>
 
@@ -62,6 +62,13 @@
     <profile>
       <!-- this is the default profile, using the stable builds-->
       <id>scala-ide-2.0-scala-2.9</id>
+    </profile>
+    <profile>
+      <!-- 2.0.x Scala IDE with Scala 2.9 -->
+      <id>scala-ide-2.0.x-scala-2.9</id>
+      <properties>
+        <repo.scala-ide>${repo.scala-ide.root}/nightly-update-2-0-x-29x</repo.scala-ide>
+      </properties>
     </profile>
     <profile>
       <!-- nightly Scala IDE with Scala 2.9 -->
