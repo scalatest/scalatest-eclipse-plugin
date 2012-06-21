@@ -18,7 +18,7 @@ Maven is used to manage the build process. The default configuration build the p
 
 The available profiles are:
 
-* **scala-ide-2.0-scala-2.9** (default): stable Scala IDE (2.0.1) - stable Scala (2.9.2)
+* **scala-ide-2.0-scala-2.9** (default): stable Scala IDE (2.0.1) - stable Scala (2.9.2) *not available right now, building is not possible with the current Scala IDE stable update site*
 * **scala-ide-2.0.x-scala-2.9**: maintenance Scala IDE (2.0.x) - stable Scala (2.9.2)
 * **scala-ide-master-scala-2.9**: master Scala IDE (2.1.x) - stable Scala (2.9.2)
 * **scala-ide-master-scala-trunk**: master Scala IDE (2.1.x) - trunk Scala (2.10.x) *disabled right now. Need to find the right library versions*
