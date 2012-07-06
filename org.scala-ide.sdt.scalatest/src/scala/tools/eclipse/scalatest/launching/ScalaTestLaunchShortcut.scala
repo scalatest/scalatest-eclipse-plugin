@@ -279,7 +279,7 @@ object ScalaTestLaunchShortcut {
     val config = existingConfigOpt match {
                    case Some(existingConfig) => existingConfig
                    case None => 
-                     val wc = configType.newInstance(null, getLaunchManager.generateUniqueLaunchConfigurationNameFrom(simpleName.replaceAll(":", "-").replaceAll("\"", "'")))
+                     val wc = configType.newInstance(null, getLaunchManager.generateLaunchConfigurationName(simpleName.replaceAll(":", "-").replaceAll("\"", "'")))
                      val project = scSrcFile.getJavaProject.getProject
                      val scProject = ScalaPlugin.plugin.getScalaProject(project)
                      wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, scSrcFile.getPath.toPortableString)
@@ -299,7 +299,7 @@ object ScalaTestLaunchShortcut {
     val config = existingConfigOpt match {
                    case Some(existingConfig) => existingConfig
                    case None => 
-                     val wc = configType.newInstance(null, getLaunchManager.generateUniqueLaunchConfigurationNameFrom(simpleName.replaceAll(":", "-").replaceAll("\"", "'")))
+                     val wc = configType.newInstance(null, getLaunchManager.generateLaunchConfigurationName(simpleName.replaceAll(":", "-").replaceAll("\"", "'")))
                      val project = packageFragment.getJavaProject.getProject
                      val scProject = ScalaPlugin.plugin.getScalaProject(project)
                      wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, simpleName)
@@ -319,7 +319,7 @@ object ScalaTestLaunchShortcut {
     val config = existingConfigOpt match {
                    case Some(existingConfig) => existingConfig
                    case None => 
-                     val wc = configType.newInstance(null, getLaunchManager.generateUniqueLaunchConfigurationNameFrom(simpleName.replaceAll(":", "-").replaceAll("\"", "'")))
+                     val wc = configType.newInstance(null, getLaunchManager.generateLaunchConfigurationName(simpleName.replaceAll(":", "-").replaceAll("\"", "'")))
                      val project = classElement.getJavaProject.getProject
                      val scProject = ScalaPlugin.plugin.getScalaProject(project)
                      wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, classElement.getFullyQualifiedName)
@@ -340,7 +340,7 @@ object ScalaTestLaunchShortcut {
     val config = existingConfigOpt match {
                    case Some(existingConfig) => existingConfig
                    case None => 
-                     val wc = configType.newInstance(null, getLaunchManager.generateUniqueLaunchConfigurationNameFrom(simpleName.replaceAll(":", "-").replaceAll("\"", "'").replaceAll(">", "-").replaceAll("<", "-")))
+                     val wc = configType.newInstance(null, getLaunchManager.generateLaunchConfigurationName(simpleName.replaceAll(":", "-").replaceAll("\"", "'").replaceAll(">", "-").replaceAll("<", "-")))
                      val scProject = ScalaPlugin.plugin.getScalaProject(project)
                      wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, className)
                      wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, project.getName)
