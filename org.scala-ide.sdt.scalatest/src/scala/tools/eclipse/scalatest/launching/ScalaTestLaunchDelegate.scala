@@ -61,10 +61,6 @@ import scala.annotation.tailrec
 
 class ScalaTestLaunchDelegate extends AbstractJavaLaunchConfigurationDelegate {
   
-  private def getDisplay() = {
-    
-  }
-  
   def launchScalaTest(configuration: ILaunchConfiguration, mode: String, launch: ILaunch, monitor0: IProgressMonitor, stArgs: String) {
     val monitor = if (monitor0 == null) new NullProgressMonitor() else monitor0
 		
