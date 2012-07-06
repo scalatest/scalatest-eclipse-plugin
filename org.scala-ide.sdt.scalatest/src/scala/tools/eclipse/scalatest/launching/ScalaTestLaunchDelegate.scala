@@ -184,7 +184,15 @@ class ScalaTestLaunchDelegate extends AbstractJavaLaunchConfigurationDelegate {
     bootEntry.toList.map(_.getLocation())
   }
   
-  private def getScalaTestArgs(configuration: ILaunchConfiguration): String = {
+  // TODO Needs an expert's review
+  private[launching] def escapeScalaTestClasspathComponent(comp: String): String = {
+    require(comp != null)
+    comp.replaceAll("""\s""", """\\ """).replaceAll(""""""", """\\"""")
+  }
+  
+  private[launching] def getScalaTestArgs(configuration: ILaunchConfiguration): String = {
+    require(configuration != null)
+    
     val launchType = configuration.getAttribute(SCALATEST_LAUNCH_TYPE_NAME, TYPE_SUITE)
     launchType match {
       case TYPE_SUITE => 
@@ -213,8 +221,7 @@ class ScalaTestLaunchDelegate extends AbstractJavaLaunchConfigurationDelegate {
           ""
       case TYPE_PACKAGE =>
         val packageName = configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, "")
-        val workspace = ResourcesPlugin.getWorkspace()
-        val outputDir = new File(workspace.getRoot.getLocation.toFile, JavaRuntime.getProjectOutputDirectory(configuration)).getAbsolutePath
+        val outputDir = getClasspath(configuration).foldLeft("")((acc, act) => acc + " " + escapeScalaTestClasspathComponent(act)).trim
         if (packageName.length > 0) {
           val includeNested = configuration.getAttribute(SCALATEST_LAUNCH_INCLUDE_NESTED_NAME, INCLUDE_NESTED_FALSE)
           if (includeNested == INCLUDE_NESTED_TRUE) 
