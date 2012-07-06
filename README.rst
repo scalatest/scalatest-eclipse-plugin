@@ -14,7 +14,7 @@ Maven is used to manage the build process. The default configuration build the p
 
 *Until the build process is merged in scala-ide trunk, some extra parameters are needed:*
 
-  $ mvn clean install -Drepo.scala-ide=http://download.scala-ide.org/luc-scala-ide-1001056/site/ -P scala-ide-master-scala-2.9 
+  $ mvn clean install -P scala-ide-master-scala-2.9 
 
 The available profiles are:
 
