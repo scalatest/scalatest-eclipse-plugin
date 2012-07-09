@@ -200,32 +200,26 @@ class ScalaTestFinder(val compiler: ScalaPresentationCompiler, loader: ClassLoad
    
   private def getTarget(className: String, apply: GenericApply, rootTree: Tree): AstNode = {
     apply.fun match {
-      case select: Select => 
-        select.qualifier match {
-          case lit: Literal =>
-            new ToStringTarget(className, rootTree, apply, lit.value.stringValue)
-          case impl: ApplyImplicitView => 
-            val implFirstArg: Tree = impl.args(0)
-            implFirstArg match {
-              case Literal(value) =>
-                new ToStringTarget(className, rootTree, apply, value.stringValue)
-              case Apply(fun, args) => 
-                fun match {
-                  case funApply: Apply =>
-                    mapApplyToMethodInvocation(className, funApply, rootTree)
-                  case _ =>
-                    new ToStringTarget(className, rootTree, select.qualifier, fun)
-                }
-              case _ => 
-                new ToStringTarget(className, rootTree, select.qualifier, implFirstArg.toString)
-            }
-          case qualifierApply: Apply =>
-            mapApplyToMethodInvocation(className, qualifierApply, rootTree)
-          case qualiferSelect: Select => 
-            new ToStringTarget(className, rootTree, qualiferSelect, qualiferSelect.name)
-          case _ =>
-            new ToStringTarget(className, rootTree, select.qualifier, select.name)
+      case Select(Literal(value), _) => 
+        new ToStringTarget(className, rootTree, apply, value.stringValue)
+      case Select(impl: ApplyImplicitView, _) =>
+        val implFirstArg: Tree = impl.args(0)
+        implFirstArg match {
+          case Literal(value) =>
+            new ToStringTarget(className, rootTree, apply, value.stringValue)
+          case Apply(fun: Apply, _) => 
+            mapApplyToMethodInvocation(className, fun, rootTree)
+          case Apply(fun, _) => 
+            new ToStringTarget(className, rootTree, impl, fun)
+          case _ => 
+            new ToStringTarget(className, rootTree, impl, implFirstArg.toString)
         }
+      case Select(apply: Apply, _) => 
+        mapApplyToMethodInvocation(className, apply, rootTree)
+      case Select(select: Select, _) => 
+        new ToStringTarget(className, rootTree, select, select.name)
+      case select: Select => 
+        new ToStringTarget(className, rootTree, select.qualifier, select.name)
       case funApply: Apply => 
         getTarget(className, funApply, rootTree)
       case typeApply: TypeApply => 
