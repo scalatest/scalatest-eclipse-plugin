@@ -39,7 +39,6 @@ package scala.tools.eclipse.scalatest.launching
 import scala.tools.eclipse.testsetup.TestProjectSetup
 import org.eclipse.core.resources.IncrementalProjectBuilder
 import org.eclipse.core.runtime.NullProgressMonitor
-//import org.eclipse.jdt.core.JavaCore
 
 object ScalaTestProject extends TestProjectSetup("scalatest", bundleName= "org.scala-ide.sdt.scalatest.tests") {
 
