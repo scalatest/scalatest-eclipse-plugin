@@ -96,6 +96,7 @@ import org.eclipse.jface.viewers.TableViewerColumn
 import org.eclipse.swt.widgets.TableItem
 import org.eclipse.swt.custom.TableEditor
 import org.eclipse.swt.events.SelectionAdapter
+import scala.tools.eclipse.ScalaProject
 
 class ScalaTestMainTab extends SharedJavaMainTab {
   // UI widgets
@@ -279,18 +280,14 @@ class ScalaTestMainTab extends SharedJavaMainTab {
     }
     
     if (fSuiteRadioButton.getSelection) {
-      var types: Array[IType] = projects.map { proj => 
-        val scProject = ScalaPlugin.plugin.getScalaProject(proj.getProject) 
-        scProject.allSourceFiles
-      }.flatten.map { file =>
-        val scSrcFileOpt = ScalaSourceFile.createFromPath(file.getFullPath.toString)
-        scSrcFileOpt match {
-          case Some(scSrcFile) =>
-            scSrcFile.getAllTypes.toList
-          case None =>
-            List.empty
+      val types: Array[IType] = 
+        projects.flatMap { proj =>
+          for (file <- ScalaPlugin.plugin.getScalaProject(proj.getProject).allSourceFiles;
+            val ssf = ScalaSourceFile.createFromPath(file.getFullPath.toString); 
+            if ssf.isDefined;
+            iType <- ssf.get.getAllTypes;
+            if ScalaTestLaunchShortcut.isScalaTestSuite(iType)) yield iType
         }
-      }.flatten.filter(iType => ScalaTestLaunchShortcut.isScalaTestSuite(iType)).toArray
     
       val mmsd = new DebugTypeSelectionDialog(getShell(), types, LauncherMessages.JavaMainTab_Choose_Main_Type_11) 
 	  mmsd.setTitle("ScalaTest Suite Selection")
@@ -305,24 +302,12 @@ class ScalaTestMainTab extends SharedJavaMainTab {
       }
     }
     else if (fFileRadioButton.getSelection) {
-      val files: Array[IResource] = projects.map { proj => 
-        val scProject = ScalaPlugin.plugin.getScalaProject(proj.getProject) 
-        scProject.allSourceFiles        
-      }.flatten.filter { file => 
-        val scSrcFileOpt = ScalaSourceFile.createFromPath(file.getFullPath.toString)
-        scSrcFileOpt match {
-          case Some(scSrcFile) =>
-            val types = scSrcFile.getAllTypes
-            types.find(iType => ScalaTestLaunchShortcut.isScalaTestSuite(iType)) match {
-              case Some(_) => 
-                true
-              case None => 
-                false
-            }
-          case None =>
-            false
+      val files = 
+        projects.flatMap { proj =>
+          for (file <- ScalaPlugin.plugin.getScalaProject(proj.getProject).allSourceFiles;
+            val ssf = ScalaSourceFile.createFromPath(file.getFullPath.toString); 
+            if ssf.isDefined && ScalaTestLaunchShortcut.containsScalaTestSuite(ssf.get)) yield file.asInstanceOf[IResource]
         }
-      }.map(file => file.asInstanceOf[IResource])
       
       val fileSelectionDialog = new ResourceListSelectionDialog(getShell, files)
       fileSelectionDialog.setTitle("Scala Source File Selection")
@@ -338,23 +323,14 @@ class ScalaTestMainTab extends SharedJavaMainTab {
     }
     else if (fPackageRadioButton.getSelection) {
       case class PackageOption(name: String, project: IJavaProject)
-      // Use mutable for better performance
-      var packageSet = new scala.collection.mutable.HashSet[PackageOption]()
-      projects.map { proj => 
-        val scProject = ScalaPlugin.plugin.getScalaProject(proj.getProject) 
-        scProject.allSourceFiles        
-      }.flatten.foreach { file => 
-        val scSrcFileOpt = ScalaSourceFile.createFromPath(file.getFullPath.toString)
-        scSrcFileOpt match {
-          case Some(scSrcFile) =>
-            val types = scSrcFile.getAllTypes
-            types.foreach { iType => 
-              if (ScalaTestLaunchShortcut.isScalaTestSuite(iType))
-                packageSet += PackageOption(iType.getPackageFragment.getElementName, iType.getJavaProject)
-            }
-          case None =>
-        }
-      }
+      val packageSet = 
+        projects.flatMap { proj =>
+          for (file <- ScalaPlugin.plugin.getScalaProject(proj.getProject).allSourceFiles;
+            val ssf = ScalaSourceFile.createFromPath(file.getFullPath.toString); 
+            if ssf.isDefined;
+            iType <- ssf.get.getAllTypes;
+            if ScalaTestLaunchShortcut.isScalaTestSuite(iType)) yield PackageOption(iType.getPackageFragment.getElementName, iType.getJavaProject)
+        }.toSet    
       
       val packageSelectionDialog = new ElementListSelectionDialog(getShell, new LabelProvider() { override def getText(element: Any) = element.asInstanceOf[PackageOption].name })
       packageSelectionDialog.setTitle("Package Selection")

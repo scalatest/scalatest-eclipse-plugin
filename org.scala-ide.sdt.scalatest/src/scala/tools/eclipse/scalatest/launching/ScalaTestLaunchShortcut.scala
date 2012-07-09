@@ -185,12 +185,13 @@ class ScalaTestTestLaunchShortcut extends ILaunchShortcut {
 object ScalaTestLaunchShortcut {
   
   def isScalaTestSuite(iType: IType): Boolean = {
-    iType.getSuperInterfaceNames().contains("org.scalatest.Suite") || 
-    iType.getAnnotations.exists(annt => annt.getElementName == "WrapWith") // org.scalatest.WrapWith does not work
+    iType.isClass && 
+    (iType.getSuperInterfaceNames().contains("org.scalatest.Suite") || 
+    iType.getAnnotations.exists(annt => annt.getElementName == "WrapWith")) // org.scalatest.WrapWith does not work
   }
   
   def containsScalaTestSuite(scSrcFile: ScalaSourceFile): Boolean = {
-    val suiteOpt = scSrcFile.getAllTypes().find { tpe => tpe.isInstanceOf[ScalaClassElement] && isScalaTestSuite(tpe) }
+    val suiteOpt = scSrcFile.getAllTypes().find { tpe => isScalaTestSuite(tpe) }
     suiteOpt match {
       case Some(suite) => true
       case None => false
