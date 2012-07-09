@@ -124,13 +124,8 @@ class ScalaTestFinder(val compiler: ScalaPresentationCompiler, loader: ClassLoad
       val rawChildren = getChildren(pClassName, rootTree, nodeTree).toList
       // Remove the primary constructor method definition.
       rawChildren match {
-        case primary :: rest => 
-          primary match {
-            case MethodDefinition(_, _, _, "this", _) =>
-              rest.toArray
-            case _ =>
-              rawChildren.toArray
-          }
+        case MethodDefinition(_, _, _, "this", _) :: rest =>
+          rest.toArray
         case _ =>
           rawChildren.toArray
       }
