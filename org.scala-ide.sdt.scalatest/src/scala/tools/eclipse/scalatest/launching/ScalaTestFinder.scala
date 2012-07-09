@@ -207,15 +207,14 @@ class ScalaTestFinder(val compiler: ScalaPresentationCompiler, loader: ClassLoad
           case impl: ApplyImplicitView => 
             val implFirstArg: Tree = impl.args(0)
             implFirstArg match {
-              case litArg: Literal =>
-                new ToStringTarget(className, rootTree, apply, litArg.value.stringValue)
-              case implArgs: ApplyToImplicitArgs =>
-                val implArgsFun: Tree = implArgs.fun
-                implArgsFun match  {
-                  case implArgsApply: Apply =>
-                    mapApplyToMethodInvocation(className, implArgsApply, rootTree)
+              case Literal(value) =>
+                new ToStringTarget(className, rootTree, apply, value.stringValue)
+              case Apply(fun, args) => 
+                fun match {
+                  case funApply: Apply =>
+                    mapApplyToMethodInvocation(className, funApply, rootTree)
                   case _ =>
-                    new ToStringTarget(className, rootTree, select.qualifier, implArgs.fun)
+                    new ToStringTarget(className, rootTree, select.qualifier, fun)
                 }
               case _ => 
                 new ToStringTarget(className, rootTree, select.qualifier, implFirstArg.toString)
