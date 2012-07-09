@@ -183,23 +183,8 @@ class ScalaTestTestLaunchShortcut extends ILaunchShortcut {
 }
 
 object ScalaTestLaunchShortcut {
-  def getScalaTestSuites(element: AnyRef): List[IType] = {
-    val je = element.asInstanceOf[IAdaptable].getAdapter(classOf[IJavaElement]).asInstanceOf[IJavaElement]
-    je.getOpenable match {
-      case scu: ScalaSourceFile => 
-        val ts = scu.getAllTypes()
-        ts.filter {tpe => 
-          tpe.isInstanceOf[ScalaClassElement] && isScalaTestSuite(tpe)
-        }.toList
-      case _ =>
-        List.empty
-    }
-  }
   
   def isScalaTestSuite(iType: IType): Boolean = {
-    //val typeHier:ITypeHierarchy = iType.newSupertypeHierarchy(null)
-    //val superTypeArr:Array[IType] = typeHier.getAllSupertypes(iType)
-    //superTypeArr.findIndexOf {superType => superType.getFullyQualifiedName == "org.scalatest.Suite"} >= 0
     iType.getSuperInterfaceNames().contains("org.scalatest.Suite") || 
     iType.getAnnotations.exists(annt => annt.getElementName == "WrapWith") // org.scalatest.WrapWith does not work
   }
