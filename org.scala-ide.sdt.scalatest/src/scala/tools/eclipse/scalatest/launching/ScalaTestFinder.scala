@@ -86,12 +86,17 @@ class ScalaTestFinder(val compiler: ScalaPresentationCompiler, loader: ClassLoad
     
     @tailrec
     private def findBlock(apply: Apply): Option[Block] = {
-      if (apply.args.length > 0 && apply.args.last.isInstanceOf[Block])
-        Some(apply.args.last.asInstanceOf[Block])
-      else if (apply.args.length > 0 && apply.args.head.isInstanceOf[Apply])
-        findBlock(apply.args.head.asInstanceOf[Apply])
-      else
-        None
+      apply.args.lastOption match {
+        case Some(b: Block) => 
+          Some(b)
+        case _ =>
+          apply.args match {
+            case List(a: Apply, _*) =>
+              findBlock(a)
+            case _ =>
+              None
+          }
+      }
     }
   
     def getChildren(className: String, root: Tree, node: Tree): Array[AstNode] = {
