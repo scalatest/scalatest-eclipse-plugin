@@ -249,7 +249,8 @@ class ScalaTestFinder(val compiler: ScalaPresentationCompiler, loader: ClassLoad
         // Some approaches used before
         // param types: " + defDefSym.info.paramTypes.map(t => t.typeSymbol.fullName)
         // param types: " + defDef.vparamss.flatten.toList.map(valDef => valDef.tpt.symbol.fullName)
-        Some(new MethodDefinition(className, rootTree, selectedTree, defDefSym.decodedName, defDefSym.info.paramTypes.map(t => t.typeSymbol.fullName): _*))
+        val args = compiler.askOption[List[String]](() => defDefSym.info.paramTypes.map(t => t.typeSymbol.fullName)).getOrElse(List.empty)
+        Some(new MethodDefinition(className, rootTree, selectedTree, defDefSym.decodedName, args: _*))
       case applyImplicitView: ApplyImplicitView =>
         None
       case apply: Apply =>
@@ -297,11 +298,12 @@ class ScalaTestFinder(val compiler: ScalaPresentationCompiler, loader: ClassLoad
               val runnerClass = valueMethod.invoke(wrapWithAnnotation).asInstanceOf[Class[_]]
               runnerClass.getAnnotations.find(annt => annt.annotationType.getName == "org.scalatest.Style")
             case None =>
-              val linearizedBaseClasses = rootTree.symbol.info.baseClasses
+              val linearizedBaseClasses = compiler.askOption[List[Symbol]](() => rootTree.symbol.info.baseClasses).getOrElse(List.empty)
               linearizedBaseClasses.find(baseClass => baseClass.annotations.exists(aInfo => aInfo.atp.toString == "org.scalatest.Style")) match {
-                case Some(styleAnnotattedBaseClass) =>
-                  val styleAnnotattedClass: Class[_] = loader.loadClass(styleAnnotattedBaseClass.info.typeSymbol.fullName)
-                  styleAnnotattedClass.getAnnotations.find(annt => annt.annotationType.getName == "org.scalatest.Style")
+                case Some(styleAnnotatatedBaseClass) =>
+                  val styleAnnotatedClassName = compiler.askOption[String](() => styleAnnotatatedBaseClass.info.typeSymbol.fullName).getOrElse(null)
+                  val styleAnnotatatedClass: Class[_] = loader.loadClass(styleAnnotatedClassName)
+                  styleAnnotatatedClass.getAnnotations.find(annt => annt.annotationType.getName == "org.scalatest.Style")
                 case None => 
                   None
               }
