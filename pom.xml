@@ -51,7 +51,7 @@
     <scalacheck.id>scalacheck_2.9.0</scalacheck.id>
     <scalacheck.version>1.9</scalacheck.version>
     <scalatest.id>scalatest_2.9.0</scalatest.id>
-    <scalatest.version>2.0.M1</scalatest.version>
+    <scalatest.version>2.0.M2</scalatest.version>
     <specs.id>specs_2.9.0</specs.id>
     <specs.version>1.6.8</specs.version>
     <junit.version>4.10</junit.version>
