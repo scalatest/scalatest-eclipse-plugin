@@ -214,18 +214,6 @@ object ScalaTestLaunchShortcut {
       false
   }
   
-  @tailrec
-  def lookupSuperClasses(iType: IType): Boolean = {
-    val superClassName = iType.getSuperclassName
-    MessageDialog.openInformation(null, "Title", superClassName)
-    if (superClassName == "org.scalatest.Suite")
-      true
-    else if (superClassName == null)
-      false
-    else
-      lookupSuperClasses(iType.getType(superClassName))
-  }
-  
   def containsScalaTestSuite(scSrcFile: ScalaSourceFile): Boolean = {
     val suiteOpt = scSrcFile.getAllTypes().find { tpe => isScalaTestSuite(tpe) }
     suiteOpt match {
