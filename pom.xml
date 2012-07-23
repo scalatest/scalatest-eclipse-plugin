@@ -101,7 +101,9 @@
                 </goals>
                 <configuration>
                   <rules>
-                    <AlwaysFail/>
+                    <AlwaysFail>
+                      <message>The build is not configured for the 2.10 versions of the dependencies</message>
+                    </AlwaysFail>
                   </rules>
                   <fail>true</fail>
                 </configuration>
