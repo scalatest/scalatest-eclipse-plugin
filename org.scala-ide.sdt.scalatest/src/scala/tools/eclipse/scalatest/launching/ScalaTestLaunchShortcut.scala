@@ -107,7 +107,6 @@ class ScalaTestFileLaunchShortcut extends ILaunchShortcut {
 class ScalaTestSuiteLaunchShortcut extends ILaunchShortcut {
   
   def launch(selection:ISelection, mode:String) {
-    println(selection)
     selection match {
       case treeSelection: ITreeSelection => 
         treeSelection.getFirstElement match {
@@ -185,9 +184,46 @@ class ScalaTestTestLaunchShortcut extends ILaunchShortcut {
 object ScalaTestLaunchShortcut {
   
   def isScalaTestSuite(iType: IType): Boolean = {
-    iType.isClass && 
-    (iType.getSuperInterfaceNames().contains("org.scalatest.Suite") || 
-    iType.getAnnotations.exists(annt => annt.getElementName == "WrapWith")) // org.scalatest.WrapWith does not work
+    if (iType.isClass) {
+      val project = iType.getJavaProject.getProject
+      val scProject = ScalaPlugin.plugin.getScalaProject(project)
+      scProject.withPresentationCompiler { compiler =>
+        import compiler._
+      
+        val scu = iType.getCompilationUnit.asInstanceOf[ScalaCompilationUnit]
+        val classPosition = new OffsetPosition(scu.createSourceFile, iType.getSourceRange.getOffset)
+        //val rootTree = compiler.locateTree(classPosition)
+        val response = new Response[Tree]
+        compiler.askTypeAt(classPosition, response)
+        val rootTree = response.get match {
+          case Left(tree) => tree 
+          case Right(thr) => throw thr
+        }
+        
+        val linearizedBaseClasses = compiler.askOption[List[compiler.Symbol]](() => rootTree.symbol.info.baseClasses).getOrElse(List.empty)
+        linearizedBaseClasses.find { baseClass => 
+          baseClass.fullName == "org.scalatest.Suite" 
+        } match {
+          case Some(suiteBaseClass) => true
+          case None => 
+            rootTree.symbol.annotations.exists(aInfo => aInfo.atp.toString == "org.scalatest.WrapWith")
+        }
+      }(false)
+    }
+    else
+      false
+  }
+  
+  @tailrec
+  def lookupSuperClasses(iType: IType): Boolean = {
+    val superClassName = iType.getSuperclassName
+    MessageDialog.openInformation(null, "Title", superClassName)
+    if (superClassName == "org.scalatest.Suite")
+      true
+    else if (superClassName == null)
+      false
+    else
+      lookupSuperClasses(iType.getType(superClassName))
   }
   
   def containsScalaTestSuite(scSrcFile: ScalaSourceFile): Boolean = {
