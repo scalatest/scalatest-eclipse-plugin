@@ -287,7 +287,13 @@ class ScalaTestFinder(val compiler: ScalaPresentationCompiler, loader: ClassLoad
         val scu = scElement.getCompilationUnit.asInstanceOf[ScalaCompilationUnit]
           
         val classPosition = new OffsetPosition(scu.createSourceFile, classElement.getSourceRange.getOffset)
-        val rootTree = compiler.locateTree(classPosition)
+        //val rootTree = compiler.locateTree(classPosition)
+        val response = new Response[Tree]
+        compiler.askTypeAt(classPosition, response)
+        val rootTree = response.get match {
+          case Left(tree) => tree 
+          case Right(thr) => throw thr
+        }
         
         val suiteClass: Class[_] = loader.loadClass(classElement.getFullyQualifiedName)
         val wrapWithAnnotation = suiteClass.getAnnotations.find(annt => annt.annotationType.getName == "org.scalatest.WrapWith")
