@@ -2,7 +2,7 @@
 <feature
       id="org.scala-ide.sdt.scalatest.feature"
       label="ScalaTest for Scala IDE"
-      version="0.1.0.qualifier"
+      version="0.9.1"
       provider-name="scala-ide.org"
       plugin="org.scala-ide.sdt.scalatest">
 
