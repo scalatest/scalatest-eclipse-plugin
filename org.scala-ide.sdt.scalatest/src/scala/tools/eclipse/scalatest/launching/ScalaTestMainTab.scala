@@ -107,6 +107,7 @@ class ScalaTestMainTab extends SharedJavaMainTab {
   private var fPackageRadioButton: Button = null
   private var fIncludeNestedCheckBox: Button = null
   
+  private var testNamesGroup: Group = null
   private var fTestNamesTable: Table = null
   private var fTestNamesEditor: TableEditor = null
   
@@ -123,17 +124,17 @@ class ScalaTestMainTab extends SharedJavaMainTab {
   private def updateUI() {
     if (fSuiteRadioButton.getSelection) {
       fIncludeNestedCheckBox.setVisible(false)
-      fTestNamesTable.setVisible(true)
+      testNamesGroup.setVisible(true)
       mainGroup.setText("Suite Class")
     }
     else if (fFileRadioButton.getSelection) {
       fIncludeNestedCheckBox.setVisible(false)
-      fTestNamesTable.setVisible(false)
+      testNamesGroup.setVisible(false)
       mainGroup.setText("Suite File")
     }
     else {
       fIncludeNestedCheckBox.setVisible(true)
-      fTestNamesTable.setVisible(false)
+      testNamesGroup.setVisible(false)
       mainGroup.setText("Package Name")
     }
   }
@@ -178,7 +179,7 @@ class ScalaTestMainTab extends SharedJavaMainTab {
     })
     createMainTypeExtensions(mainGroup)
     
-    val testNamesGroup = SWTFactory.createGroup(parent, "Test Names", 2, 1, GridData.FILL_BOTH)
+    testNamesGroup = SWTFactory.createGroup(parent, "Test Names", 2, 1, GridData.FILL_BOTH)
     createTestNamesTable(testNamesGroup)
   }
   
