@@ -47,7 +47,7 @@
     <version.suffix>2_09</version.suffix>
     <scala.version.short>2.9</scala.version.short>
     <version.tag>local</version.tag>
-    <repo.scala-ide>${repo.scala-ide.root}/releases-29/stable/site</repo.scala-ide>
+    <repo.scala-ide>${repo.scala-ide.root}/releases-29/stable/tycho-site</repo.scala-ide>
     <scalacheck.id>scalacheck_2.9.0</scalacheck.id>
     <scalacheck.version>1.9</scalacheck.version>
     <scalatest.id>scalatest_2.9.0</scalatest.id>
