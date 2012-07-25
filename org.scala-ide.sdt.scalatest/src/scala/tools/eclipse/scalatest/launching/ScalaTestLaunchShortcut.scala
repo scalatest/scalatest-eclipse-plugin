@@ -76,6 +76,7 @@ import org.eclipse.jdt.internal.core.PackageFragment
 import ScalaTestLaunchShortcut._
 import org.eclipse.ui.IEditorSite
 import org.eclipse.ui.IEditorInput
+import scala.reflect.NameTransformer
 
 class ScalaTestFileLaunchShortcut extends ILaunchShortcut {
   
@@ -324,7 +325,7 @@ object ScalaTestLaunchShortcut {
   def launchSuite(classElement: ScalaClassElement, mode: String) {
     val configType = getLaunchManager.getLaunchConfigurationType("scala.scalatest")
     val existingConfigs = getLaunchManager.getLaunchConfigurations(configType)
-    val simpleName = classElement.labelName
+    val simpleName = NameTransformer.decode(classElement.labelName)
     val existingConfigOpt = existingConfigs.find(config => config.getName == simpleName)
     val config = existingConfigOpt match {
                    case Some(existingConfig) => existingConfig

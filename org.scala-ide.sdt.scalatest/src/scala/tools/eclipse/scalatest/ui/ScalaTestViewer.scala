@@ -78,6 +78,7 @@ import org.eclipse.debug.internal.ui.DebugUIPlugin
 import org.eclipse.debug.ui.IDebugUIConstants
 import org.eclipse.jface.viewers.StructuredSelection
 import org.eclipse.jface.viewers.ViewerFilter
+import scala.reflect.NameTransformer
 
 class ScalaTestViewer(parent: Composite, fTestRunnerPart: ScalaTestRunnerViewPart) {
   
@@ -437,9 +438,9 @@ private class TestSessionLabelProvider(fTestRunnerPart: ScalaTestRunnerViewPart,
   
   private def getSimpleLabel(element: AnyRef): String = {
     element match {
-      case test: TestModel => test.testText
+      case test: TestModel => NameTransformer.decode(test.testText)
       case scope: ScopeModel => scope.message
-      case suite: SuiteModel => suite.suiteName
+      case suite: SuiteModel => NameTransformer.decode(suite.suiteName)
       case run: RunModel => "Run"
       case info: InfoModel => info.message
       case _ => element.toString
