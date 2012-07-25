@@ -128,12 +128,20 @@ class ScalaTestFinder(val compiler: ScalaPresentationCompiler, loader: ClassLoad
     override lazy val children = {
       val rawChildren = getChildren(pClassName, rootTree, nodeTree).toList
       // Remove the primary constructor method definition.
-      rawChildren match {
-        case MethodDefinition(_, _, _, "this", _) :: rest =>
+      // the following does not work for some reason, may be because of varargs?
+      /*rawChildren match {
+        case MethodDefinition(_, _, _, "this", _) :: rest  =>
+          org.eclipse.jface.dialogs.MessageDialog.openInformation(null, "With Primary Constructor", rest.map(getNodeDisplay(_)).mkString("\n===============\n"))
           rest.toArray
         case _ =>
+          org.eclipse.jface.dialogs.MessageDialog.openInformation(null, "Without Primary Constructor", rawChildren.map(getNodeDisplay(_)).mkString("\n===============\n"))
           rawChildren.toArray
-      }
+      }*/
+      
+      if (rawChildren.size > 0 && rawChildren.head.isInstanceOf[MethodDefinition] && rawChildren.head.asInstanceOf[MethodDefinition].pName == "this") 
+        rawChildren.tail.toArray
+      else 
+        rawChildren.toArray
     }
     override def equals(other: Any) = if (other != null && other.isInstanceOf[ConstructorBlock]) nodeTree eq other.asInstanceOf[ConstructorBlock].nodeTree else false 
     override def hashCode = nodeTree.hashCode
