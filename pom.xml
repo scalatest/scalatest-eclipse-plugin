@@ -29,7 +29,7 @@
 
     <!-- fixed versions -->
     <tycho.version>0.15.0</tycho.version>
-    <scalatest-finders.version>0.9.1-SNAPSHOT</scalatest-finders.version>
+    <scalatest-finders.version>0.9.2</scalatest-finders.version>
     <scala.plugin.version>3.0.2</scala.plugin.version>
 
     <!-- tycho test related -->
