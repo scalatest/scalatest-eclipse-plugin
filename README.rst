@@ -5,23 +5,18 @@ This project contains plugins for seamless support of `scalatest`_ in `Scala IDE
 
 *This is a work in progress. Please file `tickets`_ if you encounter problems.*
 
-building
+Building
 --------
 
-Maven is used to manage the build process. The default configuration build the project for Scala IDE 2.0.1 with Scala 2.9.2.
+Maven is used to manage the build process.  The project can be built for Scala IDE 2.0.2 (stable) and master (nightly/2.1.0).
 
-  $ mvn clean install
+*To build for Scala IDE 2.0.2 (stable), use
 
-*Until the build process is merged in scala-ide trunk, some extra parameters are needed:*
+  $ mvn clean install -P scala-ide-2.0.2-scala-2.9
+
+*To build for Scala IDE master (nightly/2.1.0), use
 
   $ mvn clean install -P scala-ide-master-scala-2.9 
-
-The available profiles are:
-
-* **scala-ide-2.0-scala-2.9** (default): stable Scala IDE (2.0.1) - stable Scala (2.9.2) *not available right now, building is not possible with the current Scala IDE stable update site*
-* **scala-ide-2.0.x-scala-2.9**: maintenance Scala IDE (2.0.x) - stable Scala (2.9.2)
-* **scala-ide-master-scala-2.9**: master Scala IDE (2.1.x) - stable Scala (2.9.2)
-* **scala-ide-master-scala-trunk**: master Scala IDE (2.1.x) - trunk Scala (2.10.x) *disabled right now. Need to find the right library versions*
 
 .. _scalatest: http://scalatest.org
 .. _Scala IDE: http://scala-ide.org
