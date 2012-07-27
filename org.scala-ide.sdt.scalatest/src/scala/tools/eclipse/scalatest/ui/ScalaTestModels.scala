@@ -101,6 +101,8 @@ final case class TestModel(
   var errorMessage: Option[String], 
   var errorDepth: Option[Int], 
   var errorStackTrace: Option[Array[StackTraceElement]], 
+  startFormatter: Option[Formatter],
+  var endFormatter: Option[Formatter],
   var location: Option[Location],
   rerunner: Option[String],
   threadName: String,
@@ -114,6 +116,8 @@ final case class TestModel(
 final case class ScopeModel(
   message: String,
   nameInfo: NameInfo,
+  startFormatter: Option[Formatter],
+  var endFormatter: Option[Formatter],
   location: Option[Location],
   threadName: String,
   timeStamp: Long, 
@@ -142,6 +146,8 @@ final case class SuiteModel(
   suiteId: String,
   suiteClassName: Option[String],
   decodedSuiteName: Option[String],
+  startFormatter: Option[Formatter],
+  var endFormatter: Option[Formatter],
   var location: Option[Location],
   rerunner: Option[String],
   var duration: Option[Long] = None,
@@ -173,17 +179,16 @@ final case class SuiteModel(
     }
   }
   
-  def closeScope() {
-    scopeStack.pop()
-  }
+  def closeScope() = scopeStack.pop()
   
-  def updateTest(testName: String, status: TestStatus, duration: Option[Long], location: Option[Location], errorMessage: Option[String], errorDepth: Option[Int], errorStackTrace: Option[Array[StackTraceElement]]) = {
+  def updateTest(testName: String, status: TestStatus, duration: Option[Long], formatter: Option[Formatter], location: Option[Location], errorMessage: Option[String], errorDepth: Option[Int], errorStackTrace: Option[Array[StackTraceElement]]) = {
     val node = flatTestsCache.toArray.find(node => node.isInstanceOf[TestModel] && node.asInstanceOf[TestModel].testName == testName)
     node match {
       case Some(node) => 
         val test = node.asInstanceOf[TestModel]
         test.status = status
         test.duration = duration
+        test.endFormatter = formatter
         test.location = location
         test.errorMessage = errorMessage
         test.errorDepth = errorDepth
@@ -226,6 +231,7 @@ final case class InfoModel(
   errorMessage: Option[String], 
   errorDepth: Option[Int],
   errorStackTrace: Option[Array[StackTraceElement]], 
+  formatter: Option[Formatter],
   location: Option[Location], 
   threadName: String,
   timeStamp: Long

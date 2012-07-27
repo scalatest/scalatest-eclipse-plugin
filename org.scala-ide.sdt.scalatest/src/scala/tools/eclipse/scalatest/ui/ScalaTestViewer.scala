@@ -436,21 +436,37 @@ private class TestSessionLabelProvider(fTestRunnerPart: ScalaTestRunnerViewPart,
     }
   }
   
+  private def getDisplayLabel(formatter: Option[Formatter], orElse: String): String = {
+    val a = formatter
+    NameTransformer.decode(formatter match {
+      case Some(indText: IndentedText) => 
+        val formattedText = indText.formattedText.trim
+        if (formattedText.startsWith("+ ") || formattedText.startsWith("- "))
+          formattedText.substring(2)
+        else
+          formattedText
+      case _ => orElse
+    })
+  }
+    
+  private def getFormatter(startFormatter: Option[Formatter], endFormatter: Option[Formatter]) = 
+    if (endFormatter.isDefined) endFormatter else startFormatter
+  
   private def getSimpleLabel(element: AnyRef): String = {
     element match {
-      case test: TestModel => NameTransformer.decode(test.testText)
-      case scope: ScopeModel => scope.message
-      case suite: SuiteModel => NameTransformer.decode(suite.suiteName)
+      case test: TestModel => getDisplayLabel(getFormatter(test.startFormatter, test.endFormatter), test.testText)
+      case scope: ScopeModel => getDisplayLabel(getFormatter(scope.startFormatter, scope.endFormatter), scope.message)
+      case suite: SuiteModel => getDisplayLabel(getFormatter(suite.startFormatter, suite.endFormatter), suite.suiteName)
       case run: RunModel => "Run"
-      case info: InfoModel => info.message
+      case info: InfoModel => getDisplayLabel(info.formatter, info.message)
       case _ => element.toString
     }
   }
   
   override def getText(element: AnyRef): String = {
-    val label = getSimpleLabel(element);
+    val label = getSimpleLabel(element)
     if (label == null) {
-      return element.toString();
+      return element.toString()
     }
     val duration = 
       element match {

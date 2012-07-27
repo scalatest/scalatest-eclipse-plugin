@@ -46,6 +46,7 @@ final case class TestStarting (
   testName: String,
   testText: String,
   decodedTestName: Option[String],
+  formatter: Option[Formatter], 
   location: Option[Location],
   rerunner: Option[String],
   threadName: String,
@@ -61,6 +62,7 @@ final case class TestSucceeded (
   testText: String,
   decodedTestName: Option[String],
   duration: Option[Long],
+  formatter: Option[Formatter],
   location: Option[Location],
   rerunner: Option[String],
   threadName: String,
@@ -80,6 +82,7 @@ final case class TestFailed (
   errorDepth: Option[Int], 
   errorStackTraces: Option[Array[StackTraceElement]],
   duration: Option[Long],
+  formatter: Option[Formatter],
   location: Option[Location],
   rerunner: Option[String],
   threadName: String,
@@ -94,6 +97,7 @@ final case class TestIgnored (
   testName: String,
   testText: String,
   decodedTestName: Option[String],
+  formatter: Option[Formatter], 
   location: Option[Location],
   threadName: String,
   timeStamp: Long
@@ -108,6 +112,7 @@ final case class TestPending (
   testText: String,
   decodedTestName: Option[String],
   duration: Option[Long],
+  formatter: Option[Formatter],
   location: Option[Location],
   threadName: String,
   timeStamp: Long
@@ -126,6 +131,7 @@ final case class TestCanceled (
   errorDepth: Option[Int], 
   errorStackTraces: Option[Array[StackTraceElement]], 
   duration: Option[Long],
+  formatter: Option[Formatter],
   location: Option[Location],
   threadName: String,
   timeStamp: Long
@@ -136,6 +142,7 @@ final case class SuiteStarting (
   suiteId: String,
   suiteClassName: Option[String],
   decodedSuiteName: Option[String],
+  formatter: Option[Formatter],
   location: Option[Location],
   rerunner: Option[String],
   threadName: String,
@@ -148,6 +155,7 @@ final case class SuiteCompleted (
   suiteClassName: Option[String],
   decodedSuiteName: Option[String],
   duration: Option[Long],
+  formatter: Option[Formatter],
   location: Option[Location],
   rerunner: Option[String],
   threadName: String,
@@ -164,6 +172,7 @@ final case class SuiteAborted (
   errorDepth: Option[Int], 
   errorStackTraces: Option[Array[StackTraceElement]],
   duration: Option[Long],
+  formatter: Option[Formatter],
   location: Option[Location],
   rerunner: Option[String],
   threadName: String,
@@ -210,6 +219,7 @@ final case class InfoProvided (
   errorMessage: Option[String],
   errorDepth: Option[Int], 
   errorStackTraces: Option[Array[StackTraceElement]],
+  formatter: Option[Formatter],
   location: Option[Location],
   threadName: String,
   timeStamp: Long
@@ -220,6 +230,7 @@ final case class MarkupProvided (
   nameInfo: Option[NameInfo],
   aboutAPendingTest: Option[Boolean],
   aboutACanceledTest: Option[Boolean],
+  formatter: Option[Formatter],
   location: Option[Location],
   threadName: String,
   timeStamp: Long
@@ -230,6 +241,7 @@ final case class ScopeOpened (
   nameInfo: NameInfo,
   aboutAPendingTest: Option[Boolean],
   aboutACanceledTest: Option[Boolean],
+  formatter: Option[Formatter],
   location: Option[Location],
   threadName: String,
   timeStamp: Long
@@ -240,6 +252,7 @@ final case class ScopeClosed (
   nameInfo: NameInfo,
   aboutAPendingTest: Option[Boolean],
   aboutACanceledTest: Option[Boolean],
+  formatter: Option[Formatter],
   location: Option[Location],
   threadName: String,
   timeStamp: Long

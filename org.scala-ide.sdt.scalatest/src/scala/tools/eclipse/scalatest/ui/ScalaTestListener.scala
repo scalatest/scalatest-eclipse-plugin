@@ -95,6 +95,7 @@ class ScalaTestListener extends Observable with Runnable {
                   (eventXml \ "testName").text,
                   (eventXml \ "testText").text,
                   stringOpt(eventXml \ "decodedTestName"),
+                  formatterOpt(eventXml \ "formatter"),
                   locationOpt(eventXml \ "location"),
                   stringOpt(eventXml \ "rerunner"),
                   (eventXml \ "threadName").text,
@@ -111,6 +112,7 @@ class ScalaTestListener extends Observable with Runnable {
                   (eventXml \ "testText").text,
                   stringOpt(eventXml \ "decodedTestName"),
                   longOpt(eventXml \ "duration"),
+                  formatterOpt(eventXml \ "formatter"),
                   locationOpt(eventXml \ "location"),
                   stringOpt(eventXml \ "rerunner"),
                   (eventXml \ "threadName").text,
@@ -132,6 +134,7 @@ class ScalaTestListener extends Observable with Runnable {
                   intOpt(eventXml \ "throwable" \ "depth"),
                   stackTracesOpt(eventXml \ "throwable" \ "stackTraces"),
                   longOpt(eventXml \ "duration"),
+                  formatterOpt(eventXml \ "formatter"),
                   locationOpt(eventXml \ "location"),
                   stringOpt(eventXml \ "rerunner"),
                   (eventXml \ "threadName").text,
@@ -148,6 +151,7 @@ class ScalaTestListener extends Observable with Runnable {
                   (eventXml \ "testName").text,
                   (eventXml \ "testText").text,
                   stringOpt(eventXml \ "decodedTestName"),
+                  formatterOpt(eventXml \ "formatter"),
                   locationOpt(eventXml \ "location"),
                   (eventXml \ "threadName").text,
                   (eventXml \ "timeStamp").text.toLong
@@ -164,6 +168,7 @@ class ScalaTestListener extends Observable with Runnable {
                   (eventXml \ "testText").text,
                   stringOpt(eventXml \ "decodedTestName"),
                   longOpt(eventXml \ "duration"),
+                  formatterOpt(eventXml \ "formatter"),
                   locationOpt(eventXml \ "location"),
                   (eventXml \ "threadName").text,
                   (eventXml \ "timeStamp").text.toLong
@@ -184,6 +189,7 @@ class ScalaTestListener extends Observable with Runnable {
                   intOpt(eventXml \ "throwable" \ "depth"),
                   stackTracesOpt(eventXml \ "throwable" \ "stackTraces"),
                   longOpt(eventXml \ "duration"),
+                  formatterOpt(eventXml \ "formatter"),
                   locationOpt(eventXml \ "location"),
                   (eventXml \ "threadName").text,
                   (eventXml \ "timeStamp").text.toLong
@@ -196,6 +202,7 @@ class ScalaTestListener extends Observable with Runnable {
                   nameInfo(eventXml \ "nameInfo"),
                   booleanOpt(eventXml \ "aboutAPendingTest"),
                   booleanOpt(eventXml \ "aboutACanceledTest"),
+                  formatterOpt(eventXml \ "formatter"),
                   locationOpt(eventXml \ "location"),
                   (eventXml \ "threadName").text,
                   (eventXml \ "timeStamp").text.toLong
@@ -208,6 +215,7 @@ class ScalaTestListener extends Observable with Runnable {
                   nameInfo(eventXml \ "nameInfo"),
                   booleanOpt(eventXml \ "aboutAPendingTest"),
                   booleanOpt(eventXml \ "aboutACanceledTest"),
+                  formatterOpt(eventXml \ "formatter"),
                   locationOpt(eventXml \ "location"),
                   (eventXml \ "threadName").text,
                   (eventXml \ "timeStamp").text.toLong
@@ -221,6 +229,7 @@ class ScalaTestListener extends Observable with Runnable {
                   (eventXml \ "suiteId").text,
                   stringOpt(eventXml \ "suiteClassName"),
                   stringOpt(eventXml \ "decodedSuiteName"),
+                  formatterOpt(eventXml \ "formatter"),
                   locationOpt(eventXml \ "location"),
                   stringOpt(eventXml \ "rerunner"),
                   (eventXml \ "threadName").text,
@@ -235,6 +244,7 @@ class ScalaTestListener extends Observable with Runnable {
                   stringOpt(eventXml \ "suiteClassName"),
                   stringOpt(eventXml \ "decodedSuiteName"),
                   longOpt(eventXml \ "duration"),
+                  formatterOpt(eventXml \ "formatter"),
                   locationOpt(eventXml \ "location"),
                   stringOpt(eventXml \ "rerunner"),
                   (eventXml \ "threadName").text,
@@ -253,6 +263,7 @@ class ScalaTestListener extends Observable with Runnable {
                   intOpt(eventXml \ "throwable" \ "depth"),
                   stackTracesOpt(eventXml \ "throwable" \ "stackTraces"),
                   longOpt(eventXml \ "duration"),
+                  formatterOpt(eventXml \ "formatter"),
                   locationOpt(eventXml \ "location"),
                   stringOpt(eventXml \ "rerunner"),
                   (eventXml \ "threadName").text,
@@ -312,6 +323,7 @@ class ScalaTestListener extends Observable with Runnable {
                   stringOpt(eventXml \ "throwable" \ "message"),
                   intOpt(eventXml \ "throwable" \ "depth"),
                   stackTracesOpt(eventXml \ "throwable" \ "stackTraces"),
+                  formatterOpt(eventXml \ "formatter"),
                   locationOpt(eventXml \ "location"),
                   (eventXml \ "threadName").text,
                   (eventXml \ "timeStamp").text.toLong
@@ -324,6 +336,7 @@ class ScalaTestListener extends Observable with Runnable {
                   nameInfoOpt(eventXml \ "nameInfo"),
                   booleanOpt(eventXml \ "aboutAPendingTest"),
                   booleanOpt(eventXml \ "aboutACanceledTest"),
+                  formatterOpt(eventXml \ "formatter"),
                   locationOpt(eventXml \ "location"),
                   (eventXml \ "threadName").text,
                   (eventXml \ "timeStamp").text.toLong
@@ -398,6 +411,22 @@ class ScalaTestListener extends Observable with Runnable {
             None
         }
       case None => 
+        None
+    }
+  }
+  
+  private def formatterOpt(nodeSeq: NodeSeq) = {
+    val formatter = nodeSeq.head
+    val nodeOpt = formatter.child.find(node => node.label == "MotionToSuppress" || node.label == "IndentedText")
+    nodeOpt match {
+      case Some(node) => 
+        node.label match {
+          case "MotionToSuppress" =>
+            Some(MotionToSuppress)
+          case "IndentedText" =>
+            Some(IndentedText((node \ "formattedText").text, (node \ "rawText").text, (node \ "indentationLevel").text.toInt))
+        }
+      case None =>
         None
     }
   }
