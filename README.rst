@@ -36,7 +36,7 @@ Prerequisites
 
 *   `Eclipse`_ 3.7.2 (Indigo) with Scala IDE for Scala 2.9 installed (update site: http://download.scala-ide.org/releases-29/stable/site).
 
-    Check the http://scala-ide.org/docs/user/gettingstarted.html page for instructions on how to install Scala IDE.
+    Check the getting started page http://scala-ide.org/docs/user/gettingstarted.html page for instructions on how to install Scala IDE.
 
 *   Basic knowledge of the Eclipse user interface is required (in this guide).
 
