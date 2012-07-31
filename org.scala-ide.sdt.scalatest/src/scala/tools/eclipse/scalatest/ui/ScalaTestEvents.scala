@@ -38,6 +38,8 @@ package scala.tools.eclipse.scalatest.ui
 
 sealed abstract class Event
 
+sealed trait RecordableEvent extends Event
+
 final case class TestStarting (
   suiteName: String,
   suiteId: String,
@@ -61,6 +63,7 @@ final case class TestSucceeded (
   testName: String,
   testText: String,
   decodedTestName: Option[String],
+  recordedEvents: IndexedSeq[RecordableEvent],
   duration: Option[Long],
   formatter: Option[Formatter],
   location: Option[Location],
@@ -78,6 +81,7 @@ final case class TestFailed (
   testName: String,
   testText: String,
   decodedTestName: Option[String],
+  recordedEvents: IndexedSeq[RecordableEvent],
   errorMessage: Option[String],
   errorDepth: Option[Int], 
   errorStackTraces: Option[Array[StackTraceElement]],
@@ -111,6 +115,7 @@ final case class TestPending (
   testName: String,
   testText: String,
   decodedTestName: Option[String],
+  recordedEvents: IndexedSeq[RecordableEvent],
   duration: Option[Long],
   formatter: Option[Formatter],
   location: Option[Location],
@@ -127,6 +132,7 @@ final case class TestCanceled (
   testName: String,
   testText: String,
   decodedTestName: Option[String],
+  recordedEvents: IndexedSeq[RecordableEvent],
   errorMessage: Option[String],
   errorDepth: Option[Int], 
   errorStackTraces: Option[Array[StackTraceElement]], 
@@ -223,7 +229,7 @@ final case class InfoProvided (
   location: Option[Location],
   threadName: String,
   timeStamp: Long
-) extends Event
+) extends Event with RecordableEvent
 
 final case class MarkupProvided (
   text: String,
@@ -234,7 +240,7 @@ final case class MarkupProvided (
   location: Option[Location],
   threadName: String,
   timeStamp: Long
-) extends Event
+) extends Event with RecordableEvent
 
 final case class ScopeOpened (
   message: String,

@@ -111,6 +111,7 @@ class ScalaTestListener extends Observable with Runnable {
                   (eventXml \ "testName").text,
                   (eventXml \ "testText").text,
                   stringOpt(eventXml \ "decodedTestName"),
+                  recordedEvents(eventXml \ "recordedEvents"),
                   longOpt(eventXml \ "duration"),
                   formatterOpt(eventXml \ "formatter"),
                   locationOpt(eventXml \ "location"),
@@ -130,6 +131,7 @@ class ScalaTestListener extends Observable with Runnable {
                   (eventXml \ "testName").text,
                   (eventXml \ "testText").text,
                   stringOpt(eventXml \ "decodedTestName"),
+                  recordedEvents(eventXml \ "recordedEvents"),
                   stringOpt(eventXml \ "throwable" \ "message"),
                   intOpt(eventXml \ "throwable" \ "depth"),
                   stackTracesOpt(eventXml \ "throwable" \ "stackTraces"),
@@ -167,6 +169,7 @@ class ScalaTestListener extends Observable with Runnable {
                   (eventXml \ "testName").text,
                   (eventXml \ "testText").text,
                   stringOpt(eventXml \ "decodedTestName"),
+                  recordedEvents(eventXml \ "recordedEvents"),
                   longOpt(eventXml \ "duration"),
                   formatterOpt(eventXml \ "formatter"),
                   locationOpt(eventXml \ "location"),
@@ -185,6 +188,7 @@ class ScalaTestListener extends Observable with Runnable {
                   (eventXml \ "testName").text,
                   (eventXml \ "testText").text,
                   stringOpt(eventXml \ "decodedTestName"),
+                  recordedEvents(eventXml \ "recordedEvents"),
                   stringOpt(eventXml \ "throwable" \ "message"),
                   intOpt(eventXml \ "throwable" \ "depth"),
                   stackTracesOpt(eventXml \ "throwable" \ "stackTraces"),
@@ -444,6 +448,44 @@ class ScalaTestListener extends Observable with Runnable {
                           (st \ "isNative").text.toBoolean, 
                           (st \ "toString").text)  
       }.toArray)
+    }
+  }
+  
+  private def recordedEvents(nodeSeq: NodeSeq): IndexedSeq[RecordableEvent] = {
+    if (nodeSeq.text == "")
+      IndexedSeq.empty
+    else {
+      val recordedEvents: IndexedSeq[RecordableEvent] = nodeSeq.head.child.filter(c => c.text.trim.length > 0).map { eventXml =>
+        val recordableEvent: RecordableEvent = eventXml.label match {
+          case "InfoProvided" => 
+            InfoProvided (
+                  (eventXml \ "message").text,
+                  nameInfoOpt(eventXml \ "nameInfo"),
+                  booleanOpt(eventXml \ "aboutAPendingTest"),
+                  booleanOpt(eventXml \ "aboutACanceledTest"),
+                  stringOpt(eventXml \ "throwable" \ "message"),
+                  intOpt(eventXml \ "throwable" \ "depth"),
+                  stackTracesOpt(eventXml \ "throwable" \ "stackTraces"),
+                  formatterOpt(eventXml \ "formatter"),
+                  locationOpt(eventXml \ "location"),
+                  (eventXml \ "threadName").text,
+                  (eventXml \ "timeStamp").text.toLong
+                )
+          case "MarkupProvided" =>
+            MarkupProvided (
+                  (eventXml \ "text").text,
+                  nameInfoOpt(eventXml \ "nameInfo"),
+                  booleanOpt(eventXml \ "aboutAPendingTest"),
+                  booleanOpt(eventXml \ "aboutACanceledTest"),
+                  formatterOpt(eventXml \ "formatter"),
+                  locationOpt(eventXml \ "location"),
+                  (eventXml \ "threadName").text,
+                  (eventXml \ "timeStamp").text.toLong
+                )
+        }
+        recordableEvent
+      }.toIndexedSeq
+      recordedEvents
     }
   }
   
