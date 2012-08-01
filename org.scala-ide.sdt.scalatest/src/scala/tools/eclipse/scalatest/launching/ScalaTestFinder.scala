@@ -331,7 +331,13 @@ class ScalaTestFinder(val compiler: ScalaPresentationCompiler, loader: ClassLoad
             val finder = finderClass.newInstance
                 
             val position = new OffsetPosition(scu.createSourceFile, textSelection.getOffset)
-            val selectedTree = compiler.locateTree(position)
+            //val selectedTree = compiler.locateTree(position)
+            val response = new Response[Tree]
+            compiler.askTypeAt(position, response)
+            val selectedTree = response.get match {
+              case Left(tree) => tree 
+              case Right(thr) => throw thr
+            }
 
             val scalatestAstOpt = transformAst(classElement.getFullyQualifiedName, selectedTree, rootTree)
             scalatestAstOpt match {

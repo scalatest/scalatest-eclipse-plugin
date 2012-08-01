@@ -207,7 +207,10 @@ object ScalaTestLaunchShortcut {
         } match {
           case Some(suiteBaseClass) => true
           case None => 
-            rootTree.symbol.annotations.exists(aInfo => aInfo.atp.toString == "org.scalatest.WrapWith")
+            // This does not work because compiler.askTypeAt return package instead of class symbol when there's annotation above the class element.
+            //rootTree.symbol.annotations.exists(aInfo => aInfo.atp.toString == "org.scalatest.WrapWith")
+            val classElement = getClassElement(iType)
+            classElement.getAnnotation("WrapWith") != null
         }
       }(false)
     }
