@@ -205,12 +205,13 @@ object ScalaTestLaunchShortcut {
         linearizedBaseClasses.find { baseClass => 
           baseClass.fullName == "org.scalatest.Suite" 
         } match {
-          case Some(suiteBaseClass) => true
+          case Some(suiteBaseClass) => 
+            true
           case None => 
             // This does not work because compiler.askTypeAt return package instead of class symbol when there's annotation above the class element.
             //rootTree.symbol.annotations.exists(aInfo => aInfo.atp.toString == "org.scalatest.WrapWith")
             val classElement = getClassElement(iType)
-            classElement.getAnnotation("WrapWith") != null
+            classElement.getAnnotations.find(a => a.getElementName == "WrapWith").isDefined
         }
       }(false)
     }
