@@ -77,6 +77,8 @@ import ScalaTestLaunchShortcut._
 import org.eclipse.ui.IEditorSite
 import org.eclipse.ui.IEditorInput
 import scala.reflect.NameTransformer
+import scala.tools.eclipse.ScalaPresentationCompiler
+import scala.tools.nsc.util.BatchSourceFile
 
 class ScalaTestFileLaunchShortcut extends ILaunchShortcut {
   
@@ -192,26 +194,27 @@ object ScalaTestLaunchShortcut {
         import compiler._
       
         val scu = iType.getCompilationUnit.asInstanceOf[ScalaCompilationUnit]
-        val classPosition = new OffsetPosition(scu.createSourceFile, iType.getSourceRange.getOffset)
-        //val rootTree = compiler.locateTree(classPosition)
         val response = new Response[Tree]
-        compiler.askTypeAt(classPosition, response)
-        val rootTree = response.get match {
-          case Left(tree) => tree 
-          case Right(thr) => throw thr
-        }
-        
-        val linearizedBaseClasses = compiler.askOption[List[compiler.Symbol]](() => rootTree.symbol.info.baseClasses).getOrElse(List.empty)
-        linearizedBaseClasses.find { baseClass => 
-          baseClass.fullName == "org.scalatest.Suite" 
-        } match {
-          case Some(suiteBaseClass) => 
-            true
-          case None => 
-            // This does not work because compiler.askTypeAt return package instead of class symbol when there's annotation above the class element.
-            //rootTree.symbol.annotations.exists(aInfo => aInfo.atp.toString == "org.scalatest.WrapWith")
-            val classElement = getClassElement(iType)
-            classElement.getAnnotations.find(a => a.getElementName == "WrapWith").isDefined
+        compiler.askParsedEntered(new BatchSourceFile(scu.file, scu.getContents), false, response)
+        response.get match {
+          case Left(tree) => 
+            tree.children.find {
+              case classDef: ClassDef if classDef.symbol.fullName == iType.getFullyQualifiedName => 
+                val linearizedBaseClasses = compiler.askOption[List[compiler.Symbol]](() => classDef.symbol.info.baseClasses).getOrElse(List.empty)
+                linearizedBaseClasses.find { baseClass => 
+                  baseClass.fullName == "org.scalatest.Suite" 
+                } match {
+                  case Some(_) => 
+                    true
+                  case None => 
+                    classDef.symbol.annotations.exists(aInfo => aInfo.atp.toString == "org.scalatest.WrapWith")
+                }
+              case _ => false
+            } match {
+              case Some(_) => true
+              case None => false
+            }
+          case Right(thr) => false
         }
       }(false)
     }

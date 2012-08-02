@@ -48,6 +48,7 @@ import scala.tools.eclipse.javaelements.ScalaCompilationUnit
 import scala.tools.nsc.util.OffsetPosition
 import org.eclipse.jface.text.ITextSelection
 import org.scalatest.finders.Selection
+import scala.tools.nsc.util.BatchSourceFile
 
 class ScalaTestFinder(val compiler: ScalaPresentationCompiler, loader: ClassLoader) {
   
@@ -286,74 +287,98 @@ class ScalaTestFinder(val compiler: ScalaPresentationCompiler, loader: ClassLoad
     }
   }
   
+  private def getFinderClassName(annotations: List[AnnotationInfo]): Option[String] = 
+    annotations.find(aInfo => aInfo.atp.toString == "org.scalatest.Style") match {
+      case Some(styleAnnotation) => 
+        styleAnnotation.assocs.find(a => a._1.toString == "value") match {
+          case Some(annotationValue) => 
+            annotationValue._2 match {
+              case LiteralAnnotArg(const) => Some(const.stringValue)
+              case _ => None
+            }
+          case None => None
+        }
+      case None => None
+    }
+  
+  
   def find(textSelection: ITextSelection, element: IJavaElement): Option[Selection] = {
     element match {
       case scElement: ScalaElement => 
         val classElement = ScalaTestLaunchShortcut.getClassElement(element)
-        if (classElement == null)
-          return None
-        val scu = scElement.getCompilationUnit.asInstanceOf[ScalaCompilationUnit]
-          
-        val classPosition = new OffsetPosition(scu.createSourceFile, classElement.getSourceRange.getOffset)
-        //val rootTree = compiler.locateTree(classPosition)
-        val response = new Response[Tree]
-        compiler.askTypeAt(classPosition, response)
-        val rootTree = response.get match {
-          case Left(tree) => tree 
-          case Right(thr) => throw thr
-        }
-        
-        val suiteClass: Class[_] = loader.loadClass(classElement.getFullyQualifiedName)
-        val wrapWithAnnotation = suiteClass.getAnnotations.find(annt => annt.annotationType.getName == "org.scalatest.WrapWith")
-        val styleAnnotation = 
-          wrapWithAnnotation match {
-            case Some(wrapWithAnnotation) =>
-              val valueMethod = wrapWithAnnotation.annotationType.getMethod("value")
-              val runnerClass = valueMethod.invoke(wrapWithAnnotation).asInstanceOf[Class[_]]
-              runnerClass.getAnnotations.find(annt => annt.annotationType.getName == "org.scalatest.Style")
-            case None =>
-              val linearizedBaseClasses = compiler.askOption[List[Symbol]](() => rootTree.symbol.info.baseClasses).getOrElse(List.empty)
-              linearizedBaseClasses.find(baseClass => baseClass.annotations.exists(aInfo => aInfo.atp.toString == "org.scalatest.Style")) match {
-                case Some(styleAnnotatatedBaseClass) =>
-                  val styleAnnotatedClassName = compiler.askOption[String](() => styleAnnotatatedBaseClass.info.typeSymbol.fullName).getOrElse(null)
-                  val styleAnnotatatedClass: Class[_] = loader.loadClass(styleAnnotatedClassName)
-                  styleAnnotatatedClass.getAnnotations.find(annt => annt.annotationType.getName == "org.scalatest.Style")
-                case None => 
-                  None
-              }
-          }
-          
-        styleAnnotation match {
-          case Some(styleAnnotation) => 
-            val valueMethod = styleAnnotation.annotationType.getMethod("value")
-            val finderClassName = valueMethod.invoke(styleAnnotation).asInstanceOf[String]
-            val finderClass = loader.loadClass(finderClassName)
-            val finder = finderClass.newInstance
+        if (classElement != null) {
+          // Let's get the ClassDef for the classElement
+          val scu = scElement.getCompilationUnit.asInstanceOf[ScalaCompilationUnit]
+          val response = new Response[Tree]
+          compiler.askParsedEntered(new BatchSourceFile(scu.file, scu.getContents), false, response)
+          response.get match {
+            case Left(tree) => tree.children.find {
+              case classDef: ClassDef if classDef.symbol.fullName == classElement.getFullyQualifiedName => true
+              case _ => false
+            } match {
+              case Some(classDef: ClassDef) => 
+                // We got ClassDef
+                val wrapWithAnnotation = classDef.symbol.annotations.find(a => a.atp.toString == "org.scalatest.WrapWith")
                 
-            val position = new OffsetPosition(scu.createSourceFile, textSelection.getOffset)
-            //val selectedTree = compiler.locateTree(position)
-            val response = new Response[Tree]
-            compiler.askTypeAt(position, response)
-            val selectedTree = response.get match {
-              case Left(tree) => tree 
-              case Right(thr) => throw thr
-            }
+                val finderClassName = 
+                  wrapWithAnnotation match {
+                    case Some(wrapWithAnnotation) =>
+                      // @WrapWith found, will lookup the @Style from the runner.
+                      wrapWithAnnotation.assocs.find(a => a._1.toString == "value") match {
+                        case Some(tuple) => 
+                          tuple._2 match {
+                            case LiteralAnnotArg(const) => 
+                              val runnerSymbol = const.typeValue
+                              getFinderClassName(runnerSymbol.typeSymbol.annotations)
+                            case _ => None
+                          }
+                        case None => None
+                      }
+                    case None =>
+                      // No @WrapWith found, will lookup the @Style from super classes in linearized order
+                      val linearizedBaseClasses = compiler.askOption[List[Symbol]](() => classDef.symbol.info.baseClasses).getOrElse(List.empty)
+                      getFinderClassName(linearizedBaseClasses.flatMap(_.annotations))
+                  }
+                
+                finderClassName match {
+                  case Some(finderClassName) => 
+                    val finderClass = loader.loadClass(finderClassName)
+                    val finder = finderClass.newInstance
+                    val position = new OffsetPosition(new BatchSourceFile(scu.file, scu.getContents), textSelection.getOffset)
+                    //val selectedTree = compiler.locateTree(position)
+                    val response = new Response[Tree]
+                    compiler.askTypeAt(position, response)
+                    val selectedTree = response.get match {
+                      case Left(tree) => tree 
+                      case Right(thr) => throw thr
+                    }
 
-            val scalatestAstOpt = transformAst(classElement.getFullyQualifiedName, selectedTree, rootTree)
-            scalatestAstOpt match {
-              case Some(scalatestAst) => 
-                val parent = scalatestAst.parent
-                val findMethod = finder.getClass.getMethods.find { mtd =>
-                  mtd.getName == "find" && mtd.getParameterTypes.length == 1 && mtd.getParameterTypes()(0).getName == "org.scalatest.finders.AstNode"
-                }.get
-                findMethod.invoke(finder, scalatestAst).asInstanceOf[Option[Selection]]
-              case None => 
+                    val scalatestAstOpt = transformAst(classElement.getFullyQualifiedName, selectedTree, classDef)
+                    scalatestAstOpt match {
+                      case Some(scalatestAst) => 
+                        val parent = scalatestAst.parent
+                        val findMethod = finder.getClass.getMethods.find { mtd =>
+                          mtd.getName == "find" && mtd.getParameterTypes.length == 1 && mtd.getParameterTypes()(0).getName == "org.scalatest.finders.AstNode"
+                        }.get
+                       findMethod.invoke(finder, scalatestAst).asInstanceOf[Option[Selection]]
+                      case None => 
+                        None
+                    }
+                  case None => 
+                    None
+                }
+                
+                
+              case _ =>
                 None
             }
-          case None =>
-            None
+            case Right(thr) => 
+              None
+          }
         }
-      case _ =>
+        else
+          None
+      case _ => 
         None
     }
   }
