@@ -38,6 +38,8 @@ package scala.tools.eclipse.scalatest.ui
 
 sealed abstract class Event
 
+sealed trait RecordableEvent extends Event
+
 final case class TestStarting (
   suiteName: String,
   suiteId: String,
@@ -46,6 +48,7 @@ final case class TestStarting (
   testName: String,
   testText: String,
   decodedTestName: Option[String],
+  formatter: Option[Formatter], 
   location: Option[Location],
   rerunner: Option[String],
   threadName: String,
@@ -60,7 +63,9 @@ final case class TestSucceeded (
   testName: String,
   testText: String,
   decodedTestName: Option[String],
+  recordedEvents: IndexedSeq[RecordableEvent],
   duration: Option[Long],
+  formatter: Option[Formatter],
   location: Option[Location],
   rerunner: Option[String],
   threadName: String,
@@ -76,10 +81,12 @@ final case class TestFailed (
   testName: String,
   testText: String,
   decodedTestName: Option[String],
+  recordedEvents: IndexedSeq[RecordableEvent],
   errorMessage: Option[String],
   errorDepth: Option[Int], 
   errorStackTraces: Option[Array[StackTraceElement]],
   duration: Option[Long],
+  formatter: Option[Formatter],
   location: Option[Location],
   rerunner: Option[String],
   threadName: String,
@@ -94,6 +101,7 @@ final case class TestIgnored (
   testName: String,
   testText: String,
   decodedTestName: Option[String],
+  formatter: Option[Formatter], 
   location: Option[Location],
   threadName: String,
   timeStamp: Long
@@ -107,7 +115,9 @@ final case class TestPending (
   testName: String,
   testText: String,
   decodedTestName: Option[String],
+  recordedEvents: IndexedSeq[RecordableEvent],
   duration: Option[Long],
+  formatter: Option[Formatter],
   location: Option[Location],
   threadName: String,
   timeStamp: Long
@@ -122,10 +132,12 @@ final case class TestCanceled (
   testName: String,
   testText: String,
   decodedTestName: Option[String],
+  recordedEvents: IndexedSeq[RecordableEvent],
   errorMessage: Option[String],
   errorDepth: Option[Int], 
   errorStackTraces: Option[Array[StackTraceElement]], 
   duration: Option[Long],
+  formatter: Option[Formatter],
   location: Option[Location],
   threadName: String,
   timeStamp: Long
@@ -136,6 +148,7 @@ final case class SuiteStarting (
   suiteId: String,
   suiteClassName: Option[String],
   decodedSuiteName: Option[String],
+  formatter: Option[Formatter],
   location: Option[Location],
   rerunner: Option[String],
   threadName: String,
@@ -148,6 +161,7 @@ final case class SuiteCompleted (
   suiteClassName: Option[String],
   decodedSuiteName: Option[String],
   duration: Option[Long],
+  formatter: Option[Formatter],
   location: Option[Location],
   rerunner: Option[String],
   threadName: String,
@@ -164,6 +178,7 @@ final case class SuiteAborted (
   errorDepth: Option[Int], 
   errorStackTraces: Option[Array[StackTraceElement]],
   duration: Option[Long],
+  formatter: Option[Formatter],
   location: Option[Location],
   rerunner: Option[String],
   threadName: String,
@@ -210,26 +225,29 @@ final case class InfoProvided (
   errorMessage: Option[String],
   errorDepth: Option[Int], 
   errorStackTraces: Option[Array[StackTraceElement]],
+  formatter: Option[Formatter],
   location: Option[Location],
   threadName: String,
   timeStamp: Long
-) extends Event
+) extends Event with RecordableEvent
 
 final case class MarkupProvided (
   text: String,
   nameInfo: Option[NameInfo],
   aboutAPendingTest: Option[Boolean],
   aboutACanceledTest: Option[Boolean],
+  formatter: Option[Formatter],
   location: Option[Location],
   threadName: String,
   timeStamp: Long
-) extends Event
+) extends Event with RecordableEvent
 
 final case class ScopeOpened (
   message: String,
   nameInfo: NameInfo,
   aboutAPendingTest: Option[Boolean],
   aboutACanceledTest: Option[Boolean],
+  formatter: Option[Formatter],
   location: Option[Location],
   threadName: String,
   timeStamp: Long
@@ -240,6 +258,7 @@ final case class ScopeClosed (
   nameInfo: NameInfo,
   aboutAPendingTest: Option[Boolean],
   aboutACanceledTest: Option[Boolean],
+  formatter: Option[Formatter],
   location: Option[Location],
   threadName: String,
   timeStamp: Long

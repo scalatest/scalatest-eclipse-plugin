@@ -44,11 +44,16 @@ class ScalaTestLaunchableTesterTest {
   import ScalaTestProject._
   
   @Test
-  def testScalaTestPackageTester() {
+  def testPackageTesterComTestPackage() {
     val tester = new ScalaTestPackageTester()
     
     val comTestPackage = getPackageFragment("com.test")
     assertTrue(tester.test(comTestPackage, "", Array.empty, null))
+  }
+  
+  @Test
+  def testPackageTesterSingleSpecFile() {
+    val tester = new ScalaTestPackageTester()
     
     val singleSpecFile = scalaCompilationUnit("com/test/SingleSpec.scala")
     assertFalse(tester.test(singleSpecFile, "", Array.empty, null))
@@ -59,11 +64,16 @@ class ScalaTestLaunchableTesterTest {
   }
   
   @Test
-  def testScalaTestFileTester() {
+  def testFileTesterComTestPackage() {
     val tester = new ScalaTestFileTester()
     
     val comTestPackage = getPackageFragment("com.test")
     assertFalse(tester.test(comTestPackage, "", Array.empty, null))
+  }
+  
+  @Test
+  def testFileTesterSingleSpecFile() {
+    val tester = new ScalaTestFileTester()
     
     val singleSpecFile = scalaCompilationUnit("com/test/SingleSpec.scala")
     assertTrue(tester.test(singleSpecFile, "", Array.empty, null))
@@ -74,11 +84,16 @@ class ScalaTestLaunchableTesterTest {
   }
   
   @Test
-  def testScalaTestSuiteTester() {
+  def testSuiteTesterComTestPackage() {
     val tester = new ScalaTestSuiteTester()
     
     val comTestPackage = getPackageFragment("com.test")
     assertFalse(tester.test(comTestPackage, "", Array.empty, null))
+  }
+  
+  @Test
+  def testSuiteTesterMultiSpecFile() {
+    val tester = new ScalaTestSuiteTester()
     
     val multiSpecFile = scalaCompilationUnit("com/test/MultiSpec.scala")
     assertFalse(tester.test(multiSpecFile, "", Array.empty, null))

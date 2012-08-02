@@ -248,6 +248,8 @@ class ScalaTestRunnerViewPart extends ViewPart with Observer {
             None, 
             None, 
             None, 
+            testStarting.formatter,
+            None,
             testStarting.location,
             testStarting.rerunner,
             testStarting.threadName,
@@ -265,9 +267,10 @@ class ScalaTestRunnerViewPart extends ViewPart with Observer {
         }
       case testSucceeded: TestSucceeded => 
         fTestRunSession.succeedCount += 1
+        processRecordedEvents(testSucceeded.recordedEvents)
         suiteMap.get(testSucceeded.suiteId) match {
           case Some(suite) => 
-            val test = suite.updateTest(testSucceeded.testName, TestStatus.SUCCEEDED, testSucceeded.duration, testSucceeded.location, None, None, None)
+            val test = suite.updateTest(testSucceeded.testName, TestStatus.SUCCEEDED, testSucceeded.duration, testSucceeded.formatter, testSucceeded.location, None, None, None)
             suite.closeScope()
             fTestViewer.registerAutoScrollTarget(test)
             fTestViewer.registerViewerUpdate(test)
@@ -277,9 +280,10 @@ class ScalaTestRunnerViewPart extends ViewPart with Observer {
         }
       case testFailed: TestFailed => 
         fTestRunSession.failureCount += 1
+        processRecordedEvents(testFailed.recordedEvents)
         suiteMap.get(testFailed.suiteId) match {
           case Some(suite) => 
-            val test = suite.updateTest(testFailed.testName, TestStatus.FAILED, testFailed.duration, testFailed.location, testFailed.errorMessage, testFailed.errorDepth, testFailed.errorStackTraces)
+            val test = suite.updateTest(testFailed.testName, TestStatus.FAILED, testFailed.duration, testFailed.formatter, testFailed.location, testFailed.errorMessage, testFailed.errorDepth, testFailed.errorStackTraces)
             suite.closeScope()
             fTestViewer.registerFailedForAutoScroll(test)
             fTestViewer.registerViewerUpdate(test)
@@ -299,6 +303,8 @@ class ScalaTestRunnerViewPart extends ViewPart with Observer {
             None, 
             None, 
             None, 
+            testIgnored.formatter,
+            None,
             testIgnored.location,
             None,
             testIgnored.threadName,
@@ -316,9 +322,10 @@ class ScalaTestRunnerViewPart extends ViewPart with Observer {
         }
       case testPending: TestPending => 
         fTestRunSession.pendingCount += 1
+        processRecordedEvents(testPending.recordedEvents)
         suiteMap.get(testPending.suiteId) match {
           case Some(suite) => 
-            val test = suite.updateTest(testPending.testName, TestStatus.PENDING, testPending.duration, testPending.location, None, None, None)
+            val test = suite.updateTest(testPending.testName, TestStatus.PENDING, testPending.duration, testPending.formatter, testPending.location, None, None, None)
             suite.closeScope()
             fTestViewer.registerAutoScrollTarget(test)
             fTestViewer.registerViewerUpdate(test)
@@ -328,9 +335,10 @@ class ScalaTestRunnerViewPart extends ViewPart with Observer {
         }
       case testCanceled: TestCanceled => 
         fTestRunSession.canceledCount += 1
+        processRecordedEvents(testCanceled.recordedEvents)
         suiteMap.get(testCanceled.suiteId) match {
           case Some(suite) => 
-            val test = suite.updateTest(testCanceled.testName, TestStatus.CANCELED, testCanceled.duration, testCanceled.location, testCanceled.errorMessage, testCanceled.errorDepth, testCanceled.errorStackTraces)
+            val test = suite.updateTest(testCanceled.testName, TestStatus.CANCELED, testCanceled.duration, testCanceled.formatter, testCanceled.location, testCanceled.errorMessage, testCanceled.errorDepth, testCanceled.errorStackTraces)
             suite.closeScope()
             fTestViewer.registerAutoScrollTarget(test)
             fTestViewer.registerViewerUpdate(test)
@@ -346,6 +354,8 @@ class ScalaTestRunnerViewPart extends ViewPart with Observer {
                         suiteStarting.suiteId,
                         suiteStarting.suiteClassName,
                         suiteStarting.decodedSuiteName,
+                        suiteStarting.formatter, 
+                        None, 
                         suiteStarting.location,
                         suiteStarting.rerunner,
                         None,
@@ -367,6 +377,7 @@ class ScalaTestRunnerViewPart extends ViewPart with Observer {
           suiteMap.get(suiteCompleted.suiteId) match {
             case Some(suite) => 
               suite.duration = suiteCompleted.duration
+              suite.endFormatter = suiteCompleted.formatter
               suite.location = suiteCompleted.location
               suite.status = 
                 if (suite.suiteSucceeded)
@@ -386,6 +397,7 @@ class ScalaTestRunnerViewPart extends ViewPart with Observer {
           suiteMap.get(suiteAborted.suiteId) match {
             case Some(suite) => 
               suite.duration = suiteAborted.duration
+              suite.endFormatter = suiteAborted.formatter
               suite.location = suiteAborted.location
               suite.errorMessage = suiteAborted.errorMessage
               suite.errorDepth = suiteAborted.errorDepth
@@ -452,33 +464,7 @@ class ScalaTestRunnerViewPart extends ViewPart with Observer {
         fTestViewer.registerAutoScrollTarget(null)
         enableToolbarControls(true)
       case infoProvided: InfoProvided => 
-        val info = 
-          InfoModel(
-            infoProvided.message,
-            infoProvided.nameInfo,
-            infoProvided.aboutAPendingTest,
-            infoProvided.aboutACanceledTest,
-            infoProvided.errorMessage, 
-            infoProvided.errorDepth, 
-            infoProvided.errorStackTraces, 
-            infoProvided.location, 
-            infoProvided.threadName,
-            infoProvided.timeStamp
-          )
-        infoProvided.nameInfo match {
-          case Some(nameInfo) => 
-            suiteMap.get(nameInfo.suiteId) match {
-              case Some(suite) => 
-                suite.addChild(info)
-                fTestViewer.registerAutoScrollTarget(info)
-                fTestViewer.registerNodeAdded(info)
-              case None => 
-                // Should not happen
-               throw new IllegalStateException("Unable to find suite model for InfoProvided, suiteId: " + nameInfo.suiteId)
-            }
-          case None => 
-            fTestRunSession.rootNode.addChild(info)
-        }
+        processInfoProvided(infoProvided)
       case markupProvided: MarkupProvided => 
         // Do nothing for MarkupProvided, markup info should be shown in HtmlReporter only.
       case scopeOpened: ScopeOpened => 
@@ -488,6 +474,8 @@ class ScalaTestRunnerViewPart extends ViewPart with Observer {
               ScopeModel(
                 scopeOpened.message,
                 scopeOpened.nameInfo,
+                scopeOpened.formatter, 
+                None,
                 scopeOpened.location,
                 scopeOpened.threadName,
                 scopeOpened.timeStamp, 
@@ -503,11 +491,48 @@ class ScalaTestRunnerViewPart extends ViewPart with Observer {
       case scopeClosed: ScopeClosed => 
         suiteMap.get(scopeClosed.nameInfo.suiteId) match {
           case Some(suite) => 
-            suite.closeScope()
+            suite.closeScope() match {
+              case scope: ScopeModel => 
+                scope.endFormatter = scopeClosed.formatter
+              case other => throw new IllegalStateException("Expected to pop ScopeModel, but got: " + other)
+            }
           case None => 
             throw new IllegalStateException("Unable to find suite model for ScopeClosed, suiteId: " + scopeClosed.nameInfo.suiteId)
         }
     }
+  }
+  
+  private def processInfoProvided(infoProvided: InfoProvided) {
+    val info = 
+      InfoModel(infoProvided.message,
+                infoProvided.nameInfo,
+                infoProvided.aboutAPendingTest,
+                infoProvided.aboutACanceledTest,
+                infoProvided.errorMessage, 
+                infoProvided.errorDepth, 
+                infoProvided.errorStackTraces, 
+                infoProvided.formatter,
+                infoProvided.location, 
+                infoProvided.threadName,
+                infoProvided.timeStamp)
+    infoProvided.nameInfo match {
+      case Some(nameInfo) => 
+        suiteMap.get(nameInfo.suiteId) match {
+          case Some(suite) => 
+            suite.addChild(info)
+            fTestViewer.registerAutoScrollTarget(info)
+            fTestViewer.registerNodeAdded(info)
+          case None => 
+            // Should not happen
+            throw new IllegalStateException("Unable to find suite model for InfoProvided, suiteId: " + nameInfo.suiteId)
+        }
+        case None => 
+          fTestRunSession.rootNode.addChild(info)
+      }
+  }
+  
+  private def processRecordedEvents(recordedEvents: IndexedSeq[RecordableEvent]) {
+    recordedEvents.filter(_.isInstanceOf[InfoProvided]).foreach(info => processInfoProvided(info.asInstanceOf[InfoProvided]))
   }
   
   private def getFlattenNode(suiteList: List[Node]) = {

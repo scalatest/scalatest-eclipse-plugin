@@ -39,39 +39,26 @@ package scala.tools.eclipse.scalatest.launching
 import org.junit.Test
 import org.junit.Assert._
 import scala.tools.eclipse.javaelements.ScalaSourceFile
+import org.junit.Ignore
 
 class ScalaTestLaunchShortcutTest {
+  
+  // Tests marked with @Ignore requires jar file for specs1 and scalachecks wrapper runner, 
+  // which is not in any public maven repo yet.  We could enable them back 
+  // when they are in public maven repo.
   
   import ScalaTestProject._
   
   @Test
-  def testGetScalaTestSuites() {
-    val singleSpecSuiteList = ScalaTestLaunchShortcut.getScalaTestSuites(scalaCompilationUnit("com/test/SingleSpec.scala"))
-    assertEquals(1, singleSpecSuiteList.size)
-    assertTrue(singleSpecSuiteList.exists(t => t.getFullyQualifiedName == "com.test.SingleSpec"))
-    
-    val multiSpecSuiteList = ScalaTestLaunchShortcut.getScalaTestSuites(scalaCompilationUnit("com/test/MultiSpec.scala"))
-    assertEquals(3, multiSpecSuiteList.size)
-    assertTrue(multiSpecSuiteList.exists(t => t.getFullyQualifiedName == "com.test.TestingFunSuite"))
-    assertTrue(multiSpecSuiteList.exists(t => t.getFullyQualifiedName == "com.test.TestingFreeSpec"))
-    assertTrue(multiSpecSuiteList.exists(t => t.getFullyQualifiedName == "com.test.StackSpec2"))
-    
-    /*val exampleSpec1SuiteList = ScalaTestLaunchShortcut.getScalaTestSuites(scalaCompilationUnit("com/test/ExampleSpec1.scala"))
-    assertEquals(1, exampleSpec1SuiteList.size)
-    assertTrue(exampleSpec1SuiteList.exists(t => t.getFullyQualifiedName == "com.test.ExampleSpec1"))
-    
-    val stringSpecificationSuiteList = ScalaTestLaunchShortcut.getScalaTestSuites(scalaCompilationUnit("com/test/StringSpecification.scala"))
-    assertEquals(1, stringSpecificationSuiteList.size)
-    assertTrue(stringSpecificationSuiteList.exists(t => t.getFullyQualifiedName == "com.test.StringSpecification"))*/
-  }
-  
-  @Test
-  def testIsScalaTestSuite() {
+  def testSingleSpecIsScalaTestSuite() {
     val singleSpecFile = scalaCompilationUnit("com/test/SingleSpec.scala")
     singleSpecFile.getAllTypes.foreach { t =>
       assertTrue(t.getFullyQualifiedName + " expected as a ScalaTest suite, but it is not.", ScalaTestLaunchShortcut.isScalaTestSuite(t))
     }
-    
+  }
+  
+  @Test
+  def testMultiSpecIsScalaTestSuite() {
     val multiSpecFile = scalaCompilationUnit("com/test/MultiSpec.scala")
     multiSpecFile.getAllTypes.foreach { t =>
       if (t.getFullyQualifiedName == "com.test.Fraction")
@@ -79,31 +66,46 @@ class ScalaTestLaunchShortcutTest {
       else
         assertTrue(t.getFullyQualifiedName + " expected as a ScalaTest suite, but it is not.", ScalaTestLaunchShortcut.isScalaTestSuite(t))
     }
-    
-    /*val exampleSpec1File = scalaCompilationUnit("com/test/ExampleSpec1.scala")
+  }
+  
+  @Ignore
+  def testSpec1IsScalaTestSuite() {
+    val exampleSpec1File = scalaCompilationUnit("com/test/ExampleSpec1.scala")
     exampleSpec1File.getAllTypes.foreach { t =>
       assertTrue(t.getFullyQualifiedName + " expected as a ScalaTest suite, but it is not.", ScalaTestLaunchShortcut.isScalaTestSuite(t))
     }
-    
+  }
+  
+  @Ignore
+  def testScalaCheckIsScalaTestSuite() {
     val stringSpecificationFile = scalaCompilationUnit("com/test/StringSpecification.scala")
     stringSpecificationFile.getAllTypes.foreach { t =>
       assertTrue(t.getFullyQualifiedName + " expected as a ScalaTest suite, but it is not.", ScalaTestLaunchShortcut.isScalaTestSuite(t))
-    }*/
+    }
   }
   
   @Test
-  def testContainsScalaTestSuite() {
+  def testSingleSpecContainsScalaTestSuite() {
     val singleSpecFile = scalaCompilationUnit("com/test/SingleSpec.scala").asInstanceOf[ScalaSourceFile]
     assertTrue(ScalaTestLaunchShortcut.containsScalaTestSuite(singleSpecFile))
-    
+  }
+  
+  @Test
+  def testMultiSpecContainsScalaTestSuite() {
     val multiSpecFile = scalaCompilationUnit("com/test/MultiSpec.scala").asInstanceOf[ScalaSourceFile]
     assertTrue(ScalaTestLaunchShortcut.containsScalaTestSuite(multiSpecFile))
-    
-    /*val exampleSpec1File = scalaCompilationUnit("com/test/ExampleSpec1.scala").asInstanceOf[ScalaSourceFile]
+  }
+  
+  @Ignore
+  def testSpec1ContainsScalaTestSuite() {
+    val exampleSpec1File = scalaCompilationUnit("com/test/ExampleSpec1.scala").asInstanceOf[ScalaSourceFile]
     assertTrue(ScalaTestLaunchShortcut.containsScalaTestSuite(exampleSpec1File))
-    
+  }
+  
+  @Ignore
+  def testScalaCheckContainsScalaTestSuite() {
     val stringSpecificationFile = scalaCompilationUnit("com/test/StringSpecification.scala").asInstanceOf[ScalaSourceFile]
-    assertTrue(ScalaTestLaunchShortcut.containsScalaTestSuite(stringSpecificationFile))*/
+    assertTrue(ScalaTestLaunchShortcut.containsScalaTestSuite(stringSpecificationFile))
   }
   
   @Test

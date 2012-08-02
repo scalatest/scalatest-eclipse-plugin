@@ -7,7 +7,7 @@
   </prerequisites>
   <groupId>org.scala-ide</groupId>
   <artifactId>org.scala-ide.scalatest.build</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>0.9.1</version>
   <name>Build project for the scalatest support in Scala IDE</name>
   <packaging>pom</packaging>
 
@@ -28,8 +28,8 @@
     <repo.scala-ide.root>http://download.scala-ide.org</repo.scala-ide.root>
 
     <!-- fixed versions -->
-    <tycho.version>0.14.1</tycho.version>
-    <scalatest-finders.version>0.9.1-SNAPSHOT</scalatest-finders.version>
+    <tycho.version>0.15.0</tycho.version>
+    <scalatest-finders.version>0.9.2-SNAPSHOT</scalatest-finders.version>
     <scala.plugin.version>3.0.2</scala.plugin.version>
 
     <!-- tycho test related -->
@@ -47,11 +47,11 @@
     <version.suffix>2_09</version.suffix>
     <scala.version.short>2.9</scala.version.short>
     <version.tag>local</version.tag>
-    <repo.scala-ide>${repo.scala-ide.root}/releases-29/stable/site</repo.scala-ide>
+    <repo.scala-ide>${repo.scala-ide.root}/releases-29/stable/tycho-site</repo.scala-ide>
     <scalacheck.id>scalacheck_2.9.0</scalacheck.id>
     <scalacheck.version>1.9</scalacheck.version>
     <scalatest.id>scalatest_2.9.0</scalatest.id>
-    <scalatest.version>2.0.M1</scalatest.version>
+    <scalatest.version>2.0.M2</scalatest.version>
     <specs.id>specs_2.9.0</specs.id>
     <specs.version>1.6.8</specs.version>
     <junit.version>4.10</junit.version>
@@ -62,6 +62,13 @@
     <profile>
       <!-- this is the default profile, using the stable builds-->
       <id>scala-ide-2.0-scala-2.9</id>
+    </profile>
+    <profile>
+      <!-- 2.0.x Scala IDE with Scala 2.9 -->
+      <id>scala-ide-2.0.x-scala-2.9</id>
+      <properties>
+        <repo.scala-ide>${repo.scala-ide.root}/nightly-update-2-0-x-29x</repo.scala-ide>
+      </properties>
     </profile>
     <profile>
       <!-- nightly Scala IDE with Scala 2.9 -->
@@ -94,7 +101,9 @@
                 </goals>
                 <configuration>
                   <rules>
-                    <AlwaysFail/>
+                    <AlwaysFail>
+                      <message>The build is not configured for the 2.10 versions of the dependencies</message>
+                    </AlwaysFail>
                   </rules>
                   <fail>true</fail>
                 </configuration>

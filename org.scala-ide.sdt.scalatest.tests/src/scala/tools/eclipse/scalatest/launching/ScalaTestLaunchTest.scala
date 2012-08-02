@@ -43,9 +43,14 @@ import org.junit.Test
 import org.eclipse.debug.core.DebugPlugin
 import org.eclipse.debug.core.ILaunchManager
 import org.junit.BeforeClass
+import org.junit.Ignore
 
 class ScalaTestLaunchTest {
 
+  // Tests marked with @Ignore requires jar file for specs1 and scalachecks wrapper runner, 
+  // which is not in any public maven repo yet.  We could enable them back 
+  // when they are in public maven repo.
+  
   import ScalaTestProject._
   
   private def launch(launchName: String) {
@@ -54,50 +59,107 @@ class ScalaTestLaunchTest {
   }
   
   @Test
-  def testLaunchPackage() {
+  def testLaunchComTestPackage() {
     launch("com.test")
   }
   
   @Test
-  def testLaunchFile() {
+  def testLaunchSingleSpecFile() {
     launch("SingleSpec.scala")
+  }
+  
+  @Test
+  def testLaunchMultiSpecFile() {
     launch("MultiSpec.scala")
   }
   
   @Test
-  def testLaunchSuite() {
+  def testLaunchSingleSpec() {
     launch("SingleSpec")
+  }
+  
+  @Test
+  def testLaunchStackSpec2() {
     launch("StackSpec2")
+  }
+  
+  @Test
+  def testLaunchTestingFreeSpec() {
     launch("TestingFreeSpec")
+  }
+  
+  @Test
+  def testLaunchTestingFunSuite() {
     launch("TestingFunSuite")
   }
   
   @Test
-  def testLaunchTest() {
+  def testLaunchConfigAStackshouldtastelikepeanutbutter() {
     launch("AStackshouldtastelikepeanutbutter")
-    launch("AStackwhenemptyshouldcomplainonpop")
-    launch("AStackwhenfull")
-    launch("AStackwheneveritisemptycertainlyoughttocomplainonpeek")
-    launch("AStackwheneveritisempty")
-    launch("AStack")
-    launch("com.test.TestingFunSuite-'test2'")
-  }
-  
-  // These tests requires jar file for specs1 and scalachecks wrapper runner, 
-  // which is not in any public maven repo yet.  We could enable them back 
-  // when they are in public maven repo.
-  /*@Test
-  def testLaunchSpec1() {
-    launch("ExampleSpec1.scala")
-    launch("ExampleSpec1")
-    launch("Mysystem")
-    launch("Mysystemalsocanprovidesadvancedfeature1")
   }
   
   @Test
-  def testLaunchScalaCheck() {
+  def testLaunchConfigAStackwhenemptyshouldcomplainonpop() {
+    launch("AStackwhenemptyshouldcomplainonpop")
+  }
+  
+  @Test
+  def testLaunchConfigAStackwhenfull() {
+    launch("AStackwhenfull")
+  }
+  
+  @Test
+  def testLaunchConfigAStackwheneveritisemptycertainlyoughttocomplainonpeek() {
+    launch("AStackwheneveritisemptycertainlyoughttocomplainonpeek")
+  }
+  
+  @Test
+  def testLaunchConfigAStackwheneveritisempty() {
+    launch("AStackwheneveritisempty")
+  }
+  
+  @Test
+  def testLaunchConfigAStack() {
+    launch("AStack")
+  }
+  
+  @Test 
+  def `testLaunchConfigcom.test.TestingFunSuite-'test2'`() {
+    launch("com.test.TestingFunSuite-'test2'")
+  }
+  
+  @Ignore
+  def testLaunchExampleSpec1File() {
+    launch("ExampleSpec1.scala")
+  }
+  
+  @Ignore
+  def testLaunchExampleSpec1() {
+    launch("ExampleSpec1")
+  }
+  
+  @Ignore
+  def testLaunchConfigMysystem() {
+    launch("Mysystem")
+  }
+  
+  @Ignore
+  def testLaunchConfigMysystemalsocanprovidesadvancedfeature1() {
+    launch("Mysystemalsocanprovidesadvancedfeature1")
+  }
+  
+  @Ignore
+  def testLaunchStringSpecificationFile() {
     launch("StringSpecification.scala")
+  }
+  
+  @Ignore
+  def testLaunchSpringSpecification() {
     launch("StringSpecification")
+  }
+  
+  @Ignore
+  def `testLaunchConfigcom.test.StringSpecification-'substring1'`() {
     launch("com.test.StringSpecification-'substring1'")
-  }*/
+  }
 }

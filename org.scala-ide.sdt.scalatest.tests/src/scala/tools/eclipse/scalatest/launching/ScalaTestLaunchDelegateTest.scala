@@ -12,9 +12,10 @@ import org.mockito.Mockito
 import org.junit.runner.RunWith
 
 /**
- * We need PowerMock because <code>ScalaTestLaunchDelegate</code> cannot be mocked with Mockito (its superclass is in a signed Jar file).
+ * Unit tests for ScalaTestLaunchDelegateTest.
  *
  * @author rlegendi
+ * @author cheeseng
  */
 class ScalaTestLaunchDelegateTest {
 

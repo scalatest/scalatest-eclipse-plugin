@@ -76,6 +76,9 @@ import org.eclipse.jdt.internal.core.PackageFragment
 import ScalaTestLaunchShortcut._
 import org.eclipse.ui.IEditorSite
 import org.eclipse.ui.IEditorInput
+import scala.reflect.NameTransformer
+import scala.tools.eclipse.ScalaPresentationCompiler
+import scala.tools.nsc.util.BatchSourceFile
 
 class ScalaTestFileLaunchShortcut extends ILaunchShortcut {
   
@@ -107,7 +110,6 @@ class ScalaTestFileLaunchShortcut extends ILaunchShortcut {
 class ScalaTestSuiteLaunchShortcut extends ILaunchShortcut {
   
   def launch(selection:ISelection, mode:String) {
-    println(selection)
     selection match {
       case treeSelection: ITreeSelection => 
         treeSelection.getFirstElement match {
@@ -183,29 +185,45 @@ class ScalaTestTestLaunchShortcut extends ILaunchShortcut {
 }
 
 object ScalaTestLaunchShortcut {
-  def getScalaTestSuites(element: AnyRef): List[IType] = {
-    val je = element.asInstanceOf[IAdaptable].getAdapter(classOf[IJavaElement]).asInstanceOf[IJavaElement]
-    je.getOpenable match {
-      case scu: ScalaSourceFile => 
-        val ts = scu.getAllTypes()
-        ts.filter {tpe => 
-          tpe.isInstanceOf[ScalaClassElement] && isScalaTestSuite(tpe)
-        }.toList
-      case _ =>
-        List.empty
-    }
-  }
   
   def isScalaTestSuite(iType: IType): Boolean = {
-    //val typeHier:ITypeHierarchy = iType.newSupertypeHierarchy(null)
-    //val superTypeArr:Array[IType] = typeHier.getAllSupertypes(iType)
-    //superTypeArr.findIndexOf {superType => superType.getFullyQualifiedName == "org.scalatest.Suite"} >= 0
-    iType.getSuperInterfaceNames().contains("org.scalatest.Suite") || 
-    iType.getAnnotations.exists(annt => annt.getElementName == "WrapWith") // org.scalatest.WrapWith does not work
+    if (iType.isClass) {
+      val project = iType.getJavaProject.getProject
+      val scProject = ScalaPlugin.plugin.getScalaProject(project)
+      scProject.withPresentationCompiler { compiler =>
+        import compiler._
+      
+        val scu = iType.getCompilationUnit.asInstanceOf[ScalaCompilationUnit]
+        val response = new Response[Tree]
+        compiler.askParsedEntered(new BatchSourceFile(scu.file, scu.getContents), false, response)
+        response.get match {
+          case Left(tree) => 
+            tree.children.find {
+              case classDef: ClassDef if classDef.symbol.fullName == iType.getFullyQualifiedName => 
+                val linearizedBaseClasses = compiler.askOption[List[compiler.Symbol]](() => classDef.symbol.info.baseClasses).getOrElse(List.empty)
+                linearizedBaseClasses.find { baseClass => 
+                  baseClass.fullName == "org.scalatest.Suite" 
+                } match {
+                  case Some(_) => 
+                    true
+                  case None => 
+                    classDef.symbol.annotations.exists(aInfo => aInfo.atp.toString == "org.scalatest.WrapWith")
+                }
+              case _ => false
+            } match {
+              case Some(_) => true
+              case None => false
+            }
+          case Right(thr) => false
+        }
+      }(false)
+    }
+    else
+      false
   }
   
   def containsScalaTestSuite(scSrcFile: ScalaSourceFile): Boolean = {
-    val suiteOpt = scSrcFile.getAllTypes().find { tpe => tpe.isInstanceOf[ScalaClassElement] && isScalaTestSuite(tpe) }
+    val suiteOpt = scSrcFile.getAllTypes().find { tpe => isScalaTestSuite(tpe) }
     suiteOpt match {
       case Some(suite) => true
       case None => false
@@ -279,7 +297,7 @@ object ScalaTestLaunchShortcut {
     val config = existingConfigOpt match {
                    case Some(existingConfig) => existingConfig
                    case None => 
-                     val wc = configType.newInstance(null, getLaunchManager.generateUniqueLaunchConfigurationNameFrom(simpleName.replaceAll(":", "-").replaceAll("\"", "'")))
+                     val wc = configType.newInstance(null, getLaunchManager.generateLaunchConfigurationName(simpleName.replaceAll(":", "-").replaceAll("\"", "'")))
                      val project = scSrcFile.getJavaProject.getProject
                      val scProject = ScalaPlugin.plugin.getScalaProject(project)
                      wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, scSrcFile.getPath.toPortableString)
@@ -299,7 +317,7 @@ object ScalaTestLaunchShortcut {
     val config = existingConfigOpt match {
                    case Some(existingConfig) => existingConfig
                    case None => 
-                     val wc = configType.newInstance(null, getLaunchManager.generateUniqueLaunchConfigurationNameFrom(simpleName.replaceAll(":", "-").replaceAll("\"", "'")))
+                     val wc = configType.newInstance(null, getLaunchManager.generateLaunchConfigurationName(simpleName.replaceAll(":", "-").replaceAll("\"", "'")))
                      val project = packageFragment.getJavaProject.getProject
                      val scProject = ScalaPlugin.plugin.getScalaProject(project)
                      wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, simpleName)
@@ -314,12 +332,12 @@ object ScalaTestLaunchShortcut {
   def launchSuite(classElement: ScalaClassElement, mode: String) {
     val configType = getLaunchManager.getLaunchConfigurationType("scala.scalatest")
     val existingConfigs = getLaunchManager.getLaunchConfigurations(configType)
-    val simpleName = classElement.labelName
+    val simpleName = NameTransformer.decode(classElement.labelName)
     val existingConfigOpt = existingConfigs.find(config => config.getName == simpleName)
     val config = existingConfigOpt match {
                    case Some(existingConfig) => existingConfig
                    case None => 
-                     val wc = configType.newInstance(null, getLaunchManager.generateUniqueLaunchConfigurationNameFrom(simpleName.replaceAll(":", "-").replaceAll("\"", "'")))
+                     val wc = configType.newInstance(null, getLaunchManager.generateLaunchConfigurationName(simpleName.replaceAll(":", "-").replaceAll("\"", "'")))
                      val project = classElement.getJavaProject.getProject
                      val scProject = ScalaPlugin.plugin.getScalaProject(project)
                      wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, classElement.getFullyQualifiedName)
@@ -340,7 +358,7 @@ object ScalaTestLaunchShortcut {
     val config = existingConfigOpt match {
                    case Some(existingConfig) => existingConfig
                    case None => 
-                     val wc = configType.newInstance(null, getLaunchManager.generateUniqueLaunchConfigurationNameFrom(simpleName.replaceAll(":", "-").replaceAll("\"", "'").replaceAll(">", "-").replaceAll("<", "-")))
+                     val wc = configType.newInstance(null, getLaunchManager.generateLaunchConfigurationName(simpleName.replaceAll(":", "-").replaceAll("\"", "'").replaceAll(">", "-").replaceAll("<", "-")))
                      val scProject = ScalaPlugin.plugin.getScalaProject(project)
                      wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, className)
                      wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, project.getName)

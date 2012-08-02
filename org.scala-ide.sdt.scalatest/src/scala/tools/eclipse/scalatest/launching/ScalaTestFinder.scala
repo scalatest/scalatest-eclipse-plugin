@@ -48,6 +48,7 @@ import scala.tools.eclipse.javaelements.ScalaCompilationUnit
 import scala.tools.nsc.util.OffsetPosition
 import org.eclipse.jface.text.ITextSelection
 import org.scalatest.finders.Selection
+import scala.tools.nsc.util.BatchSourceFile
 
 class ScalaTestFinder(val compiler: ScalaPresentationCompiler, loader: ClassLoader) {
   
@@ -86,12 +87,17 @@ class ScalaTestFinder(val compiler: ScalaPresentationCompiler, loader: ClassLoad
     
     @tailrec
     private def findBlock(apply: Apply): Option[Block] = {
-      if (apply.args.length > 0 && apply.args.last.isInstanceOf[Block])
-        Some(apply.args.last.asInstanceOf[Block])
-      else if (apply.args.length > 0 && apply.args.head.isInstanceOf[Apply])
-        findBlock(apply.args.head.asInstanceOf[Apply])
-      else
-        None
+      apply.args.lastOption match {
+        case Some(b: Block) => 
+          Some(b)
+        case _ =>
+          apply.args match {
+            case List(a: Apply, _*) =>
+              findBlock(a)
+            case _ =>
+              None
+          }
+      }
     }
   
     def getChildren(className: String, root: Tree, node: Tree): Array[AstNode] = {
@@ -123,17 +129,20 @@ class ScalaTestFinder(val compiler: ScalaPresentationCompiler, loader: ClassLoad
     override lazy val children = {
       val rawChildren = getChildren(pClassName, rootTree, nodeTree).toList
       // Remove the primary constructor method definition.
-      rawChildren match {
-        case primary :: rest => 
-          primary match {
-            case MethodDefinition(_, _, _, "this", _) =>
-              rest.toArray
-            case _ =>
-              rawChildren.toArray
-          }
+      // the following does not work for some reason, may be because of varargs?
+      /*rawChildren match {
+        case MethodDefinition(_, _, _, "this", _) :: rest  =>
+          org.eclipse.jface.dialogs.MessageDialog.openInformation(null, "With Primary Constructor", rest.map(getNodeDisplay(_)).mkString("\n===============\n"))
+          rest.toArray
         case _ =>
+          org.eclipse.jface.dialogs.MessageDialog.openInformation(null, "Without Primary Constructor", rawChildren.map(getNodeDisplay(_)).mkString("\n===============\n"))
           rawChildren.toArray
-      }
+      }*/
+      
+      if (rawChildren.size > 0 && rawChildren.head.isInstanceOf[MethodDefinition] && rawChildren.head.asInstanceOf[MethodDefinition].pName == "this") 
+        rawChildren.tail.toArray
+      else 
+        rawChildren.toArray
     }
     override def equals(other: Any) = if (other != null && other.isInstanceOf[ConstructorBlock]) nodeTree eq other.asInstanceOf[ConstructorBlock].nodeTree else false 
     override def hashCode = nodeTree.hashCode
@@ -200,33 +209,26 @@ class ScalaTestFinder(val compiler: ScalaPresentationCompiler, loader: ClassLoad
    
   private def getTarget(className: String, apply: GenericApply, rootTree: Tree): AstNode = {
     apply.fun match {
-      case select: Select => 
-        select.qualifier match {
-          case lit: Literal =>
-            new ToStringTarget(className, rootTree, apply, lit.value.stringValue)
-          case impl: ApplyImplicitView => 
-            val implFirstArg: Tree = impl.args(0)
-            implFirstArg match {
-              case litArg: Literal =>
-                new ToStringTarget(className, rootTree, apply, litArg.value.stringValue)
-              case implArgs: ApplyToImplicitArgs =>
-                val implArgsFun: Tree = implArgs.fun
-                implArgsFun match  {
-                  case implArgsApply: Apply =>
-                    mapApplyToMethodInvocation(className, implArgsApply, rootTree)
-                  case _ =>
-                    new ToStringTarget(className, rootTree, select.qualifier, implArgs.fun)
-                }
-              case _ => 
-                new ToStringTarget(className, rootTree, select.qualifier, implFirstArg.toString)
-            }
-          case qualifierApply: Apply =>
-            mapApplyToMethodInvocation(className, qualifierApply, rootTree)
-          case qualiferSelect: Select => 
-            new ToStringTarget(className, rootTree, qualiferSelect, qualiferSelect.name)
-          case _ =>
-            new ToStringTarget(className, rootTree, select.qualifier, select.name)
+      case Select(Literal(value), _) => 
+        new ToStringTarget(className, rootTree, apply, value.stringValue)
+      case Select(impl: ApplyImplicitView, _) =>
+        val implFirstArg: Tree = impl.args(0)
+        implFirstArg match {
+          case Literal(value) =>
+            new ToStringTarget(className, rootTree, apply, value.stringValue)
+          case Apply(fun: Apply, _) => 
+            mapApplyToMethodInvocation(className, fun, rootTree)
+          case Apply(fun, _) => 
+            new ToStringTarget(className, rootTree, impl, fun)
+          case _ => 
+            new ToStringTarget(className, rootTree, impl, implFirstArg.toString)
         }
+      case Select(apply: Apply, _) => 
+        mapApplyToMethodInvocation(className, apply, rootTree)
+      case Select(select: Select, _) => 
+        new ToStringTarget(className, rootTree, select, select.name)
+      case select: Select => 
+        new ToStringTarget(className, rootTree, select.qualifier, select.name)
       case funApply: Apply => 
         getTarget(className, funApply, rootTree)
       case typeApply: TypeApply => 
@@ -256,7 +258,8 @@ class ScalaTestFinder(val compiler: ScalaPresentationCompiler, loader: ClassLoad
         // Some approaches used before
         // param types: " + defDefSym.info.paramTypes.map(t => t.typeSymbol.fullName)
         // param types: " + defDef.vparamss.flatten.toList.map(valDef => valDef.tpt.symbol.fullName)
-        Some(new MethodDefinition(className, rootTree, selectedTree, defDefSym.decodedName, defDefSym.info.paramTypes.map(t => t.typeSymbol.fullName): _*))
+        val args = compiler.askOption[List[String]](() => defDefSym.info.paramTypes.map(t => t.typeSymbol.fullName)).getOrElse(List.empty)
+        Some(new MethodDefinition(className, rootTree, selectedTree, defDefSym.decodedName, args: _*))
       case applyImplicitView: ApplyImplicitView =>
         None
       case apply: Apply =>
@@ -284,61 +287,98 @@ class ScalaTestFinder(val compiler: ScalaPresentationCompiler, loader: ClassLoad
     }
   }
   
+  private def getFinderClassName(annotations: List[AnnotationInfo]): Option[String] = 
+    annotations.find(aInfo => aInfo.atp.toString == "org.scalatest.Style") match {
+      case Some(styleAnnotation) => 
+        styleAnnotation.assocs.find(a => a._1.toString == "value") match {
+          case Some(annotationValue) => 
+            annotationValue._2 match {
+              case LiteralAnnotArg(const) => Some(const.stringValue)
+              case _ => None
+            }
+          case None => None
+        }
+      case None => None
+    }
+  
+  
   def find(textSelection: ITextSelection, element: IJavaElement): Option[Selection] = {
     element match {
       case scElement: ScalaElement => 
         val classElement = ScalaTestLaunchShortcut.getClassElement(element)
-        if (classElement == null)
-          return None
-        val scu = scElement.getCompilationUnit.asInstanceOf[ScalaCompilationUnit]
-          
-        val classPosition = new OffsetPosition(scu.createSourceFile, classElement.getSourceRange.getOffset)
-        val rootTree = compiler.locateTree(classPosition)
-        
-        val suiteClass: Class[_] = loader.loadClass(classElement.getFullyQualifiedName)
-        val wrapWithAnnotation = suiteClass.getAnnotations.find(annt => annt.annotationType.getName == "org.scalatest.WrapWith")
-        val styleAnnotation = 
-          wrapWithAnnotation match {
-            case Some(wrapWithAnnotation) =>
-              val valueMethod = wrapWithAnnotation.annotationType.getMethod("value")
-              val runnerClass = valueMethod.invoke(wrapWithAnnotation).asInstanceOf[Class[_]]
-              runnerClass.getAnnotations.find(annt => annt.annotationType.getName == "org.scalatest.Style")
-            case None =>
-              val linearizedBaseClasses = rootTree.symbol.info.baseClasses
-              linearizedBaseClasses.find(baseClass => baseClass.annotations.exists(aInfo => aInfo.atp.toString == "org.scalatest.Style")) match {
-                case Some(styleAnnotattedBaseClass) =>
-                  val styleAnnotattedClass: Class[_] = loader.loadClass(styleAnnotattedBaseClass.info.typeSymbol.fullName)
-                  styleAnnotattedClass.getAnnotations.find(annt => annt.annotationType.getName == "org.scalatest.Style")
-                case None => 
-                  None
-              }
-          }
-          
-        styleAnnotation match {
-          case Some(styleAnnotation) => 
-            val valueMethod = styleAnnotation.annotationType.getMethod("value")
-            val finderClassName = valueMethod.invoke(styleAnnotation).asInstanceOf[String]
-            val finderClass = loader.loadClass(finderClassName)
-            val finder = finderClass.newInstance
+        if (classElement != null) {
+          // Let's get the ClassDef for the classElement
+          val scu = scElement.getCompilationUnit.asInstanceOf[ScalaCompilationUnit]
+          val response = new Response[Tree]
+          compiler.askParsedEntered(new BatchSourceFile(scu.file, scu.getContents), false, response)
+          response.get match {
+            case Left(tree) => tree.children.find {
+              case classDef: ClassDef if classDef.symbol.fullName == classElement.getFullyQualifiedName => true
+              case _ => false
+            } match {
+              case Some(classDef: ClassDef) => 
+                // We got ClassDef
+                val wrapWithAnnotation = classDef.symbol.annotations.find(a => a.atp.toString == "org.scalatest.WrapWith")
                 
-            val position = new OffsetPosition(scu.createSourceFile, textSelection.getOffset)
-            val selectedTree = compiler.locateTree(position)
+                val finderClassName = 
+                  wrapWithAnnotation match {
+                    case Some(wrapWithAnnotation) =>
+                      // @WrapWith found, will lookup the @Style from the runner.
+                      wrapWithAnnotation.assocs.find(a => a._1.toString == "value") match {
+                        case Some(tuple) => 
+                          tuple._2 match {
+                            case LiteralAnnotArg(const) => 
+                              val runnerSymbol = const.typeValue
+                              getFinderClassName(runnerSymbol.typeSymbol.annotations)
+                            case _ => None
+                          }
+                        case None => None
+                      }
+                    case None =>
+                      // No @WrapWith found, will lookup the @Style from super classes in linearized order
+                      val linearizedBaseClasses = compiler.askOption[List[Symbol]](() => classDef.symbol.info.baseClasses).getOrElse(List.empty)
+                      getFinderClassName(linearizedBaseClasses.flatMap(_.annotations))
+                  }
+                
+                finderClassName match {
+                  case Some(finderClassName) => 
+                    val finderClass = loader.loadClass(finderClassName)
+                    val finder = finderClass.newInstance
+                    val position = new OffsetPosition(new BatchSourceFile(scu.file, scu.getContents), textSelection.getOffset)
+                    //val selectedTree = compiler.locateTree(position)
+                    val response = new Response[Tree]
+                    compiler.askTypeAt(position, response)
+                    val selectedTree = response.get match {
+                      case Left(tree) => tree 
+                      case Right(thr) => throw thr
+                    }
 
-            val scalatestAstOpt = transformAst(classElement.getFullyQualifiedName, selectedTree, rootTree)
-            scalatestAstOpt match {
-              case Some(scalatestAst) => 
-                val parent = scalatestAst.parent
-                val findMethod = finder.getClass.getMethods.find { mtd =>
-                  mtd.getName == "find" && mtd.getParameterTypes.length == 1 && mtd.getParameterTypes()(0).getName == "org.scalatest.finders.AstNode"
-                }.get
-                findMethod.invoke(finder, scalatestAst).asInstanceOf[Option[Selection]]
-              case None => 
+                    val scalatestAstOpt = transformAst(classElement.getFullyQualifiedName, selectedTree, classDef)
+                    scalatestAstOpt match {
+                      case Some(scalatestAst) => 
+                        val parent = scalatestAst.parent
+                        val findMethod = finder.getClass.getMethods.find { mtd =>
+                          mtd.getName == "find" && mtd.getParameterTypes.length == 1 && mtd.getParameterTypes()(0).getName == "org.scalatest.finders.AstNode"
+                        }.get
+                       findMethod.invoke(finder, scalatestAst).asInstanceOf[Option[Selection]]
+                      case None => 
+                        None
+                    }
+                  case None => 
+                    None
+                }
+                
+                
+              case _ =>
                 None
             }
-          case None =>
-            None
+            case Right(thr) => 
+              None
+          }
         }
-      case _ =>
+        else
+          None
+      case _ => 
         None
     }
   }

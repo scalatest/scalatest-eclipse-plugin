@@ -2,28 +2,26 @@
 <feature
       id="org.scala-ide.sdt.scalatest.feature"
       label="ScalaTest for Scala IDE"
-      version="0.1.0.qualifier"
+      version="0.9.1"
       provider-name="scala-ide.org"
       plugin="org.scala-ide.sdt.scalatest">
 
    <description url="http://scala-ide.org/">
-      The Scala IDE for Eclipse provides the tools needed to
-to build Scala programs on the Eclipse Platform.
+      The ScalaTest plugin for Scala IDE to provides a platform to run 
+      tests written using ScalaTest or other test frameworks.
    </description>
 
    <copyright url="http://scala-lang.org/downloads/">
-      Copyright (c) 2002-2010 EPFL, Lausanne.
+      Copyright (C) 2011-2012 Artima, Inc. 
 All rights reserved.
    </copyright>
 
    <license url="http://scala-lang.org/downloads/license.html">
       SCALA LICENSE
 
-Copyright (c) 2002-2010 EPFL, Lausanne, unless otherwise specified.
-All rights reserved.
+Copyright (C) 2011-2012 Artima, Inc. All rights reserved.
 
-This software was developed by the Programming Methods Laboratory of the
-Swiss Federal Institute of Technology (EPFL), Lausanne, Switzerland.
+This software was developed by Artima, Inc.
 
 Permission to use, copy, modify, and distribute this software in source
 or binary form for any purpose with or without fee is hereby granted,
@@ -63,31 +61,7 @@ SUCH DAMAGE.
          version="0.0.0"/> -->
 
    <requires>
-      <import plugin="org.eclipse.equinox.weaving.aspectj"/>
-      <import plugin="org.eclipse.core.runtime"/>
-      <import plugin="org.eclipse.core.resources"/>
-      <import plugin="org.eclipse.core.filesystem"/>
-      <import plugin="org.eclipse.jface.text"/>
-      <import plugin="org.eclipse.ui"/>
-      <import plugin="org.eclipse.ui.ide"/>
-      <import plugin="org.eclipse.ui.editors"/>
-      <import plugin="org.eclipse.ui.workbench.texteditor"/>
-      <import plugin="org.eclipse.ui.views"/>
-      <import plugin="org.eclipse.ui.console"/>
-      <import plugin="org.eclipse.search"/>
-      <import plugin="org.eclipse.text"/>
-      <import plugin="org.eclipse.jdt.core"/>
-      <import plugin="org.eclipse.jdt.ui"/>
-      <import plugin="org.eclipse.jdt.launching"/>
-      <import plugin="org.eclipse.debug.core"/>
-      <import plugin="org.eclipse.debug.ui"/>
-      <import plugin="org.eclipse.jdt.debug"/>
-      <import plugin="org.eclipse.jdt.debug.ui"/>
-      <import plugin="org.eclipse.ui.forms"/>
-      <import plugin="org.eclipse.ui.navigator"/>
-      <import plugin="org.eclipse.ui.navigator.resources"/>
-      <import plugin="org.apache.ant"/>
-      <import plugin="org.scala-ide.sdt.core"/>
+      <import feature="org.scala-ide.sdt.feature"/>
    </requires>
 
    <plugin

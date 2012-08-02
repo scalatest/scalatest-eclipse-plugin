@@ -2,12 +2,13 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Scala Plugin (Test)
 Bundle-SymbolicName: org.scala-ide.sdt.scalatest.tests
-Bundle-Version: 0.1.0.qualifier
+Bundle-Version: 0.9.1
 Bundle-Vendor: scala-ide.org
 Fragment-Host: org.scala-ide.sdt.scalatest
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Require-Bundle: org.scala-ide.scala.library,
  org.eclipse.equinox.weaving.aspectj,
+ org.junit4;bundle-version="4.5.0",
  org.scala-ide.sdt.core
 Import-Package: scala.tools.eclipse.testsetup,
  org.aspectj.weaver.loadtime.definition

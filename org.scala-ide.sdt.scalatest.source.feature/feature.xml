@@ -2,27 +2,25 @@
 <feature
   id="org.scala-ide.sdt.scalatest.source.feature"
   label="ScalaTest Scala IDE Source"
-  version="0.1.0.qualifier"
+  version="0.9.1"
   provider-name="scala-ide.org">
 
   <description url="http://scala-ide.org/">
-The Scala IDE for Eclipse provides the tools needed to
-to build Scala programs on the Eclipse Platform.
+     The source of ScalaTest plugin for Scala IDE to provides a platform to run 
+     tests written using ScalaTest or other test frameworks.
   </description>
 
    <copyright url="http://scala-lang.org/downloads/">
-Copyright (c) 2002-2010 EPFL, Lausanne.
+      Copyright (C) 2011-2012 Artima, Inc. 
 All rights reserved.
-  </copyright>
+   </copyright>
 
   <license url="http://scala-lang.org/downloads/license.html">
 SCALA LICENSE
 
-Copyright (c) 2002-2010 EPFL, Lausanne, unless otherwise specified.
-All rights reserved.
+Copyright (C) 2011-2012 Artima, Inc. All rights reserved.
 
-This software was developed by the Programming Methods Laboratory of the
-Swiss Federal Institute of Technology (EPFL), Lausanne, Switzerland.
+This software was developed by Artima, Inc.
 
 Permission to use, copy, modify, and distribute this software in source
 or binary form for any purpose with or without fee is hereby granted,
