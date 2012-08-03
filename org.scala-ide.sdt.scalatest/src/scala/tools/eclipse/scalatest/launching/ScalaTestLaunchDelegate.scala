@@ -180,18 +180,6 @@ class ScalaTestLaunchDelegate extends AbstractJavaLaunchConfigurationDelegate {
     bootEntry.toList.map(_.getLocation())
   }
   
-  /**
-   * Simple utility function that processes a classpath element for the ScalaTest Runner class.
-   * 
-   * <p>
-   * Basically, the only task to do here is to escape each whitespace and double quote characters. 
-   * </p>
-   * 
-   * @param comp a classpath component as a string 
-   * @return a properly escaped version of parameter <code>comp</code> 
-   * @see <a href="http://www.scalatest.org/scaladoc/1.8/org/scalatest/tools/Runner$.html">Runner</a> (see section "Specifying a runpath")
-   * @author rlegendi
-   */
   // TODO Needs an expert's review
   private[launching] def escapeScalaTestClasspathComponent(comp: String): String = {
     require(comp != null)
@@ -229,8 +217,6 @@ class ScalaTestLaunchDelegate extends AbstractJavaLaunchConfigurationDelegate {
           ""
       case TYPE_PACKAGE =>
         val packageName = configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, "")
-        // Reference for the workspace should be omitted, tests fail with an java.lang.IllegalStateException: Workspace is closed. error message
-        //val workspace = ResourcesPlugin.getWorkspace()
         val outputDir = getClasspath(configuration).foldLeft("")((acc, act) => acc + " " + escapeScalaTestClasspathComponent(act)).trim
         if (packageName.length > 0) {
           val includeNested = configuration.getAttribute(SCALATEST_LAUNCH_INCLUDE_NESTED_NAME, INCLUDE_NESTED_FALSE)
