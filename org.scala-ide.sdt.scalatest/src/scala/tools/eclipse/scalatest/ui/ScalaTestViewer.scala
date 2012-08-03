@@ -436,7 +436,7 @@ private class TestSessionLabelProvider(fTestRunnerPart: ScalaTestRunnerViewPart,
     }
   }
   
-  private def getDisplayLabel(formatter: Option[Formatter], orElse: String): String = {
+  private def getDisplayLabel(formatter: Option[Formatter], orElse: String, postfix: String): String = {
     val a = formatter
     NameTransformer.decode(formatter match {
       case Some(indText: IndentedText) => 
@@ -446,19 +446,29 @@ private class TestSessionLabelProvider(fTestRunnerPart: ScalaTestRunnerViewPart,
         else
           formattedText
       case _ => orElse
-    })
+    }) + postfix
   }
     
   private def getFormatter(startFormatter: Option[Formatter], endFormatter: Option[Formatter]) = 
     if (endFormatter.isDefined) endFormatter else startFormatter
   
+  private def getPostfix(test: TestModel) = { 
+    import TestStatus.{IGNORED, PENDING, CANCELED}
+    test.status match {
+      case IGNORED => " !!! IGNORED !!!"
+      case PENDING => " (pending)"
+      case CANCELED => " !!! CANCELED !!!"
+      case _ => ""
+    }
+  }
+    
   private def getSimpleLabel(element: AnyRef): String = {
     element match {
-      case test: TestModel => getDisplayLabel(getFormatter(test.startFormatter, test.endFormatter), test.testText)
-      case scope: ScopeModel => getDisplayLabel(getFormatter(scope.startFormatter, scope.endFormatter), scope.message)
-      case suite: SuiteModel => getDisplayLabel(getFormatter(suite.startFormatter, suite.endFormatter), suite.suiteName)
+      case test: TestModel => getDisplayLabel(getFormatter(test.startFormatter, test.endFormatter), test.testText, getPostfix(test))
+      case scope: ScopeModel => getDisplayLabel(getFormatter(scope.startFormatter, scope.endFormatter), scope.message, "")
+      case suite: SuiteModel => getDisplayLabel(getFormatter(suite.startFormatter, suite.endFormatter), suite.suiteName, "")
       case run: RunModel => "Run"
-      case info: InfoModel => getDisplayLabel(info.formatter, info.message)
+      case info: InfoModel => getDisplayLabel(info.formatter, info.message, "")
       case _ => element.toString
     }
   }
