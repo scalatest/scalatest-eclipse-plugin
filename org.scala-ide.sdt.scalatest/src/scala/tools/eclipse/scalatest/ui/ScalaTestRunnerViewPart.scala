@@ -314,6 +314,7 @@ class ScalaTestRunnerViewPart extends ViewPart with Observer {
         suiteMap.get(testIgnored.suiteId) match {
           case Some(suite) => 
             suite.addChild(test)
+            suite.closeScope()
             fTestViewer.registerAutoScrollTarget(test)
             fTestViewer.registerNodeAdded(test)
           case None => 
