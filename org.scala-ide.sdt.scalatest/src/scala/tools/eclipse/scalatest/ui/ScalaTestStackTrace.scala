@@ -81,10 +81,23 @@ class ScalaTestStackTrace(parent: Composite, fTestRunner: ScalaTestRunnerViewPar
     }
     
     def handleOpen(e: SelectionEvent) {
-      val selectedIdx = fTable.getSelectionIndex
-      if (selectedIdx >= 0) {
+      // Note that everything is shifted by one (since the proper error message, if any)
+      // AND it should be pointing to the same location as the 0th element on the list
+      val offset = node match {
+        case tm: TestModel => tm.errorMessage match {
+          case Some(_) => -1
+          case None => 0
+        }
+        case _ => 0
+      }
+
+      // Selection index might return -1 in some exceptional cases (e.g., widget disposed) 
+      if (fTable.getSelectionIndex >= 0) {
+        // If we get the first (annotation) line selected, its index would be -1 without the max call
+        // But this way it will be correctly pointing to the same location where the test failed
+        val selectedIdx = math.max(fTable.getSelectionIndex + offset, 0)
         fStackTraces match {
-          case Some(stackTraces) => 
+          case Some(stackTraces) =>
             val foldedStackTraces = getFoldedStackTraces(stackTraces)
             val stackTraceElement = foldedStackTraces(selectedIdx)
             val model = JavaCore.create(ResourcesPlugin.getWorkspace.getRoot)
@@ -141,7 +154,16 @@ class ScalaTestStackTrace(parent: Composite, fTestRunner: ScalaTestRunnerViewPar
     stackTraces match {
       case Some(stackTraces) => 
         val foldedStackTraces = getFoldedStackTraces(stackTraces)
-        val trace = foldedStackTraces.mkString("\n").trim
+        val testFailureMessage = node match {
+          case tm: TestModel => tm.errorMessage
+          case _ => None
+        }
+
+        val trace = (testFailureMessage match {
+          case Some(m) => m + "\n"
+          case None => ""
+        }) + foldedStackTraces.mkString("\n").trim
+        
         fTable.setRedraw(false)
         fTable.removeAll()
         new TextualTrace(trace, getFilterPatterns)
