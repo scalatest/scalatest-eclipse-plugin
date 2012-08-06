@@ -90,6 +90,7 @@ sealed abstract class Node {
   def hasChildren = children.length > 0
   def getStackTraces: Option[Array[StackTraceElement]]
   def getStackDepth: Option[Int]
+  def getErrorMessage: Option[String]
 }
 
 final case class TestModel(
@@ -111,6 +112,7 @@ final case class TestModel(
 ) extends Node {
   def getStackTraces = errorStackTrace
   def getStackDepth = errorDepth
+  def getErrorMessage = errorMessage
 }
 
 final case class ScopeModel(
@@ -139,6 +141,7 @@ final case class ScopeModel(
   
   def getStackTraces = None
   def getStackDepth = None
+  def getErrorMessage = None
 }
 
 final case class SuiteModel(
@@ -206,6 +209,7 @@ final case class SuiteModel(
   
   def getStackTraces = errorStackTrace
   def getStackDepth = errorDepth
+  def getErrorMessage = errorMessage
 }
 
 final case class RunModel(
@@ -221,6 +225,7 @@ final case class RunModel(
 ) extends Node {
   def getStackTraces = errorStackTrace
   def getStackDepth = errorDepth
+  def getErrorMessage = errorMessage
 }
 
 final case class InfoModel(
@@ -238,4 +243,5 @@ final case class InfoModel(
 ) extends Node {
   def getStackTraces = errorStackTrace
   def getStackDepth = errorDepth
+  def getErrorMessage = errorMessage
 }

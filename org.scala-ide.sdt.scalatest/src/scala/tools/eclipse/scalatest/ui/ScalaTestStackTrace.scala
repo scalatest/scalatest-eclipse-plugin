@@ -59,6 +59,7 @@ class ScalaTestStackTrace(parent: Composite, fTestRunner: ScalaTestRunnerViewPar
   
   private val fTable = new Table(parent, SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL)
   private val fFailureTableDisplay = new FailureTableDisplay(fTable)
+  private var fErrorMessage: Option[String] = None
   private var fStackDepth: Option[Int] = None
   private var fStackTraces: Option[Array[StackTraceElement]] = None
   var node: Node = null
@@ -106,6 +107,7 @@ class ScalaTestStackTrace(parent: Composite, fTestRunner: ScalaTestRunnerViewPar
   
   def clear() {
     fTable.removeAll()
+    fErrorMessage = None
     fStackDepth = None
     fStackTraces = None
   }
@@ -117,12 +119,13 @@ class ScalaTestStackTrace(parent: Composite, fTestRunner: ScalaTestRunnerViewPar
       selectedNode match {
         case Some(selectedNode) => 
           node = selectedNode
+          fErrorMessage = selectedNode.getErrorMessage
           fStackDepth = selectedNode.getStackDepth
           selectedNode.getStackTraces
         case None =>
           None
       }
-    updateTable(fStackTraces, fStackDepth)
+    updateTable(fErrorMessage, fStackTraces, fStackDepth)
   }
   
   private def getFoldedStackTraces(stackTraces: Array[StackTraceElement]) = 
@@ -137,11 +140,17 @@ class ScalaTestStackTrace(parent: Composite, fTestRunner: ScalaTestRunnerViewPar
     else
       stackTraces
   
-  private def updateTable(stackTraces: Option[Array[StackTraceElement]], stackDepth: Option[Int]) {
+  private def updateTable(errorMessage: Option[String], stackTraces: Option[Array[StackTraceElement]], stackDepth: Option[Int]) {
     stackTraces match {
       case Some(stackTraces) => 
         val foldedStackTraces = getFoldedStackTraces(stackTraces)
-        val trace = foldedStackTraces.mkString("\n").trim
+        val trace = fErrorMessage match {
+          case Some(message) => 
+            "Message: " + message + "\n" + foldedStackTraces.mkString("\n").trim
+          case None =>
+            foldedStackTraces.mkString("\n").trim
+        }
+          
         fTable.setRedraw(false)
         fTable.removeAll()
         new TextualTrace(trace, getFilterPatterns)
@@ -153,7 +162,7 @@ class ScalaTestStackTrace(parent: Composite, fTestRunner: ScalaTestRunnerViewPar
   }
   
   def refresh() {
-    updateTable(fStackTraces, fStackDepth)
+    updateTable(fErrorMessage, fStackTraces, fStackDepth)
   }
   
   private def getFilterPatterns: Array[String] = {
