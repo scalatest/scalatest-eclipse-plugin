@@ -287,7 +287,8 @@ class ScalaTestFinder(val compiler: ScalaPresentationCompiler, loader: ClassLoad
     }
   }
   
-  private def getFinderClassName(annotations: List[AnnotationInfo]): Option[String] = 
+  // this should be removed since @Style is already removed from 2.0, it only works for version prior to 2.0.M4.
+  private def getFinderByStyleAnnotation(annotations: List[AnnotationInfo]): Option[String] = 
     annotations.find(aInfo => aInfo.atp.toString == "org.scalatest.Style") match {
       case Some(styleAnnotation) => 
         styleAnnotation.assocs.find(a => a._1.toString == "value") match {
@@ -301,6 +302,32 @@ class ScalaTestFinder(val compiler: ScalaPresentationCompiler, loader: ClassLoad
       case None => None
     }
   
+  private def getFinderByFindersAnnotation(annotations: List[AnnotationInfo]): Array[String] = 
+    annotations.find(aInfo => aInfo.atp.toString == "org.scalatest.Finders") match {
+      case Some(findersAnnotation) => 
+        findersAnnotation.assocs.find(a => a._1.toString == "value") match {
+          case Some(annotationValue) =>
+            annotationValue._2 match {
+              case ArrayAnnotArg(args) => 
+                args.filter(_.isInstanceOf[LiteralAnnotArg]).map(_.asInstanceOf[LiteralAnnotArg].const.stringValue)
+              case _ => Array.empty
+            }
+          case None => Array.empty
+        }
+      case None => Array.empty
+    }
+  
+  private def getFinderClassNames(annotations: List[AnnotationInfo]): Array[String] = {
+    val finderClassNames = getFinderByFindersAnnotation(annotations)
+    if (finderClassNames.size > 0) 
+      finderClassNames
+    else {
+      getFinderByStyleAnnotation(annotations) match {
+        case Some(finder) => Array(finder)
+        case None => Array.empty
+      }
+    }
+  }
   
   def find(textSelection: ITextSelection, element: IJavaElement): Option[Selection] = {
     element match {
@@ -320,7 +347,7 @@ class ScalaTestFinder(val compiler: ScalaPresentationCompiler, loader: ClassLoad
                 // We got ClassDef
                 val wrapWithAnnotation = classDef.symbol.annotations.find(a => a.atp.toString == "org.scalatest.WrapWith")
                 
-                val finderClassName = 
+                val finderClassNames: Array[String] = 
                   wrapWithAnnotation match {
                     case Some(wrapWithAnnotation) =>
                       // @WrapWith found, will lookup the @Style from the runner.
@@ -329,45 +356,47 @@ class ScalaTestFinder(val compiler: ScalaPresentationCompiler, loader: ClassLoad
                           tuple._2 match {
                             case LiteralAnnotArg(const) => 
                               val runnerSymbol = const.typeValue
-                              getFinderClassName(runnerSymbol.typeSymbol.annotations)
-                            case _ => None
+                              getFinderClassNames(runnerSymbol.typeSymbol.annotations)
+                            case _ => Array.empty
                           }
-                        case None => None
+                        case None => Array.empty
                       }
                     case None =>
                       // No @WrapWith found, will lookup the @Style from super classes in linearized order
                       val linearizedBaseClasses = compiler.askOption[List[Symbol]](() => classDef.symbol.info.baseClasses).getOrElse(List.empty)
-                      getFinderClassName(linearizedBaseClasses.flatMap(_.annotations))
+                      getFinderClassNames(linearizedBaseClasses.flatMap(_.annotations))
                   }
                 
-                finderClassName match {
-                  case Some(finderClassName) => 
-                    val finderClass = loader.loadClass(finderClassName)
-                    val finder = finderClass.newInstance
-                    val position = new OffsetPosition(new BatchSourceFile(scu.file, scu.getContents), textSelection.getOffset)
-                    //val selectedTree = compiler.locateTree(position)
-                    val response = new Response[Tree]
-                    compiler.askTypeAt(position, response)
-                    val selectedTree = response.get match {
-                      case Left(tree) => tree 
-                      case Right(thr) => throw thr
-                    }
+                var selectionOpt: Option[Selection] = None
+                finderClassNames.find { finderClassName =>
+                  val finderClass = loader.loadClass(finderClassName)
+                  val finder = finderClass.newInstance
+                  val position = new OffsetPosition(new BatchSourceFile(scu.file, scu.getContents), textSelection.getOffset)
+                  //val selectedTree = compiler.locateTree(position)
+                  val response = new Response[Tree]
+                  compiler.askTypeAt(position, response)
+                  val selectedTree = response.get match {
+                    case Left(tree) => tree 
+                    case Right(thr) => throw thr
+                  }
 
-                    val scalatestAstOpt = transformAst(classElement.getFullyQualifiedName, selectedTree, classDef)
-                    scalatestAstOpt match {
-                      case Some(scalatestAst) => 
-                        val parent = scalatestAst.parent
-                        val findMethod = finder.getClass.getMethods.find { mtd =>
-                          mtd.getName == "find" && mtd.getParameterTypes.length == 1 && mtd.getParameterTypes()(0).getName == "org.scalatest.finders.AstNode"
-                        }.get
-                       findMethod.invoke(finder, scalatestAst).asInstanceOf[Option[Selection]]
-                      case None => 
-                        None
-                    }
-                  case None => 
-                    None
+                  val scalatestAstOpt = transformAst(classElement.getFullyQualifiedName, selectedTree, classDef)
+                  scalatestAstOpt match {
+                    case Some(scalatestAst) => 
+                      val parent = scalatestAst.parent
+                      val findMethod = finder.getClass.getMethods.find { mtd =>
+                        mtd.getName == "find" && mtd.getParameterTypes.length == 1 && mtd.getParameterTypes()(0).getName == "org.scalatest.finders.AstNode"
+                      }.get
+                     findMethod.invoke(finder, scalatestAst).asInstanceOf[Option[Selection]] match {
+                       case Some(selection) => 
+                         selectionOpt = Some(selection)
+                         true
+                       case None => false
+                     }  
+                    case None => false
+                  }
                 }
-                
+                selectionOpt
                 
               case _ =>
                 None
