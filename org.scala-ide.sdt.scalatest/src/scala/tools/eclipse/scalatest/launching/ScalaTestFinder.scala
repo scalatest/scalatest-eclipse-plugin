@@ -155,7 +155,7 @@ class ScalaTestFinder(val compiler: ScalaPresentationCompiler, loader: ClassLoad
     pName: String, 
     pParamTypes: String*)
     extends org.scalatest.finders.MethodDefinition(pClassName, null, Array.empty, pName, pParamTypes.toList: _*) with TreeSupport {
-    override def getParent() = getParent(pClassName, rootTree, nodeTree)
+    override def parent() = getParent(pClassName, rootTree, nodeTree)
     override lazy val children = getChildren(pClassName, rootTree, nodeTree)
     override def equals(other: Any) = if (other != null && other.isInstanceOf[MethodDefinition]) nodeTree eq other.asInstanceOf[MethodDefinition].nodeTree else false
     override def hashCode = nodeTree.hashCode
@@ -169,7 +169,7 @@ class ScalaTestFinder(val compiler: ScalaPresentationCompiler, loader: ClassLoad
     pName: String, 
     pArgs: AstNode*)
     extends org.scalatest.finders.MethodInvocation(pClassName, pTarget, null, Array.empty, pName, pArgs.toList: _*) with TreeSupport {
-    override def getParent() = getParent(pClassName, rootTree, nodeTree)
+    override def parent() = getParent(pClassName, rootTree, nodeTree)
     override lazy val children = getChildren(pClassName, rootTree, nodeTree)
     override def equals(other: Any) = if (other != null && other.isInstanceOf[MethodInvocation]) nodeTree eq other.asInstanceOf[MethodInvocation].nodeTree else false
     override def hashCode = nodeTree.hashCode
@@ -177,14 +177,14 @@ class ScalaTestFinder(val compiler: ScalaPresentationCompiler, loader: ClassLoad
   
   private case class StringLiteral(pClassName: String, rootTree: Tree, nodeTree: Tree, pValue: String)
     extends org.scalatest.finders.StringLiteral(pClassName, null, pValue) with TreeSupport {
-    override def getParent() = getParent(pClassName, rootTree, nodeTree)
+    override def parent() = getParent(pClassName, rootTree, nodeTree)
     override def equals(other: Any) = if (other != null && other.isInstanceOf[StringLiteral]) nodeTree eq other.asInstanceOf[StringLiteral].nodeTree else false
     override def hashCode = nodeTree.hashCode
   }
   
   private case class ToStringTarget(pClassName: String, rootTree: Tree, nodeTree: Tree, pTarget: AnyRef) 
     extends org.scalatest.finders.ToStringTarget(pClassName, null, Array.empty, pTarget) with TreeSupport {
-    override def getParent() = getParent(pClassName, rootTree, nodeTree)
+    override def parent() = getParent(pClassName, rootTree, nodeTree)
     override lazy val children = getChildren(pClassName, rootTree, nodeTree)
     override def equals(other: Any) = if (other != null && other.isInstanceOf[ToStringTarget]) nodeTree eq other.asInstanceOf[ToStringTarget].nodeTree else false
     override def hashCode = nodeTree.hashCode
@@ -387,12 +387,13 @@ class ScalaTestFinder(val compiler: ScalaPresentationCompiler, loader: ClassLoad
                       val findMethod = finder.getClass.getMethods.find { mtd =>
                         mtd.getName == "find" && mtd.getParameterTypes.length == 1 && mtd.getParameterTypes()(0).getName == "org.scalatest.finders.AstNode"
                       }.get
-                     findMethod.invoke(finder, scalatestAst).asInstanceOf[Option[Selection]] match {
-                       case Some(selection) => 
-                         selectionOpt = Some(selection)
-                         true
-                       case None => false
-                     }  
+                      val selection = findMethod.invoke(finder, scalatestAst)
+                      if (selection != null) {
+                        selectionOpt = Some(selection.asInstanceOf[Selection])
+                        true
+                      }
+                      else
+                        false
                     case None => false
                   }
                 }
