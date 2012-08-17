@@ -91,6 +91,7 @@ sealed abstract class Node {
   def getStackTraces: Option[Array[StackTraceElement]]
   def getStackDepth: Option[Int]
   def getErrorMessage: Option[String]
+  def getErrorClassName: Option[String]
 }
 
 final case class TestModel(
@@ -99,6 +100,7 @@ final case class TestModel(
   testText: String,
   decodedTestName: Option[String],
   var duration: Option[Long],
+  var errorClassName: Option[String],
   var errorMessage: Option[String], 
   var errorDepth: Option[Int], 
   var errorStackTrace: Option[Array[StackTraceElement]], 
@@ -113,6 +115,7 @@ final case class TestModel(
   def getStackTraces = errorStackTrace
   def getStackDepth = errorDepth
   def getErrorMessage = errorMessage
+  def getErrorClassName = errorClassName
 }
 
 final case class ScopeModel(
@@ -142,6 +145,7 @@ final case class ScopeModel(
   def getStackTraces = None
   def getStackDepth = None
   def getErrorMessage = None
+  def getErrorClassName = None
 }
 
 final case class SuiteModel(
@@ -154,6 +158,7 @@ final case class SuiteModel(
   var location: Option[Location],
   rerunner: Option[String],
   var duration: Option[Long] = None,
+  var errorClassName: Option[String],
   var errorMessage: Option[String], 
   var errorDepth: Option[Int], 
   var errorStackTrace: Option[Array[StackTraceElement]], 
@@ -184,7 +189,7 @@ final case class SuiteModel(
   
   def closeScope() = scopeStack.pop()
   
-  def updateTest(testName: String, status: TestStatus, duration: Option[Long], formatter: Option[Formatter], location: Option[Location], errorMessage: Option[String], errorDepth: Option[Int], errorStackTrace: Option[Array[StackTraceElement]]) = {
+  def updateTest(testName: String, status: TestStatus, duration: Option[Long], formatter: Option[Formatter], location: Option[Location], errorClassName: Option[String], errorMessage: Option[String], errorDepth: Option[Int], errorStackTrace: Option[Array[StackTraceElement]]) = {
     val node = flatTestsCache.toArray.find(node => node.isInstanceOf[TestModel] && node.asInstanceOf[TestModel].testName == testName)
     node match {
       case Some(node) => 
@@ -193,6 +198,7 @@ final case class SuiteModel(
         test.duration = duration
         test.endFormatter = formatter
         test.location = location
+        test.errorClassName = errorClassName
         test.errorMessage = errorMessage
         test.errorDepth = errorDepth
         test.errorStackTrace = errorStackTrace
@@ -210,12 +216,14 @@ final case class SuiteModel(
   def getStackTraces = errorStackTrace
   def getStackDepth = errorDepth
   def getErrorMessage = errorMessage
+  def getErrorClassName = errorClassName
 }
 
 final case class RunModel(
   testCount: Int, 
   var duration: Option[Long] = None,
   var summary: Option[Summary] = None,
+  var errorClassName: Option[String],
   var errorMessage: Option[String], 
   var errorDepth: Option[Int],
   var errorStackTrace: Option[Array[StackTraceElement]], 
@@ -226,6 +234,7 @@ final case class RunModel(
   def getStackTraces = errorStackTrace
   def getStackDepth = errorDepth
   def getErrorMessage = errorMessage
+  def getErrorClassName = errorClassName
 }
 
 final case class InfoModel(
@@ -233,6 +242,7 @@ final case class InfoModel(
   nameInfo: Option[NameInfo],
   aboutAPendingTest: Option[Boolean],
   aboutACanceledTest: Option[Boolean],
+  errorClassName: Option[String],
   errorMessage: Option[String], 
   errorDepth: Option[Int],
   errorStackTrace: Option[Array[StackTraceElement]], 
@@ -244,4 +254,5 @@ final case class InfoModel(
   def getStackTraces = errorStackTrace
   def getStackDepth = errorDepth
   def getErrorMessage = errorMessage
+  def getErrorClassName = errorClassName
 }

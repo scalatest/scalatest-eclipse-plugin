@@ -245,6 +245,7 @@ class ScalaTestRunnerViewPart extends ViewPart with Observer {
             testStarting.testText,
             testStarting.decodedTestName,
             None,
+            None,
             None, 
             None, 
             None, 
@@ -270,7 +271,7 @@ class ScalaTestRunnerViewPart extends ViewPart with Observer {
         processRecordedEvents(testSucceeded.recordedEvents)
         suiteMap.get(testSucceeded.suiteId) match {
           case Some(suite) => 
-            val test = suite.updateTest(testSucceeded.testName, TestStatus.SUCCEEDED, testSucceeded.duration, testSucceeded.formatter, testSucceeded.location, None, None, None)
+            val test = suite.updateTest(testSucceeded.testName, TestStatus.SUCCEEDED, testSucceeded.duration, testSucceeded.formatter, testSucceeded.location, None, None, None, None)
             suite.closeScope()
             fTestViewer.registerAutoScrollTarget(test)
             fTestViewer.registerViewerUpdate(test)
@@ -283,7 +284,7 @@ class ScalaTestRunnerViewPart extends ViewPart with Observer {
         processRecordedEvents(testFailed.recordedEvents)
         suiteMap.get(testFailed.suiteId) match {
           case Some(suite) => 
-            val test = suite.updateTest(testFailed.testName, TestStatus.FAILED, testFailed.duration, testFailed.formatter, testFailed.location, testFailed.errorMessage, testFailed.errorDepth, testFailed.errorStackTraces)
+            val test = suite.updateTest(testFailed.testName, TestStatus.FAILED, testFailed.duration, testFailed.formatter, testFailed.location, testFailed.errorClassName, testFailed.errorMessage, testFailed.errorDepth, testFailed.errorStackTraces)
             suite.closeScope()
             fTestViewer.registerFailedForAutoScroll(test)
             fTestViewer.registerViewerUpdate(test)
@@ -300,6 +301,7 @@ class ScalaTestRunnerViewPart extends ViewPart with Observer {
             testIgnored.testText,
             testIgnored.decodedTestName,
             None,
+            None, 
             None, 
             None, 
             None, 
@@ -326,7 +328,7 @@ class ScalaTestRunnerViewPart extends ViewPart with Observer {
         processRecordedEvents(testPending.recordedEvents)
         suiteMap.get(testPending.suiteId) match {
           case Some(suite) => 
-            val test = suite.updateTest(testPending.testName, TestStatus.PENDING, testPending.duration, testPending.formatter, testPending.location, None, None, None)
+            val test = suite.updateTest(testPending.testName, TestStatus.PENDING, testPending.duration, testPending.formatter, testPending.location, None, None, None, None)
             suite.closeScope()
             fTestViewer.registerAutoScrollTarget(test)
             fTestViewer.registerViewerUpdate(test)
@@ -339,7 +341,7 @@ class ScalaTestRunnerViewPart extends ViewPart with Observer {
         processRecordedEvents(testCanceled.recordedEvents)
         suiteMap.get(testCanceled.suiteId) match {
           case Some(suite) => 
-            val test = suite.updateTest(testCanceled.testName, TestStatus.CANCELED, testCanceled.duration, testCanceled.formatter, testCanceled.location, testCanceled.errorMessage, testCanceled.errorDepth, testCanceled.errorStackTraces)
+            val test = suite.updateTest(testCanceled.testName, TestStatus.CANCELED, testCanceled.duration, testCanceled.formatter, testCanceled.location, testCanceled.errorClassName, testCanceled.errorMessage, testCanceled.errorDepth, testCanceled.errorStackTraces)
             suite.closeScope()
             fTestViewer.registerAutoScrollTarget(test)
             fTestViewer.registerViewerUpdate(test)
@@ -359,6 +361,7 @@ class ScalaTestRunnerViewPart extends ViewPart with Observer {
                         None, 
                         suiteStarting.location,
                         suiteStarting.rerunner,
+                        None,
                         None,
                         None,
                         None, 
@@ -400,6 +403,7 @@ class ScalaTestRunnerViewPart extends ViewPart with Observer {
               suite.duration = suiteAborted.duration
               suite.endFormatter = suiteAborted.formatter
               suite.location = suiteAborted.location
+              suite.errorClassName = suiteAborted.errorClassName
               suite.errorMessage = suiteAborted.errorMessage
               suite.errorDepth = suiteAborted.errorDepth
               suite.errorStackTrace = suiteAborted.errorStackTraces
@@ -419,6 +423,7 @@ class ScalaTestRunnerViewPart extends ViewPart with Observer {
           RunModel(
             runStarting.testCount, 
             None, 
+            None,
             None,
             None,
             None, 
@@ -455,6 +460,7 @@ class ScalaTestRunnerViewPart extends ViewPart with Observer {
         if (fTestRunSession.rootNode != null) {
           fTestRunSession.rootNode.duration = runAborted.duration
           fTestRunSession.rootNode.summary = runAborted.summary
+          fTestRunSession.rootNode.errorClassName = runAborted.errorClassName
           fTestRunSession.rootNode.errorMessage = runAborted.errorMessage
           fTestRunSession.rootNode.errorDepth = runAborted.errorDepth
           fTestRunSession.rootNode.errorStackTrace = runAborted.errorStackTraces
@@ -509,6 +515,7 @@ class ScalaTestRunnerViewPart extends ViewPart with Observer {
                 infoProvided.nameInfo,
                 infoProvided.aboutAPendingTest,
                 infoProvided.aboutACanceledTest,
+                infoProvided.errorClassName,
                 infoProvided.errorMessage, 
                 infoProvided.errorDepth, 
                 infoProvided.errorStackTraces, 
