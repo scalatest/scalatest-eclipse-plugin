@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.scala-ide</groupId>
     <artifactId>org.scala-ide.scalatest.build</artifactId>
-    <version>0.9.2</version>
+    <version>0.9.3</version>
   </parent>
   <artifactId>org.scala-ide.sdt.scalatest</artifactId>
   <packaging>eclipse-plugin</packaging>

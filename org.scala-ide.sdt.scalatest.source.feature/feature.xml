@@ -2,7 +2,7 @@
 <feature
       id="org.scala-ide.sdt.scalatest.source.feature"
       label="ScalaTest Scala IDE Source"
-      version="0.9.2"
+      version="0.9.3"
       provider-name="scala-ide.org">
 
    <description url="http://scala-ide.org/">
