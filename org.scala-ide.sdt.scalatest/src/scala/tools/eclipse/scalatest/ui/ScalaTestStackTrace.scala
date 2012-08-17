@@ -147,11 +147,21 @@ class ScalaTestStackTrace(parent: Composite, fTestRunner: ScalaTestRunnerViewPar
     stackTraces match {
       case Some(stackTraces) => 
         val foldedStackTraces = getFoldedStackTraces(stackTraces)
-        val trace = fErrorMessage match {
-          case Some(message) => 
-            (if (errorClassName.isDefined) errorClassName.get else "Message") + ": " + message + "\n" + foldedStackTraces.mkString("\n").trim
+        val trace = fErrorClassName match {
+          case Some(errorClassName) => 
+            fErrorMessage match {
+              case Some(message) => 
+                errorClassName + ": " + message + "\n" + foldedStackTraces.mkString("\n").trim
+              case None =>
+                errorClassName + ": " + "\n" + foldedStackTraces.mkString("\n").trim
+            }
           case None =>
-            foldedStackTraces.mkString("\n").trim
+            fErrorMessage match {
+              case Some(message) => 
+                "Message: " + message + "\n" + foldedStackTraces.mkString("\n").trim
+              case None => 
+                foldedStackTraces.mkString("\n").trim
+            }
         }
           
         fTable.setRedraw(false)
