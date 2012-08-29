@@ -124,8 +124,33 @@ class ScalaTestFinder(val compiler: ScalaPresentationCompiler, loader: ClassLoad
     }
   }
   
+  private case class ClassDefinition(pClassName: String, rootTree: Tree, nodeTree: Tree, pName: String, pParamTypes: String*) 
+    extends org.scalatest.finders.ClassDefinition(pClassName, null, Array.empty, pName, pParamTypes.toList: _*) with TreeSupport {
+    override def parent() = getParent(pClassName, rootTree, nodeTree)
+    override lazy val children = getChildren(pClassName, rootTree, nodeTree)
+    override def equals(other: Any) = if (other != null && other.isInstanceOf[ClassDefinition]) nodeTree eq other.asInstanceOf[ClassDefinition].nodeTree else false 
+    override def hashCode = nodeTree.hashCode
+  }
+  
+  private case class ModuleDefinition(pClassName: String, rootTree: Tree, nodeTree: Tree, pName: String) 
+    extends org.scalatest.finders.ModuleDefinition(pClassName, null, Array.empty, pName) with TreeSupport {
+    override def parent() = getParent(pClassName, rootTree, nodeTree)
+    override lazy val children = getChildren(pClassName, rootTree, nodeTree)
+    override def equals(other: Any) = if (other != null && other.isInstanceOf[ModuleDefinition]) nodeTree eq other.asInstanceOf[ModuleDefinition].nodeTree else false 
+    override def hashCode = nodeTree.hashCode
+  }
+  
+  private case class TraitDefinition(pClassName: String, rootTree: Tree, nodeTree: Tree, pName: String)
+    extends org.scalatest.finders.TraitDefinition(pClassName, null, Array.empty, pName) with TreeSupport  {
+    override def parent() = getParent(pClassName, rootTree, nodeTree)
+    override lazy val children = getChildren(pClassName, rootTree, nodeTree)
+    override def equals(other: Any) = if (other != null && other.isInstanceOf[TraitDefinition]) nodeTree eq other.asInstanceOf[TraitDefinition].nodeTree else false 
+    override def hashCode = nodeTree.hashCode
+  }
+  
   private case class ConstructorBlock(pClassName: String, rootTree: Tree, nodeTree: Tree) 
-    extends org.scalatest.finders.ConstructorBlock(pClassName, Array.empty) with TreeSupport {
+    extends org.scalatest.finders.ConstructorBlock(pClassName, null, Array.empty) with TreeSupport {
+    override def parent() = getParent(pClassName, rootTree, nodeTree)
     override lazy val children = {
       val rawChildren = getChildren(pClassName, rootTree, nodeTree).toList
       // Remove the primary constructor method definition.
@@ -266,6 +291,15 @@ class ScalaTestFinder(val compiler: ScalaPresentationCompiler, loader: ClassLoad
         Some(mapApplyToMethodInvocation(className, apply, rootTree))
       case template: Template =>
         Some(new ConstructorBlock(className, rootTree, selectedTree))
+      case classDef: ClassDef =>
+        if (classDef.mods hasFlag 0x02000000)  // From deprecated scala.reflect.generic.ModifierFlags, where is the replacement?
+          Some(new TraitDefinition(className, rootTree, selectedTree, classDef.symbol.decodedName))
+        else {
+          val args = compiler.askOption[List[String]](() => classDef.symbol.info.paramTypes.map(t => t.typeSymbol.fullName)).getOrElse(List.empty)
+          Some(new ClassDefinition(className, rootTree, selectedTree, classDef.symbol.decodedName))
+        }
+      case moduleDef: ModuleDef => 
+        Some(new ModuleDefinition(className, rootTree, selectedTree, moduleDef.symbol.decodedName))
       case _ =>
         None
     }
