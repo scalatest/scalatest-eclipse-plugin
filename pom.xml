@@ -86,9 +86,9 @@
         <scala.version.short>2.10</scala.version.short>
         <repo.scala-ide>${repo.scala-ide.root}/nightly-update-master-trunk</repo.scala-ide>
       </properties>
-      <build>
+      <!--<build>
         <plugins>
-          <!-- plugin to make it fail -->
+          plugin to make it fail
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-enforcer-plugin</artifactId>
@@ -111,7 +111,7 @@
             </executions>
           </plugin>
         </plugins>
-      </build>
+      </build> -->
     </profile>
 
     <profile>
