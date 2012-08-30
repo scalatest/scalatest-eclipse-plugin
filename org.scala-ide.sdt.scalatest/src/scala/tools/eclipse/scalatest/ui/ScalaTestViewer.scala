@@ -79,6 +79,7 @@ import org.eclipse.debug.ui.IDebugUIConstants
 import org.eclipse.jface.viewers.StructuredSelection
 import org.eclipse.jface.viewers.ViewerFilter
 import scala.reflect.NameTransformer
+import org.eclipse.core.runtime.NullProgressMonitor
 
 class ScalaTestViewer(parent: Composite, fTestRunnerPart: ScalaTestRunnerViewPart) {
   
@@ -589,6 +590,36 @@ private class GoToSourceAction(node: Node, fTestRunnerPart: ScalaTestRunnerViewP
     }
   }
   
+  /*private def getClassNameToOpen(className: String): String = 
+    if (className.endsWith("$"))
+      NameTransformer.decode(className.substring(0, className.length - 1)).replaceAll("\\$", ".").split("\\.").map(NameTransformer.encode(_)).mkString(".") + "$"
+    else
+      NameTransformer.decode(className).replaceAll("\\$", ".").split("\\.").map(NameTransformer.encode(_)).mkString(".")*/
+  
+  private def getClassNameToOpen(className: String, scProj: ScalaProject): String = {
+    import collection.mutable.ListBuffer
+    val buffer = new ListBuffer[String]()
+    val tokens = className.split("\\.")
+    tokens.foreach { token => 
+      val decoded = NameTransformer.decode(token)
+      if (decoded.indexOf("$") >= 0) {
+        val innerTokens = decoded.split("\\$")
+        innerTokens.foreach { inner =>
+          val innerEncoded = NameTransformer.encode(inner)
+          val innerIType = scProj.javaProject.findType(buffer.mkString(".") + "." + innerEncoded, new NullProgressMonitor())
+          if (innerIType == null)
+            buffer += innerEncoded + "$"
+          else
+            buffer += innerEncoded  
+        }
+        
+      }
+      else
+        buffer += token
+    }
+    buffer.mkString(".")
+  }
+  
   private def goToLocation(location: Option[Location], errorDepth: Option[Int], errorStackTraces: Option[Array[StackTraceElement]]) {
     location match {
       case Some(location) =>
@@ -597,7 +628,8 @@ private class GoToSourceAction(node: Node, fTestRunnerPart: ScalaTestRunnerViewP
             val scProj = getScalaProject(fTestRunnerPart.getSession.projectName)
             scProj match {
               case Some(scProj) => 
-                val iType = scProj.javaProject.findType(topOfClass.className)
+                val className = getClassNameToOpen(topOfClass.className, scProj)
+                val iType = scProj.javaProject.findType(className, new NullProgressMonitor())
                 if (iType != null)
                   JavaUI.openInEditor(iType, true, true)
                 else
@@ -609,7 +641,8 @@ private class GoToSourceAction(node: Node, fTestRunnerPart: ScalaTestRunnerViewP
             val scProj = getScalaProject(fTestRunnerPart.getSession.projectName)
             scProj match {
               case Some(scProj) => 
-                val iType = scProj.javaProject.findType(topOfMethod.className)
+                val className = getClassNameToOpen(topOfMethod.className, scProj)
+                val iType = scProj.javaProject.findType(className, new NullProgressMonitor())
                 val methodId = topOfMethod.methodId
                 val methodName = methodId.substring(methodId.lastIndexOf('.') + 1, methodId.lastIndexOf('('))
                 val methodRawParamTypes = methodId.substring(methodId.lastIndexOf('(') + 1, methodId.length - 1)
