@@ -48,13 +48,6 @@
     <scala.version.short>2.9</scala.version.short>
     <version.tag>local</version.tag>
     <repo.scala-ide>${repo.scala-ide.root}/releases-29/stable/tycho-site</repo.scala-ide>
-    <scalacheck.id>scalacheck_2.9.0</scalacheck.id>
-    <scalacheck.version>1.9</scalacheck.version>
-    <scalatest.id>scalatest_2.9.0</scalatest.id>
-    <scalatest.version>2.0.M2</scalatest.version>
-    <specs.id>specs_2.9.0</specs.id>
-    <specs.version>1.6.8</specs.version>
-    <junit.version>4.10</junit.version>
     <mockito.version>1.9.0</mockito.version>
    </properties>
 
@@ -86,32 +79,6 @@
         <scala.version.short>2.10</scala.version.short>
         <repo.scala-ide>${repo.scala-ide.root}/nightly-update-master-trunk</repo.scala-ide>
       </properties>
-      <!--<build>
-        <plugins>
-          plugin to make it fail
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-enforcer-plugin</artifactId>
-            <version>1.0.1</version>
-            <executions>
-              <execution>
-                <id>enforce</id>
-                <goals>
-                  <goal>enforce</goal>
-                </goals>
-                <configuration>
-                  <rules>
-                    <AlwaysFail>
-                      <message>The build is not configured for the 2.10 versions of the dependencies</message>
-                    </AlwaysFail>
-                  </rules>
-                  <fail>true</fail>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build> -->
     </profile>
 
     <profile>
@@ -160,30 +127,10 @@
         <version>${scalatest-finders.version}</version>
       </dependency>
       <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-        <version>${junit.version}</version>
-      </dependency>
-      <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-all</artifactId>
         <version>${mockito.version}</version>
         <scope>compile</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.scala-tools.testing</groupId>
-        <artifactId>${scalacheck.id}</artifactId>
-        <version>${scalacheck.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.scalatest</groupId>
-        <artifactId>${scalatest.id}</artifactId>
-        <version>${scalatest.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.scala-tools.testing</groupId>
-        <artifactId>${specs.id}</artifactId>
-        <version>${specs.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
