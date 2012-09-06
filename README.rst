@@ -49,17 +49,17 @@ Using ScalaTest in a Scala project
 
 To use ScalaTest in your Scala project, you must include ScalaTest in Build path of your project.
 
-You can use ScalaTest 1.x or the latest 2.0.M3 (recommended).  Using ScalaTest 2.0 enables the following:-
+You can use ScalaTest 1.x or the latest 2.0.M4 (recommended).  Using ScalaTest 2.0 enables the following:-
 
 *   Test result view built in the eclipse workspace.
 *   Running of selected specific test or scope.
 
 When using ScalaTest 1.x, the GUI Runner provided by ScalaTest will be used instead of the built-in test result view.
 
-*   Run using ScalaTest 2.0.M3
+*   Run using ScalaTest 2.0.M4
 
 .. image:: http://www.scalatest.org/assets/images/eclipseScreenshot.png
-       :alt: Run using ScalaTest 2.0.M3
+       :alt: Run using ScalaTest 2.0.M4
        :width: 100%
        :target: http://www.scalatest.org/assets/images/eclipseScreenshot.png
 
