@@ -53,7 +53,6 @@ import org.eclipse.jdt.ui.JavaUI
 import org.eclipse.ui.IFileEditorInput
 import scala.tools.eclipse.ScalaPlugin
 import scala.tools.eclipse.javaelements.ScalaElement
-import scala.reflect.generic.Trees
 import scala.tools.eclipse.javaelements.ScalaCompilationUnit
 import scala.tools.nsc.util.OffsetPosition
 import scala.tools.eclipse.javaelements.ScalaClassElement
