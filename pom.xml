@@ -80,6 +80,12 @@
         <repo.scala-ide>${repo.scala-ide.root}/nightly-update-master-trunk</repo.scala-ide>
       </properties>
     </profile>
+    <profile>
+      <id>scala-ide-2.1.m2-juno-scala-2.9</id>
+      <properties>
+        <repo.scala-ide>${repo.scala-ide.root}/releases-juno-29/milestone/site</repo.scala-ide>
+      </properties>
+    </profile>
 
     <profile>
       <!-- some configuration for tests run by tycho on Mac OS -->
