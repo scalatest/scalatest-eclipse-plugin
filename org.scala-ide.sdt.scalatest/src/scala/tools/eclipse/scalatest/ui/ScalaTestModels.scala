@@ -44,9 +44,7 @@ final case class Summary(testsSucceededCount: Int, testsFailedCount: Int, testsI
   val testsCompletedCount = testsSucceededCount + testsFailedCount
 }
 
-case class TestNameInfo(testName: String, decodedTestName: Option[String])
-
-final case class NameInfo(suiteName: String, suiteId: String, suiteClassName: Option[String], decodedSuiteName:Option[String],  testName: Option[TestNameInfo])
+final case class NameInfo(suiteName: String, suiteId: String, suiteClassName: Option[String], testName: Option[String])
 
 case class StackTraceElement(className: String, methodName: String, fileName: String, lineNumber: Int, isNative: Boolean, toStringValue: String) {
   override def toString = toStringValue
@@ -98,7 +96,6 @@ final case class TestModel(
   suiteId: String, 
   testName: String,
   testText: String,
-  decodedTestName: Option[String],
   var duration: Option[Long],
   var errorClassName: Option[String],
   var errorMessage: Option[String], 
@@ -119,7 +116,7 @@ final case class TestModel(
 }
 
 final case class ScopeModel(
-  message: String,
+  text: String,
   nameInfo: NameInfo,
   startFormatter: Option[Formatter],
   var endFormatter: Option[Formatter],
@@ -152,7 +149,6 @@ final case class SuiteModel(
   suiteName: String,
   suiteId: String,
   suiteClassName: Option[String],
-  decodedSuiteName: Option[String],
   startFormatter: Option[Formatter],
   var endFormatter: Option[Formatter],
   var location: Option[Location],

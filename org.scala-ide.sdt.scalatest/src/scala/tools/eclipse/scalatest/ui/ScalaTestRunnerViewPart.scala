@@ -243,7 +243,6 @@ class ScalaTestRunnerViewPart extends ViewPart with Observer {
             testStarting.suiteId, 
             testStarting.testName,
             testStarting.testText,
-            testStarting.decodedTestName,
             None,
             None,
             None, 
@@ -299,7 +298,6 @@ class ScalaTestRunnerViewPart extends ViewPart with Observer {
             testIgnored.suiteId, 
             testIgnored.testName,
             testIgnored.testText,
-            testIgnored.decodedTestName,
             None,
             None, 
             None, 
@@ -356,7 +354,6 @@ class ScalaTestRunnerViewPart extends ViewPart with Observer {
                         suiteStarting.suiteName,
                         suiteStarting.suiteId,
                         suiteStarting.suiteClassName,
-                        suiteStarting.decodedSuiteName,
                         suiteStarting.formatter, 
                         None, 
                         suiteStarting.location,
@@ -479,7 +476,7 @@ class ScalaTestRunnerViewPart extends ViewPart with Observer {
           case Some(suite) => 
             val scope = 
               ScopeModel(
-                scopeOpened.message,
+                scopeOpened.text,
                 scopeOpened.nameInfo,
                 scopeOpened.formatter, 
                 None,

@@ -91,10 +91,8 @@ class ScalaTestListener extends Observable with Runnable {
                   (eventXml \ "suiteName").text,
                   (eventXml \ "suiteId").text,
                   stringOpt(eventXml \ "suiteClassName"),
-                  stringOpt(eventXml \ "decodedSuiteName"),
                   (eventXml \ "testName").text,
                   (eventXml \ "testText").text,
-                  stringOpt(eventXml \ "decodedTestName"),
                   formatterOpt(eventXml \ "formatter"),
                   locationOpt(eventXml \ "location"),
                   stringOpt(eventXml \ "rerunner"),
@@ -107,10 +105,8 @@ class ScalaTestListener extends Observable with Runnable {
                   (eventXml \ "suiteName").text,
                   (eventXml \ "suiteId").text,
                   stringOpt(eventXml \ "suiteClassName"),
-                  stringOpt(eventXml \ "decodedSuiteName"),
                   (eventXml \ "testName").text,
                   (eventXml \ "testText").text,
-                  stringOpt(eventXml \ "decodedTestName"),
                   recordedEvents(eventXml \ "recordedEvents"),
                   longOpt(eventXml \ "duration"),
                   formatterOpt(eventXml \ "formatter"),
@@ -127,10 +123,8 @@ class ScalaTestListener extends Observable with Runnable {
                   (eventXml \ "suiteName").text,
                   (eventXml \ "suiteId").text,
                   stringOpt(eventXml \ "suiteClassName"),
-                  stringOpt(eventXml \ "decodedSuiteName"),
                   (eventXml \ "testName").text,
                   (eventXml \ "testText").text,
-                  stringOpt(eventXml \ "decodedTestName"),
                   recordedEvents(eventXml \ "recordedEvents"),
                   stringOpt(eventXml \ "throwable" \ "className"),
                   stringOpt(eventXml \ "throwable" \ "message"),
@@ -150,10 +144,8 @@ class ScalaTestListener extends Observable with Runnable {
                   (eventXml \ "suiteName").text,
                   (eventXml \ "suiteId").text,
                   stringOpt(eventXml \ "suiteClassName"),
-                  stringOpt(eventXml \ "decodedSuiteName"),
                   (eventXml \ "testName").text,
                   (eventXml \ "testText").text,
-                  stringOpt(eventXml \ "decodedTestName"),
                   formatterOpt(eventXml \ "formatter"),
                   locationOpt(eventXml \ "location"),
                   (eventXml \ "threadName").text,
@@ -166,10 +158,8 @@ class ScalaTestListener extends Observable with Runnable {
                   (eventXml \ "suiteName").text,
                   (eventXml \ "suiteId").text,
                   stringOpt(eventXml \ "suiteClassName"),
-                  stringOpt(eventXml \ "decodedSuiteName"),
                   (eventXml \ "testName").text,
                   (eventXml \ "testText").text,
-                  stringOpt(eventXml \ "decodedTestName"),
                   recordedEvents(eventXml \ "recordedEvents"),
                   longOpt(eventXml \ "duration"),
                   formatterOpt(eventXml \ "formatter"),
@@ -185,10 +175,8 @@ class ScalaTestListener extends Observable with Runnable {
                   (eventXml \ "suiteName").text,
                   (eventXml \ "suiteId").text,
                   stringOpt(eventXml \ "suiteClassName"),
-                  stringOpt(eventXml \ "decodedSuiteName"),
                   (eventXml \ "testName").text,
                   (eventXml \ "testText").text,
-                  stringOpt(eventXml \ "decodedTestName"),
                   recordedEvents(eventXml \ "recordedEvents"),
                   stringOpt(eventXml \ "throwable" \ "className"),
                   stringOpt(eventXml \ "throwable" \ "message"),
@@ -234,7 +222,6 @@ class ScalaTestListener extends Observable with Runnable {
                   (eventXml \ "suiteName").text,
                   (eventXml \ "suiteId").text,
                   stringOpt(eventXml \ "suiteClassName"),
-                  stringOpt(eventXml \ "decodedSuiteName"),
                   formatterOpt(eventXml \ "formatter"),
                   locationOpt(eventXml \ "location"),
                   stringOpt(eventXml \ "rerunner"),
@@ -248,7 +235,6 @@ class ScalaTestListener extends Observable with Runnable {
                   (eventXml \ "suiteName").text,
                   (eventXml \ "suiteId").text,
                   stringOpt(eventXml \ "suiteClassName"),
-                  stringOpt(eventXml \ "decodedSuiteName"),
                   longOpt(eventXml \ "duration"),
                   formatterOpt(eventXml \ "formatter"),
                   locationOpt(eventXml \ "location"),
@@ -264,7 +250,6 @@ class ScalaTestListener extends Observable with Runnable {
                   (eventXml \ "suiteName").text,
                   (eventXml \ "suiteId").text,
                   stringOpt(eventXml \ "suiteClassName"),
-                  stringOpt(eventXml \ "decodedSuiteName"),
                   stringOpt(eventXml \ "throwable" \ "className"),
                   stringOpt(eventXml \ "throwable" \ "message"),
                   intOpt(eventXml \ "throwable" \ "depth"),
@@ -499,17 +484,12 @@ class ScalaTestListener extends Observable with Runnable {
     if (nodeSeq.text == "")
       None
     else {
-      val testName = 
-        if ((nodeSeq \ "testName").text == "")
-          None
-        else
-          Some(TestNameInfo((nodeSeq \ "testName" \ "testName").text, stringOpt(nodeSeq \ "testName" \ "decodedTestName")))
+      val testName = stringOpt(nodeSeq \ "testName")
       Some(
         NameInfo(
           (nodeSeq \ "suiteName").text, 
           (nodeSeq \ "suiteId").text, 
           stringOpt(nodeSeq \ "suiteClassName"), 
-          stringOpt(nodeSeq \ "decodedSuiteName"),  
           testName)
       )
     }

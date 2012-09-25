@@ -466,7 +466,7 @@ private class TestSessionLabelProvider(fTestRunnerPart: ScalaTestRunnerViewPart,
   private def getSimpleLabel(element: AnyRef): String = {
     element match {
       case test: TestModel => getDisplayLabel(getFormatter(test.startFormatter, test.endFormatter), test.testText, getPostfix(test))
-      case scope: ScopeModel => getDisplayLabel(getFormatter(scope.startFormatter, scope.endFormatter), scope.message, "")
+      case scope: ScopeModel => getDisplayLabel(getFormatter(scope.startFormatter, scope.endFormatter), scope.text, "")
       case suite: SuiteModel => getDisplayLabel(getFormatter(suite.startFormatter, suite.endFormatter), suite.suiteName, "")
       case run: RunModel => "Run"
       case info: InfoModel => getDisplayLabel(info.formatter, info.message, "")
