@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ScalaTest Plugin
 Bundle-SymbolicName: org.scala-ide.sdt.scalatest;singleton:=true
-Bundle-Version: 0.9.3
+Bundle-Version: 2.9.3.qualifier
 Bundle-Vendor: scala-ide.org
 Bundle-ActivationPolicy: lazy
 Bundle-Localization: plugin
@@ -23,7 +23,7 @@ Require-Bundle:
  org.eclipse.ui.ide,
  org.scala-ide.scala.library,
  org.scala-ide.scala.compiler,
- org.scala-ide.sdt.core;bundle-version="[2.0.0, 2.2.0)"
+ org.scala-ide.sdt.core
 Import-Package: 
  com.ibm.icu.text;apply-aspects:=false;org.eclipse.swt.graphics;apply-aspects:=false,
  scala.tools.eclipse;apply-aspects:=false,

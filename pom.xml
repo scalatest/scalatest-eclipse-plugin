@@ -7,7 +7,7 @@
   </prerequisites>
   <groupId>org.scala-ide</groupId>
   <artifactId>org.scala-ide.scalatest.build</artifactId>
-  <version>0.9.3</version>
+  <version>2.9.3-SNAPSHOT</version>
   <name>Build project for the scalatest support in Scala IDE</name>
   <packaging>pom</packaging>
 
@@ -104,6 +104,18 @@
         <repo.scala-ide>${repo.scala-ide.root}/sdk/e37/scala210/dev/site</repo.scala-ide>
       </properties>
     </profile>
+    <profile>
+      <id>scala-ide-2.1-m2</id>
+      <properties>
+        <version.tag>m2</version.tag>
+      </properties>
+    </profile>
+    <profile>
+      <id>scala-ide-2.0.2</id>
+      <properties>
+        <version.tag>v-2</version.tag>
+      </properties>
+    </profile>
 
     <profile>
       <!-- some configuration for tests run by tycho on Mac OS -->
@@ -135,6 +147,52 @@
         </pluginManagement>
       </build>
     </profile>
+
+    <profile>
+      <!-- pull the data needed to add the version numbers to the manifests -->
+      <id>set-versions</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.scala-ide</groupId>
+          <artifactId>build-tools_2.9.2</artifactId>
+          <version>0.2.0</version>
+        </dependency>
+      </dependencies>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>1.2.1</version>
+            <executions>
+              <execution>
+                <id>set-versions</id>
+                <goals>
+                  <goal>java</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <classpathScope>compile</classpathScope>
+              <mainClass>org.scalaide.buildtools.UpdateAddonManifests</mainClass>
+              <arguments>
+                <argument>${repo.scala-ide}</argument>
+              </arguments>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+      <repositories>
+        <repository>
+          <!-- extra repository containing the build package -->
+          <id>typesafe-ide</id>
+          <name>Typesafe IDE repository</name>
+          <url>http://repo.typesafe.com/typesafe/ide-2.9</url>
+          <snapshots><enabled>true</enabled></snapshots>
+        </repository>
+      </repositories>
+    </profile>
+
   </profiles>
 
   <!-- scm configuration is require to extract the github hash-->

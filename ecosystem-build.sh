@@ -32,7 +32,7 @@ ROOT_DIR=${PWD}
 TARGET_DIR=~/tmp/scalatest-build-ecosystem
 
 # scala-ide/build-tools/maven-tool/merge-site/ location
-MERGE_TOOL_DIR=/home/cheeseng/git/build-tools/maven-tool/merge-site
+MERGE_TOOL_DIR=~/git/build-tools/maven-tool/merge-site
 
 ###################
 

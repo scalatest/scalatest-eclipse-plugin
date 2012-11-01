@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.scala-ide</groupId>
     <artifactId>org.scala-ide.scalatest.build</artifactId>
-    <version>0.9.3</version>
+    <version>2.9.3-SNAPSHOT</version>
   </parent>
   <artifactId>org.scala-ide.sdt.scalatest.tests</artifactId>
   <packaging>eclipse-test-plugin</packaging>
