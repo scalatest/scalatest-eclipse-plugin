@@ -8,15 +8,35 @@ This project contains plugins for seamless support of `scalatest`_ in `Scala IDE
 Building
 --------
 
-Maven is used to manage the build process.  The project can be built for Scala IDE 2.0.2 (stable) and master (nightly/2.1.0).
+Maven is used to manage the build process.  You can build the project for Scala IDE nightly releases.
 
-*To build for Scala IDE 2.0.2 (stable), use
+For Scala IDE 2.0.2 (stable) and 2.1 (milestones), we recommend you to install from update sites listed here:-
 
-  $ mvn clean install -P scala-ide-2.0-scala-2.9
+  2.0.2 for Scala 2.9 (Indigo)   - http://download.scala-ide.org/sdk/e37/scala29/stable/site/
+  2.1-M2 for Scala 2.9 (Indigo)  - http://download.scala-ide.org/sdk/e37/scala29/dev/site/
+  2.1-M2 for Scala 2.10 (Indigo) - http://download.scala-ide.org/sdk/e37/scala210/dev/site/
+  2.1-M2 for Scala 2.9 (Juno)    - http://download.scala-ide.org/sdk/e38/scala29/dev/site/
+  2.1-M2 for Scala 2.10 (Juno)   - http://download.scala-ide.org/sdk/e38/scala210/dev/site/
 
-*To build for Scala IDE master (nightly/2.1.0), use
+*To build for Scala IDE nightly for Scala 2.9 (Indigo), use
 
-  $ mvn clean install -P scala-ide-master-scala-2.9 
+  $ mvn clean install -P scala-ide-master-scala-2.9
+
+*To build for Scala IDE nightly for Scala 2.10 (Indigo), use
+
+  $ mvn clean install -P scala-ide-master-scala-trunk
+
+*To build for Scala IDE nightly for Scala 2.9 (Juno), use
+
+  $ mvn clean install -P scala-ide-juno-master-scala-2.9
+
+*To build for Scala IDE nightly for Scala 2.10 (Juno), use
+
+  $ mvn clean install -P scala-ide-juno-master-scala-trunk
+
+*To build for Scala IDE 2.0 nightly for Scala 2.9 (Indigo), use
+
+  $ mvn clean install -P scala-ide-2.0.x-scala-2.9
 
 .. _scalatest: http://scalatest.org
 .. _Scala IDE: http://scala-ide.org
@@ -29,12 +49,12 @@ Using ScalaTest Plugin in Scala IDE 2.0
 What is in this guide?
 ----------------------
 
-This guide will show you how to use the ScalaTest plugin in Scala IDE 2.0.
+This guide will show you how to use the ScalaTest plugin in Scala IDE 2.0/2.1.
 
 Prerequisites
 .............
 
-*   `Eclipse`_ 3.7.2 (Indigo) with Scala IDE for Scala 2.9 installed (update site: http://download.scala-ide.org/releases-29/stable/site).
+*   `Eclipse`_ 3.7 (Indigo) or 3.8/4.2 (Juno) with Scala IDE for Scala 2.9/2.10 installed (http://scala-ide.org).
 
     Check the getting started page http://scala-ide.org/docs/user/gettingstarted.html page for instructions on how to install Scala IDE.
 
