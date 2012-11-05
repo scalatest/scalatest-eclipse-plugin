@@ -12,11 +12,11 @@ Maven is used to manage the build process.  You can build the project for Scala 
 
 For Scala IDE 2.0.2 (stable) and 2.1 (milestones), we recommend you to install from update sites listed here:-
 
-  2.0.2 for Scala 2.9 (Indigo)   - http://download.scala-ide.org/sdk/e37/scala29/stable/site/
-  2.1-M2 for Scala 2.9 (Indigo)  - http://download.scala-ide.org/sdk/e37/scala29/dev/site/
-  2.1-M2 for Scala 2.10 (Indigo) - http://download.scala-ide.org/sdk/e37/scala210/dev/site/
-  2.1-M2 for Scala 2.9 (Juno)    - http://download.scala-ide.org/sdk/e38/scala29/dev/site/
-  2.1-M2 for Scala 2.10 (Juno)   - http://download.scala-ide.org/sdk/e38/scala210/dev/site/
+*   2.0.2 for Scala 2.9 (Indigo)   - http://download.scala-ide.org/sdk/e37/scala29/stable/site/
+*   2.1-M2 for Scala 2.9 (Indigo)  - http://download.scala-ide.org/sdk/e37/scala29/dev/site/
+*   2.1-M2 for Scala 2.10 (Indigo) - http://download.scala-ide.org/sdk/e37/scala210/dev/site/
+*   2.1-M2 for Scala 2.9 (Juno)    - http://download.scala-ide.org/sdk/e38/scala29/dev/site/
+*   2.1-M2 for Scala 2.10 (Juno)   - http://download.scala-ide.org/sdk/e38/scala210/dev/site/
 
 *To build for Scala IDE nightly for Scala 2.9 (Indigo), use
 
