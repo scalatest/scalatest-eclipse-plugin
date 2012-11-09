@@ -130,6 +130,13 @@
       </properties>
     </profile>
     <profile>
+      <id>scala-ide-2.1-m2-2_10</id>
+      <properties>
+        <version.tag>m2</version.tag>
+        <version.suffix>2_10</version.suffix>
+      </properties>
+    </profile>
+    <profile>
       <id>scala-ide-2.0.2</id>
       <properties>
         <version.tag>v-2</version.tag>
