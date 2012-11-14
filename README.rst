@@ -67,7 +67,7 @@ Prerequisites
 Using ScalaTest in a Scala project
 ----------------------------------
 
-To use ScalaTest in your Scala project, you must include ScalaTest in Build path of your project.
+To use ScalaTest in your Scala project, you must download ScalaTest and include it in Build path of your project.
 
 You can use ScalaTest 1.x or the latest 2.0.M4 (recommended).  Using ScalaTest 2.0 enables the following:-
 
