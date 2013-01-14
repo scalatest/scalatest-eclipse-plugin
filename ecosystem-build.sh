@@ -14,7 +14,7 @@ function build() {
   cd ${ROOT_DIR}
   mvn -Pset-versions -P$1 -Drepo.scala-ide=$2 -Dscala.version=$3 -Drepo.eclipse=$5 -Dtycho.style=maven --non-recursive exec:java
 
-  mvn -Pset-versions -P$1 -Drepo.scala-ide=$2 -Dscala.version=$3 -Drepo.eclipes=$5 clean package
+  mvn -Pset-versions -P$1 -Drepo.scala-ide=$2 -Dscala.version=$3 -Drepo.eclipse=$5 clean package
 
   rm -rf ${TARGET_DIR}/$4
   mkdir -p ${TARGET_DIR}
