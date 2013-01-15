@@ -21,26 +21,31 @@ For Scala IDE 2.0.2 (stable) and 2.1 (milestones), we recommend you to install f
 *To build for Scala IDE nightly for Scala 2.9 (Indigo), use
 
   $ mvn -Pset-versions -Pscala-ide-nightly -Drepo.scala-ide=http://download.scala-ide.org/nightly-update-master-29x -Dscala.version=2.9.3-SNAPSHOT -Drepo.eclipse=http://download.eclipse.org/releases/indigo/ -Dtycho.style=maven --non-recursive exec:java
+  
   $ mvn -Pset-versions -Pscala-ide-nightly -Drepo.scala-ide=http://download.scala-ide.org/nightly-update-master-29x -Dscala.version=2.9.3-SNAPSHOT -Drepo.eclipse=http://download.eclipse.org/releases/indigo/ clean package
 
 *To build for Scala IDE nightly for Scala 2.10 (Indigo), use
 
   $ mvn -Pset-versions -Pscala-ide-nightly -Drepo.scala-ide=http://download.scala-ide.org/nightly-update-master-trunk -Dscala.version=2.10.0-SNAPSHOT -Drepo.eclipse=http://download.eclipse.org/releases/indigo/ -Dtycho.style=maven --non-recursive exec:java
+  
   $ mvn -Pset-versions -Pscala-ide-nightly -Drepo.scala-ide=http://download.scala-ide.org/nightly-update-master-trunk -Dscala.version=2.10.0-SNAPSHOT -Drepo.eclipse=http://download.eclipse.org/releases/indigo/ clean package
 
 *To build for Scala IDE nightly for Scala 2.9 (Juno), use
 
   $ mvn -Pset-versions -Pscala-ide-nightly -Drepo.scala-ide=http://download.scala-ide.org/nightly-update-juno-master-29x -Dscala.version=2.9.3-SNAPSHOT -Drepo.eclipse=http://download.eclipse.org/releases/juno/ -Dtycho.style=maven --non-recursive exec:java
+  
   $ mvn -Pset-versions -Pscala-ide-nightly -Drepo.scala-ide=http://download.scala-ide.org/nightly-update-juno-master-29x -Dscala.version=2.9.3-SNAPSHOT -Drepo.eclipse=http://download.eclipse.org/releases/juno/ clean package
 
 *To build for Scala IDE nightly for Scala 2.10 (Juno), use
 
   $ mvn -Pset-versions -Pscala-ide-nightly -Drepo.scala-ide=http://download.scala-ide.org/nightly-update-juno-master-2.10.x -Dscala.version=2.10.0-SNAPSHOT -Drepo.eclipse=http://download.eclipse.org/releases/juno/ -Dtycho.style=maven --non-recursive exec:java
+  
   $ mvn -Pset-versions -Pscala-ide-nightly -Drepo.scala-ide=http://download.scala-ide.org/nightly-update-juno-master-2.10.x -Dscala.version=2.10.0-SNAPSHOT -Drepo.eclipse=http://download.eclipse.org/releases/juno/ clean package
 
 *To build for Scala IDE 2.0 nightly for Scala 2.9 (Indigo), use
 
   $ mvn -Pset-versions -Pscala-ide-nightly -Drepo.scala-ide=http://download.scala-ide.org/nightly-update-2-0-x-29x -Dscala.version=2.9.3-SNAPSHOT -Drepo.eclipse=http://download.eclipse.org/releases/indigo/ -Dtycho.style=maven --non-recursive exec:java
+  
   $ mvn -Pset-versions -Pscala-ide-nightly -Drepo.scala-ide=http://download.scala-ide.org/nightly-update-2-0-x-29x -Dscala.version=2.9.3-SNAPSHOT -Drepo.eclipse=http://download.eclipse.org/releases/indigo/ clean package
 
 .. _scalatest: http://scalatest.org
