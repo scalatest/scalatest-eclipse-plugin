@@ -18,6 +18,19 @@ For Scala IDE 2.0.2 (stable) and 2.1 (milestones), we recommend you to install f
 *   2.1-M2 for Scala 2.9 (Juno)    - http://download.scala-ide.org/sdk/e38/scala29/dev/site/
 *   2.1-M2 for Scala 2.10 (Juno)   - http://download.scala-ide.org/sdk/e38/scala210/dev/site/
 
+To build for Scala IDE nightly, please make sure you have the following installed:-
+
+  * The Git command line tools (this will be available as a standard package for Linux distributions)
+  * A recent JDK (the [current Oracle JDK](http://www.oracle.com/technetwork/java/javase/downloads/index.html) is recommended)
+  * [Maven 3](http://maven.apache.org/download.html)
+
+You then clone and checkout master trunk:-
+
+  $ git clone git://github.com/scalatest/scalatest-eclipse-plugin.git
+  $ cd scalatest-eclipse-plugin
+
+Finally use the following commands to build for different version of Scala IDE.
+
 *To build for Scala IDE nightly for Scala 2.9 (Indigo), use
 
   $ mvn -Pset-versions -Pscala-ide-nightly -Drepo.scala-ide=http://download.scala-ide.org/nightly-update-master-29x -Dscala.version=2.9.3-SNAPSHOT -Drepo.eclipse=http://download.eclipse.org/releases/indigo/ -Dtycho.style=maven --non-recursive exec:java
