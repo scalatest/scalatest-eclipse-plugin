@@ -22,7 +22,7 @@ To build for Scala IDE nightly, please make sure you have the following installe
 
   * The Git command line tools (this will be available as a standard package for Linux distributions)
   * A recent JDK (the [current Oracle JDK](http://www.oracle.com/technetwork/java/javase/downloads/index.html) is recommended)
-  * [Maven 3](http://maven.apache.org/download.html)
+  * Maven 3(http://maven.apache.org/download.html)
 
 You then clone and checkout master trunk:-
 
