@@ -60,15 +60,15 @@
       <id>scala-ide-2.0-scala-2.9</id>
     </profile>
     <profile>
-      <id>scala-ide-2.1-m3</id>
+      <id>scala-ide-3.0</id>
       <properties>
-        <version.tag>m3</version.tag>
+        <version.tag>v-3</version.tag>
       </properties>
     </profile>
     <profile>
-      <id>scala-ide-2.1-m3-2_10</id>
+      <id>scala-ide-3.0-2_10</id>
       <properties>
-        <version.tag>m3</version.tag>
+        <version.tag>v-3</version.tag>
         <version.suffix>2_10</version.suffix>
       </properties>
     </profile>
