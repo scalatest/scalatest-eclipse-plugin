@@ -46,8 +46,8 @@ rm -rf ${TARGET_DIR}
 #build scala-ide-master-scala-trunk http://download.scala-ide.org/ecosystem/e38/scala29/dev/site/ 2.10.0-RC1 e38-scala210-dev http://download.eclipse.org/releases/juno/
 build scala-ide-3.0 http://download.scala-ide.org/sdk/next/e37/scala29/dev/site/ 2.9.3-RC2 e37-scala29-3.0 http://download.eclipse.org/releases/indigo/
 build scala-ide-3.0 http://download.scala-ide.org/sdk/next/e38/scala29/dev/site/ 2.9.3-RC2 e38-scala29-3.0 http://download.eclipse.org/releases/juno/
-build scala-ide-3.0-2_10 http://download.scala-ide.org/sdk/next/e37/scala210/dev/site/ 2.10.1-RC1 e37-scala210-3.0 http://download.eclipse.org/releases/indigo/
-build scala-ide-3.0-2_10 http://download.scala-ide.org/sdk/next/e38/scala210/dev/site/ 2.10.1-RC1 e38-scala210-3.0 http://download.eclipse.org/releases/juno/
+build scala-ide-3.0-2_10 http://download.scala-ide.org/sdk/next/e37/scala210/dev/site/ 2.10.1-RC3 e37-scala210-3.0 http://download.eclipse.org/releases/indigo/
+build scala-ide-3.0-2_10 http://download.scala-ide.org/sdk/next/e38/scala210/dev/site/ 2.10.1-RC3 e38-scala210-3.0 http://download.eclipse.org/releases/juno/
 build scala-ide-2.0.2 http://download.scala-ide.org/sdk/e37/scala29/stable/site/ 2.9.2 e37-scala29-2.0.2 http://download.eclipse.org/releases/indigo/
 
 cd ${MERGE_TOOL_DIR}
