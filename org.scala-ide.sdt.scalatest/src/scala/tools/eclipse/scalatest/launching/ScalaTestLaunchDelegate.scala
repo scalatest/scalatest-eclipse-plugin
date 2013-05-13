@@ -98,7 +98,10 @@ class ScalaTestLaunchDelegate extends AbstractJavaLaunchConfigurationDelegate {
 			
       val loaderUrls = classpath.map{ cp => new File(cp.toString).toURI.toURL }
 
-      val loader:ClassLoader = new URLClassLoader(loaderUrls.toArray, getClass.getClassLoader)
+      val bootClassPath = getBootpath(configuration)
+      
+      val bootClassLoader = new URLClassLoader(bootClassPath.map(new File(_).toURI.toURL))
+      val loader:ClassLoader = new URLClassLoader(loaderUrls.toArray, bootClassLoader)
       
       val pgmArgs = 
       try {
@@ -123,7 +126,7 @@ class ScalaTestLaunchDelegate extends AbstractJavaLaunchConfigurationDelegate {
       runConfig.setVMSpecificAttributesMap(vmAttributesMap)
 
       // Bootpath
-      runConfig.setBootClassPath(getBootpath(configuration))
+      runConfig.setBootClassPath(bootClassPath)
 			
       // check for cancellation
       if (monitor.isCanceled())
@@ -190,20 +193,22 @@ class ScalaTestLaunchDelegate extends AbstractJavaLaunchConfigurationDelegate {
     require(configuration != null)
     
     val launchType = configuration.getAttribute(SCALATEST_LAUNCH_TYPE_NAME, TYPE_SUITE)
+    val outputDir = getClasspath(configuration).foldLeft("")((acc, act) => acc + " " + escapeScalaTestClasspathComponent(act)).trim
     launchType match {
       case TYPE_SUITE => 
         val suiteClass = configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, "")
         val testSet: java.util.Set[String] = configuration.getAttribute(SCALATEST_LAUNCH_TESTS_NAME, new java.util.HashSet[String]()).asInstanceOf[java.util.Set[String]]
         if (testSet.size == 0) 
-          "-s " + suiteClass
+          "-p \"" + outputDir + "\" -s " + suiteClass
         else
-          "-s " + suiteClass + " " + testSet.map("-t \"" + _ + "\"").mkString(" ")
+          "-p \"" + outputDir + "\" -s " + suiteClass + " " + testSet.map("-t \"" + _ + "\"").mkString(" ")
       case TYPE_FILE =>
         val filePortablePath = configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, "")
         if (filePortablePath.length > 0) {
           val scSrcFileOpt = ScalaSourceFile.createFromPath(filePortablePath)
           scSrcFileOpt match {
             case Some(scSrcFile) => 
+              "-p \"" + outputDir + "\" " + 
               scSrcFile.getTypes
                 .filter(ScalaTestLaunchShortcut.isScalaTestSuite(_))
                 .map(iType => "-s " + iType.getFullyQualifiedName)
@@ -217,7 +222,6 @@ class ScalaTestLaunchDelegate extends AbstractJavaLaunchConfigurationDelegate {
           ""
       case TYPE_PACKAGE =>
         val packageName = configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, "")
-        val outputDir = getClasspath(configuration).foldLeft("")((acc, act) => acc + " " + escapeScalaTestClasspathComponent(act)).trim
         if (packageName.length > 0) {
           val includeNested = configuration.getAttribute(SCALATEST_LAUNCH_INCLUDE_NESTED_NAME, INCLUDE_NESTED_FALSE)
           if (includeNested == INCLUDE_NESTED_TRUE) 
