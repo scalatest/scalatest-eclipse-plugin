@@ -194,8 +194,6 @@ class ScalaTestListener extends Observable with Runnable {
                 ScopeOpened(
                   (eventXml \ "message").text,
                   nameInfo(eventXml \ "nameInfo"),
-                  booleanOpt(eventXml \ "aboutAPendingTest"),
-                  booleanOpt(eventXml \ "aboutACanceledTest"),
                   formatterOpt(eventXml \ "formatter"),
                   locationOpt(eventXml \ "location"),
                   (eventXml \ "threadName").text,
@@ -207,13 +205,22 @@ class ScalaTestListener extends Observable with Runnable {
                 ScopeClosed (
                   (eventXml \ "message").text,
                   nameInfo(eventXml \ "nameInfo"),
-                  booleanOpt(eventXml \ "aboutAPendingTest"),
-                  booleanOpt(eventXml \ "aboutACanceledTest"),
                   formatterOpt(eventXml \ "formatter"),
                   locationOpt(eventXml \ "location"),
                   (eventXml \ "threadName").text,
                   (eventXml \ "timeStamp").text.toLong
                 )    
+              )
+            case "ScopePending" => 
+              send(
+                ScopePending (
+                  (eventXml \ "message").text,
+                  nameInfo(eventXml \ "nameInfo"),
+                  formatterOpt(eventXml \ "formatter"),
+                  locationOpt(eventXml \ "location"),
+                  (eventXml \ "threadName").text,
+                  (eventXml \ "timeStamp").text.toLong
+                )
               )
             case "SuiteStarting" => 
               println(eventRawXml)

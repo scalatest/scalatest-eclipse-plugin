@@ -462,11 +462,19 @@ private class TestSessionLabelProvider(fTestRunnerPart: ScalaTestRunnerViewPart,
       case _ => ""
     }
   }
+  
+  private def getPostfix(scope: ScopeModel) = {
+    import ScopeStatus.PENDING
+    scope.status match {
+      case PENDING => " (pending)"
+      case _ => ""
+    }
+  }
     
   private def getSimpleLabel(element: AnyRef): String = {
     element match {
       case test: TestModel => getDisplayLabel(getFormatter(test.startFormatter, test.endFormatter), test.testText, getPostfix(test))
-      case scope: ScopeModel => getDisplayLabel(getFormatter(scope.startFormatter, scope.endFormatter), scope.text, "")
+      case scope: ScopeModel => getDisplayLabel(getFormatter(scope.startFormatter, scope.endFormatter), scope.message, getPostfix(scope))
       case suite: SuiteModel => getDisplayLabel(getFormatter(suite.startFormatter, suite.endFormatter), suite.suiteName, "")
       case run: RunModel => "Run"
       case info: InfoModel => getDisplayLabel(info.formatter, info.message, "")

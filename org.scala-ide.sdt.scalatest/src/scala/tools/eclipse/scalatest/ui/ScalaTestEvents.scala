@@ -233,10 +233,8 @@ final case class MarkupProvided (
 ) extends Event with RecordableEvent
 
 final case class ScopeOpened (
-  text: String,
+  message: String,
   nameInfo: NameInfo,
-  aboutAPendingTest: Option[Boolean],
-  aboutACanceledTest: Option[Boolean],
   formatter: Option[Formatter],
   location: Option[Location],
   threadName: String,
@@ -244,10 +242,17 @@ final case class ScopeOpened (
 ) extends Event
 
 final case class ScopeClosed (
-  text: String,
+  message: String,
   nameInfo: NameInfo,
-  aboutAPendingTest: Option[Boolean],
-  aboutACanceledTest: Option[Boolean],
+  formatter: Option[Formatter],
+  location: Option[Location],
+  threadName: String,
+  timeStamp: Long
+) extends Event
+
+final case class ScopePending (
+  message: String,
+  nameInfo: NameInfo,
   formatter: Option[Formatter],
   location: Option[Location],
   threadName: String,

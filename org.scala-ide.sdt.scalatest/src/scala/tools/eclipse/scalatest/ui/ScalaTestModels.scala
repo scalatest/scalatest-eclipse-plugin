@@ -57,7 +57,7 @@ object TestStatus extends Enumeration {
 
 object ScopeStatus extends Enumeration {
   type ScopeStatus = Value
-  val OPENED, CLOSED = Value
+  val OPENED, CLOSED, PENDING = Value
 }
 
 object SuiteStatus extends Enumeration {
@@ -116,7 +116,7 @@ final case class TestModel(
 }
 
 final case class ScopeModel(
-  text: String,
+  message: String,
   nameInfo: NameInfo,
   startFormatter: Option[Formatter],
   var endFormatter: Option[Formatter],

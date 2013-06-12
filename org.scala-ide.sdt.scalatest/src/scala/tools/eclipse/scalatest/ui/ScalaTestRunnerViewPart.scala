@@ -476,7 +476,7 @@ class ScalaTestRunnerViewPart extends ViewPart with Observer {
           case Some(suite) => 
             val scope = 
               ScopeModel(
-                scopeOpened.text,
+                scopeOpened.message,
                 scopeOpened.nameInfo,
                 scopeOpened.formatter, 
                 None,
@@ -502,6 +502,20 @@ class ScalaTestRunnerViewPart extends ViewPart with Observer {
             }
           case None => 
             throw new IllegalStateException("Unable to find suite model for ScopeClosed, suiteId: " + scopeClosed.nameInfo.suiteId)
+        }
+      case scopePending: ScopePending => 
+        suiteMap.get(scopePending.nameInfo.suiteId) match {
+          case Some(suite) => 
+            suite.closeScope() match {
+              case scope: ScopeModel => 
+                scope.endFormatter = scopePending.formatter
+                scope.status = ScopeStatus.PENDING
+                fTestViewer.registerAutoScrollTarget(scope)
+                fTestViewer.registerViewerUpdate(scope)
+              case other => throw new IllegalStateException("Expected to pop ScopeModel, but got: " + other)
+            }
+          case None => 
+            throw new IllegalStateException("Unable to find suite model for ScopePending, suiteId: " + scopePending.nameInfo.suiteId)
         }
     }
   }
