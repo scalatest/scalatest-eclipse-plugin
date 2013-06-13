@@ -74,7 +74,7 @@ class ScalaTestListener extends Observable with Runnable {
           if (line != null) {
             if (eventRawXml == "" && line.length > 0)
               endingXml = line.substring(0, 1) + "/" + line.substring(1)
-            eventRawXml += line
+            eventRawXml += line + "\n"
             if (line.trim == endingXml.trim) 
               eventXml = XML.loadString(eventRawXml)
             else if (!connection.isClosed && !in.ready)
@@ -369,7 +369,7 @@ class ScalaTestListener extends Observable with Runnable {
   private def stringOpt(nodeSeq: NodeSeq) = {
     if (nodeSeq.text == "")
       None
-    else
+    else 
       Some(nodeSeq.text)
   }
   

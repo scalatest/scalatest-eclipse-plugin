@@ -151,14 +151,14 @@ class ScalaTestStackTrace(parent: Composite, fTestRunner: ScalaTestRunnerViewPar
           case Some(errorClassName) => 
             fErrorMessage match {
               case Some(message) => 
-                errorClassName + ": " + message + "\n" + foldedStackTraces.mkString("\n").trim
+                errorClassName + ": \n" + message + "\n" + foldedStackTraces.mkString("\n").trim
               case None =>
-                errorClassName + ": " + "\n" + foldedStackTraces.mkString("\n").trim
+                errorClassName + ": \n" + foldedStackTraces.mkString("\n").trim
             }
           case None =>
             fErrorMessage match {
               case Some(message) => 
-                "Message: " + message + "\n" + foldedStackTraces.mkString("\n").trim
+                "Message: \n" + message + "\n" + foldedStackTraces.mkString("\n").trim
               case None => 
                 foldedStackTraces.mkString("\n").trim
             }
