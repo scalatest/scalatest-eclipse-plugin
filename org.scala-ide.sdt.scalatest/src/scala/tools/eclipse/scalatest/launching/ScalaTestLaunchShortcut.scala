@@ -265,7 +265,7 @@ object ScalaTestLaunchShortcut {
         }
         catch {
           // This could due to custom classes not compiled.
-          case e: Exception => 
+          case e: Throwable => 
             e.printStackTrace()
           None
         }
