@@ -258,9 +258,9 @@ object ScalaTestLaunchShortcut {
       val loaderUrls = scProject.scalaClasspath.fullClasspath.map { cp => cp.toURI.toURL }
       val loader:ClassLoader = new URLClassLoader(loaderUrls.toArray, getClass.getClassLoader)
       
-      scProject.withPresentationCompiler { compiler =>
-        val scalatestFinder = new ScalaTestFinder(compiler, loader)
+      scProject.presentationCompiler { compiler =>
         try {
+          val scalatestFinder = new ScalaTestFinder(compiler, loader)
           scalatestFinder.find(textSelection, element)
         }
         catch {
@@ -269,7 +269,7 @@ object ScalaTestLaunchShortcut {
             e.printStackTrace()
           None
         }
-      } (null)
+      } getOrElse None
     }
   }
   
