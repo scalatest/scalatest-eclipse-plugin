@@ -255,7 +255,7 @@ object ScalaTestLaunchShortcut {
       val element = SelectionConverter.getElementAtOffset(typeRoot, selection.asInstanceOf[ITextSelection])
       val project = typeRoot.getJavaProject.getProject
       val scProject = ScalaPlugin.plugin.getScalaProject(project)
-      val loaderUrls = scProject.classpath.map { cp => new File(cp.toString).toURI.toURL }
+      val loaderUrls = scProject.scalaClasspath.fullClasspath.map { cp => cp.toURI.toURL }
       val loader:ClassLoader = new URLClassLoader(loaderUrls.toArray, getClass.getClassLoader)
       
       scProject.withPresentationCompiler { compiler =>

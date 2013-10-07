@@ -34,4 +34,4 @@ Export-Package:
  scala.tools.eclipse.scalatest.ui
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ClassPath: .,
- target/lib/scalatest-finders_2.9.0-0.9.5.jar
+ target/lib/scalatest-finders-0.9.5.jar

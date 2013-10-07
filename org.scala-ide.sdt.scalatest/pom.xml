@@ -13,7 +13,7 @@
   <dependencies>
     <dependency>
       <groupId>org.scalatest</groupId>
-      <artifactId>scalatest-finders_2.9.0</artifactId>
+      <artifactId>scalatest-finders</artifactId>
     </dependency>
   </dependencies>
 
@@ -34,7 +34,7 @@
               <artifactItems>
                 <artifactItem>
                   <groupId>org.scalatest</groupId>
-                  <artifactId>scalatest-finders_2.9.0</artifactId>
+                  <artifactId>scalatest-finders</artifactId>
                   <outputDirectory>${project.build.directory}/lib</outputDirectory>
                 </artifactItem>
               </artifactItems>
