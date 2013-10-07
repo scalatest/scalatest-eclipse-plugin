@@ -49,9 +49,11 @@ import scala.tools.nsc.util.OffsetPosition
 import org.eclipse.jface.text.ITextSelection
 import org.scalatest.finders.Selection
 import scala.tools.nsc.util.BatchSourceFile
+import scala.tools.eclipse.ScalaPresentationCompilerProxy
 
-class ScalaTestFinder(val compiler: ScalaPresentationCompiler, loader: ClassLoader) {
+class ScalaTestFinder(val compilerRef: ScalaPresentationCompilerProxy, loader: ClassLoader) {
   
+  private[launching] val compiler: ScalaPresentationCompiler = compilerRef { compiler => compiler }.orNull
   import compiler._
 
   trait TreeSupport {
