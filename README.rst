@@ -10,56 +10,31 @@ Building
 
 Maven is used to manage the build process.  You can build the project for Scala IDE nightly releases.
 
-For Scala IDE 2.0.2 (stable) and 2.1 (milestones), we recommend you to install from update sites listed here:-
+For Scala IDE 3.0.0/3.0.0 (Stable) releases, we recommend you to install from update sites listed here:-
 
-*   2.0.2 for Scala 2.9 (Indigo)   - http://download.scala-ide.org/sdk/e37/scala29/stable/site/
-*   2.1-M2 for Scala 2.9 (Indigo)  - http://download.scala-ide.org/sdk/e37/scala29/dev/site/
-*   2.1-M2 for Scala 2.10 (Indigo) - http://download.scala-ide.org/sdk/e37/scala210/dev/site/
-*   2.1-M2 for Scala 2.9 (Juno)    - http://download.scala-ide.org/sdk/e38/scala29/dev/site/
-*   2.1-M2 for Scala 2.10 (Juno)   - http://download.scala-ide.org/sdk/e38/scala210/dev/site/
+*   3.0.x for Scala 2.9 (Indigo)  - http://download.scala-ide.org/sdk/e37/scala29/stable/site
+*   3.0.x for Scala 2.10 (Indigo) - http://download.scala-ide.org/sdk/e37/scala210/stable/site
+*   3.0.x for Scala 2.9 (Juno)    - http://download.scala-ide.org/sdk/e38/scala29/stable/site
+*   3.0.x for Scala 2.10 (Juno/Kepler)   - http://download.scala-ide.org/sdk/e38/scala210/stable/site
+
+For Scala IDE 3.0.2-RC01 (Milestones) releases, we recommend you to install from update sites listed here:-
+*   3.0.2-RC01 for Scala 2.10.3-RC2 (Juno/Kepler) - http://download.scala-ide.org/sdk/e38/scala210/dev/site
+*   3.0.2-RC01 for Scala 2.11.0-M5 (Juno/Kepler)  - http://download.scala-ide.org/sdk/e38/scala211/dev/site
 
 To build for Scala IDE nightly, please make sure you have the following installed:-
 
   * The Git command line tools (this will be available as a standard package for Linux distributions)
   * A recent JDK (the [current Oracle JDK](http://www.oracle.com/technetwork/java/javase/downloads/index.html) is recommended)
-  * Maven 3(http://maven.apache.org/download.html)
+  * Maven 3.0.x (http://maven.apache.org/download.html)
 
 You then clone and checkout master trunk:-
 
-  $ git clone git://github.com/scalatest/scalatest-eclipse-plugin.git
-  $ cd scalatest-eclipse-plugin
+    $ git clone git://github.com/scalatest/scalatest-eclipse-plugin.git
+    $ cd scalatest-eclipse-plugin
 
-Finally use the following commands to build for different version of Scala IDE.
+Finally use the following commands to build for Scala IDE nightly: 
 
-*To build for Scala IDE nightly for Scala 2.9 (Indigo), use
-
-  $ mvn -Pset-versions -Pscala-ide-nightly -Drepo.scala-ide=http://download.scala-ide.org/nightly-update-master-29x -Dscala.version=2.9.3-SNAPSHOT -Drepo.eclipse=http://download.eclipse.org/releases/indigo/ -Dtycho.style=maven --non-recursive exec:java
-  
-  $ mvn -Pset-versions -Pscala-ide-nightly -Drepo.scala-ide=http://download.scala-ide.org/nightly-update-master-29x -Dscala.version=2.9.3-SNAPSHOT -Drepo.eclipse=http://download.eclipse.org/releases/indigo/ clean package
-
-*To build for Scala IDE nightly for Scala 2.10 (Indigo), use
-
-  $ mvn -Pset-versions -Pscala-ide-nightly -Drepo.scala-ide=http://download.scala-ide.org/nightly-update-master-trunk -Dscala.version=2.10.0-SNAPSHOT -Drepo.eclipse=http://download.eclipse.org/releases/indigo/ -Dtycho.style=maven --non-recursive exec:java
-  
-  $ mvn -Pset-versions -Pscala-ide-nightly -Drepo.scala-ide=http://download.scala-ide.org/nightly-update-master-trunk -Dscala.version=2.10.0-SNAPSHOT -Drepo.eclipse=http://download.eclipse.org/releases/indigo/ clean package
-
-*To build for Scala IDE nightly for Scala 2.9 (Juno), use
-
-  $ mvn -Pset-versions -Pscala-ide-nightly -Drepo.scala-ide=http://download.scala-ide.org/nightly-update-juno-master-29x -Dscala.version=2.9.3-SNAPSHOT -Drepo.eclipse=http://download.eclipse.org/releases/juno/ -Dtycho.style=maven --non-recursive exec:java
-  
-  $ mvn -Pset-versions -Pscala-ide-nightly -Drepo.scala-ide=http://download.scala-ide.org/nightly-update-juno-master-29x -Dscala.version=2.9.3-SNAPSHOT -Drepo.eclipse=http://download.eclipse.org/releases/juno/ clean package
-
-*To build for Scala IDE nightly for Scala 2.10 (Juno), use
-
-  $ mvn -Pset-versions -Pscala-ide-nightly -Drepo.scala-ide=http://download.scala-ide.org/nightly-update-juno-master-2.10.x -Dscala.version=2.10.0-SNAPSHOT -Drepo.eclipse=http://download.eclipse.org/releases/juno/ -Dtycho.style=maven --non-recursive exec:java
-  
-  $ mvn -Pset-versions -Pscala-ide-nightly -Drepo.scala-ide=http://download.scala-ide.org/nightly-update-juno-master-2.10.x -Dscala.version=2.10.0-SNAPSHOT -Drepo.eclipse=http://download.eclipse.org/releases/juno/ clean package
-
-*To build for Scala IDE 2.0 nightly for Scala 2.9 (Indigo), use
-
-  $ mvn -Pset-versions -Pscala-ide-nightly -Drepo.scala-ide=http://download.scala-ide.org/nightly-update-2-0-x-29x -Dscala.version=2.9.3-SNAPSHOT -Drepo.eclipse=http://download.eclipse.org/releases/indigo/ -Dtycho.style=maven --non-recursive exec:java
-  
-  $ mvn -Pset-versions -Pscala-ide-nightly -Drepo.scala-ide=http://download.scala-ide.org/nightly-update-2-0-x-29x -Dscala.version=2.9.3-SNAPSHOT -Drepo.eclipse=http://download.eclipse.org/releases/indigo/ clean package
+    $ mvn clean package
 
 .. _scalatest: http://scalatest.org
 .. _Scala IDE: http://scala-ide.org
@@ -72,12 +47,12 @@ Using ScalaTest Plugin in Scala IDE 2.0
 What is in this guide?
 ----------------------
 
-This guide will show you how to use the ScalaTest plugin in Scala IDE 2.0/2.1.
+This guide will show you how to use the ScalaTest plugin in Scala IDE 3.0.x.
 
 Prerequisites
 .............
 
-*   `Eclipse`_ 3.7 (Indigo) or 3.8/4.2 (Juno) with Scala IDE for Scala 2.9/2.10 installed (http://scala-ide.org).
+*   `Eclipse`_ 3.7 (Indigo), 3.8/4.2 (Juno) or 4.3 (Kepler) with Scala IDE for Scala 2.9/2.10 installed (http://scala-ide.org).
 
     Check the getting started page http://scala-ide.org/docs/user/gettingstarted.html page for instructions on how to install Scala IDE.
 
@@ -92,17 +67,17 @@ Using ScalaTest in a Scala project
 
 To use ScalaTest in your Scala project, you must download ScalaTest and include it in Build path of your project.
 
-You can use ScalaTest 1.x or the latest 2.0.M5 (recommended).  Using ScalaTest 2.0 enables the following:-
+You can use ScalaTest 1.x or the latest 2.0.RC1 (recommended).  Using ScalaTest 2.0 enables the following:-
 
 *   Test result view built in the eclipse workspace.
 *   Running of selected specific test or scope.
 
 When using ScalaTest 1.x, the GUI Runner provided by ScalaTest will be used instead of the built-in test result view.
 
-*   Run using ScalaTest 2.0.M5
+*   Run using ScalaTest 2.0.RC1
 
 .. image:: http://www.scalatest.org/assets/images/eclipseScreenshot.png
-       :alt: Run using ScalaTest 2.0.M5
+       :alt: Run using ScalaTest 2.0.RC1
        :width: 100%
        :target: http://www.scalatest.org/assets/images/eclipseScreenshot.png
 
