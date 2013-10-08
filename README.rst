@@ -18,6 +18,7 @@ For Scala IDE 3.0.0/3.0.0 (Stable) releases, we recommend you to install from up
 *   3.0.x for Scala 2.10 (Juno/Kepler)   - http://download.scala-ide.org/sdk/e38/scala210/stable/site
 
 For Scala IDE 3.0.2-RC01 (Milestones) releases, we recommend you to install from update sites listed here:-
+
 *   3.0.2-RC01 for Scala 2.10.3-RC2 (Juno/Kepler) - http://download.scala-ide.org/sdk/e38/scala210/dev/site
 *   3.0.2-RC01 for Scala 2.11.0-M5 (Juno/Kepler)  - http://download.scala-ide.org/sdk/e38/scala211/dev/site
 
@@ -29,12 +30,12 @@ To build for Scala IDE nightly, please make sure you have the following installe
 
 You then clone and checkout master trunk:-
 
-    $ git clone git://github.com/scalatest/scalatest-eclipse-plugin.git
-    $ cd scalatest-eclipse-plugin
+    `$ git clone git://github.com/scalatest/scalatest-eclipse-plugin.git`
+    `$ cd scalatest-eclipse-plugin`
 
 Finally use the following commands to build for Scala IDE nightly: 
 
-    $ mvn clean package
+    `$ mvn clean package`
 
 .. _scalatest: http://scalatest.org
 .. _Scala IDE: http://scala-ide.org
