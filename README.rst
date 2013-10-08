@@ -43,8 +43,8 @@ Finally use the following commands to build for Scala IDE nightly:
 .. _tickets: http://scala-ide.org/docs/user/community.html
 .. _scala-ide/scala-ide: http://github.com/scala-ide/scala-ide
 
-Using ScalaTest Plugin in Scala IDE 2.0
-===============================================
+Using ScalaTest Plugin in Scala IDE
+===================================
 
 What is in this guide?
 ----------------------
