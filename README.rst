@@ -38,6 +38,8 @@ Finally use the following commands to build for Scala IDE nightly:
 
     `$ mvn clean package`
 
+The built update site will be available in org.scala-ide.sdt.scalatest.update-site/target.
+
 .. _scalatest: http://scalatest.org
 .. _Scala IDE: http://scala-ide.org
 .. _tickets: http://scala-ide.org/docs/user/community.html
