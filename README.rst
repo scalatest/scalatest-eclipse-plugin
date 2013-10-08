@@ -10,7 +10,7 @@ Building
 
 Maven is used to manage the build process.  You can build the project for Scala IDE nightly releases.
 
-For Scala IDE 3.0.0/3.0.0 (Stable) releases, we recommend you to install from update sites listed here:-
+For Scala IDE 3.0.0/3.0.1 (Stable) releases, we recommend you to install from update sites listed here:-
 
 *   3.0.x for Scala 2.9 (Indigo)  - http://download.scala-ide.org/sdk/e37/scala29/stable/site
 *   3.0.x for Scala 2.10 (Indigo) - http://download.scala-ide.org/sdk/e37/scala210/stable/site
@@ -31,6 +31,7 @@ To build for Scala IDE nightly, please make sure you have the following installe
 You then clone and checkout master trunk:-
 
     `$ git clone git://github.com/scalatest/scalatest-eclipse-plugin.git`
+    
     `$ cd scalatest-eclipse-plugin`
 
 Finally use the following commands to build for Scala IDE nightly: 
