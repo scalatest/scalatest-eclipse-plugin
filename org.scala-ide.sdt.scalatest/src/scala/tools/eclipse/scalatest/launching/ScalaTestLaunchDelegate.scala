@@ -114,11 +114,27 @@ class ScalaTestLaunchDelegate extends AbstractJavaLaunchConfigurationDelegate {
         case e: Throwable => 
           getProgramArguments(configuration) + " " + stArgs + " -oW -g"
       }
+      
+      // In 2.11, XML classes has been modularized into its own jar, and by default Scala IDE does not include it.
+      // We'll include it automatically in boot class path so that our XmlSocketReporter still works.
+      val missingScalaXml = 
+        try {
+          loader.loadClass("scala.xml.Elem")
+          List.empty[String]
+        }
+        catch {
+          case e: Throwable => 
+            val codeSource = Class.forName("scala.xml.Elem").getProtectionDomain.getCodeSource
+            if (codeSource != null) // code source could be null
+              List(codeSource.getLocation.toExternalForm)
+            else
+              List.empty[String]
+        }
             
       val execArgs = new ExecutionArguments(vmArgs, pgmArgs)
 			
       // Create VM config
-      val runConfig = new VMRunnerConfiguration(mainTypeName, classpath.toArray)
+      val runConfig = new VMRunnerConfiguration(mainTypeName, (classpath ::: missingScalaXml).toArray)
       runConfig.setProgramArguments(execArgs.getProgramArgumentsArray())
       runConfig.setEnvironment(envp)
       runConfig.setVMArguments(execArgs.getVMArgumentsArray())
