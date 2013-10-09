@@ -119,21 +119,16 @@ class ScalaTestLaunchDelegate extends AbstractJavaLaunchConfigurationDelegate {
       // We'll include it automatically in boot class path so that our XmlSocketReporter still works.
       val missingScalaXml = 
         try {
-          loader.loadClass("scala/xml/MetaData")
+          loader.loadClass("scala.xml.Elem")
           List.empty[String]
         }
         catch {
           case e: Throwable => 
-            bootClassPath.find(_.endsWith("scala-library.jar")) match {
-              case Some(path) =>
-                val bundlesDir = (new File(path)).getParentFile
-                val bundles = bundlesDir.listFiles
-                bundles.find(_.getName.startsWith("scala-xml")) match {
-                  case Some(bundle) => List(bundle.getAbsolutePath)
-                  case None => List.empty[String]
-                }
-              case None => List.empty[String]
-            }
+            val codeSource = Class.forName("scala.xml.Elem").getProtectionDomain.getCodeSource
+            if (codeSource != null) // code source could be null
+              List(codeSource.getLocation.toExternalForm)
+            else
+              List.empty[String]
         }
             
       val execArgs = new ExecutionArguments(vmArgs, pgmArgs)
