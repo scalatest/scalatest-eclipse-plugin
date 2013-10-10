@@ -51,9 +51,8 @@ import org.scalatest.finders.Selection
 import scala.tools.nsc.util.BatchSourceFile
 import scala.tools.eclipse.ScalaPresentationCompilerProxy
 
-class ScalaTestFinder(val compilerRef: ScalaPresentationCompilerProxy, loader: ClassLoader) {
+class ScalaTestFinder(compiler: ScalaPresentationCompiler, loader: ClassLoader) {
   
-  private[launching] val compiler: ScalaPresentationCompiler = compilerRef { compiler => compiler }.orNull
   import compiler._
 
   trait TreeSupport {
@@ -218,7 +217,7 @@ class ScalaTestFinder(val compilerRef: ScalaPresentationCompilerProxy, loader: C
   }
   
   @tailrec
-  final def getParentTree(candidate: Tree, node: Tree): Option[Tree] = {
+  private def getParentTree(candidate: Tree, node: Tree): Option[Tree] = {
     val foundOpt = candidate.children.find(c => c == node)
     foundOpt match {
       case Some(a) =>

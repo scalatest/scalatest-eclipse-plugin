@@ -256,8 +256,10 @@ object ScalaTestLaunchShortcut {
       val loader:ClassLoader = new URLClassLoader(loaderUrls.toArray, getClass.getClassLoader)
       
       try {
-        val scalatestFinder = new ScalaTestFinder(scProject.presentationCompiler, loader)
-        scalatestFinder.find(textSelection, element)
+        scProject.presentationCompiler { compiler => 
+          val scalatestFinder = new ScalaTestFinder(compiler, loader)
+          scalatestFinder.find(textSelection, element)
+        } getOrElse None
       }
       catch {
         // This could due to custom classes not compiled.
