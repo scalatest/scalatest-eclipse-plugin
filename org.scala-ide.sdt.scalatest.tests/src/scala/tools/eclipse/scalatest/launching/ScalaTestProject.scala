@@ -40,7 +40,7 @@ import scala.tools.eclipse.testsetup.TestProjectSetup
 import org.eclipse.core.resources.IncrementalProjectBuilder
 import org.eclipse.core.runtime.NullProgressMonitor
 
-object ScalaTestProject extends TestProjectSetup("scalatest", bundleName= "org.scala-ide.sdt.scalatest.tests") {
+object ScalaTestProject extends TestProjectSetup("scalatest", "/%s/src/", "org.scala-ide.sdt.scalatest.tests") {
 
   project.underlying.build(IncrementalProjectBuilder.CLEAN_BUILD, new NullProgressMonitor)
   project.underlying.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, new NullProgressMonitor)

@@ -40,8 +40,8 @@ set -x
 
 rm -rf ${TARGET_DIR}
 
-build scala-ide-3.0 http://download.scala-ide.org/sdk/e37/scala29/stable/site/ 2.9.3 e37-scala29-3.0 http://download.eclipse.org/releases/indigo/
-build scala-ide-3.0 http://download.scala-ide.org/sdk/e38/scala29/stable/site/ 2.9.3 e38-scala29-3.0 http://download.eclipse.org/releases/juno/
+build scala-ide-3.0 http://download.scala-ide.org/sdk/e37/scala29/stable/site/ 2.9.3-SNAPSHOT e37-scala29-3.0 http://download.eclipse.org/releases/indigo/
+build scala-ide-3.0 http://download.scala-ide.org/sdk/e38/scala29/stable/site/ 2.9.3-SNAPSHOT e38-scala29-3.0 http://download.eclipse.org/releases/juno/
 build scala-ide-3.0-2_10 http://download.scala-ide.org/sdk/e37/scala210/stable/site/ 2.10.2 e37-scala210-3.0 http://download.eclipse.org/releases/indigo/
 build scala-ide-3.0-2_10 http://download.scala-ide.org/sdk/e38/scala210/stable/site/ 2.10.2 e38-scala210-3.0 http://download.eclipse.org/releases/juno/
 

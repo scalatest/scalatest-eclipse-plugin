@@ -30,7 +30,7 @@
 
     <!-- fixed versions -->
     <tycho.version>0.15.0</tycho.version>
-    <scalatest-finders.version>0.9.5</scalatest-finders.version>
+    <scalatest-finders.version>0.9.6</scalatest-finders.version>
     <scala.plugin.version>3.0.2</scala.plugin.version>
 
     <!-- tycho test related -->
@@ -59,7 +59,7 @@
     <profile>
       <id>scala-ide-3.0</id>
       <properties>
-        <scala.version>2.9.3</scala.version>
+        <scala.version>2.9.3-SNAPSHOT</scala.version>
         <version.suffix>2_09</version.suffix>
         <scala.version.short>2.9</scala.version.short>
         <version.tag>v-3</version.tag>
