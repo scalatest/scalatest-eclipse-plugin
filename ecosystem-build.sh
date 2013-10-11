@@ -1,5 +1,9 @@
 #!/bin/bash
 
+KEYSTORE=[Keystore Location]
+ALIAS=[Alias Name]
+STOREPASS=[Keystore Password]
+KEYPASS=[Key Password]
 
 ####################
 #
@@ -14,7 +18,7 @@ function build() {
   cd ${ROOT_DIR}
   mvn -Pset-versions -P$1 -Drepo.scala-ide=$2 -Dscala.version=$3 -Drepo.eclipse=$5 -Dtycho.style=maven --non-recursive exec:java
 
-  mvn -Pset-versions -P$1 -Drepo.scala-ide=$2 -Dscala.version=$3 -Drepo.eclipse=$5 clean package
+  mvn -Pset-versions -P$1 -Drepo.scala-ide=$2 -Dscala.version=$3 -Drepo.eclipse=$5 -Djarsigner.keystore=${KEYSTORE} -Djarsigner.alias=${ALIAS} -Djarsigner.storepass=${STOREPASS} -Djarsigner.keypass=${KEYPASS} clean package
 
   rm -rf ${TARGET_DIR}/$4
   mkdir -p ${TARGET_DIR}
