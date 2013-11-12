@@ -40,9 +40,10 @@ set -x
 
 rm -rf ${TARGET_DIR}
 
-build scala-ide-3.0-2_10 http://download.scala-ide.org/sdk/e38/scala210/dev/site/ 2.10.3-RC2 e38-scala210-3.0 http://download.eclipse.org/releases/juno/
-build scala-ide-3.0-2_11 http://download.scala-ide.org/sdk/e38/scala211/dev/site/ 2.11.0-M5 e38-scala211-3.0 http://download.eclipse.org/releases/juno/
+build scala-ide-4.0-2_11 http://download.scala-ide.org/sdk/e38/scala211/dev/site/ 2.11.0-M5 e38-scala211-4.0 http://download.eclipse.org/releases/juno/
+git checkout kepler-nightly
+build scala-ide-4.0-2_10 http://download.scala-ide.org/sdk/e38/scala210/dev/site/ 2.10.3-RC2 e38-scala210-4.0 http://download.eclipse.org/releases/juno/
 
 cd ${MERGE_TOOL_DIR}
-mvn -Drepo.dest=${TARGET_DIR}/combined -Drepo.source=file://${TARGET_DIR}/e38-scala210-3.0 package
-mvn -Drepo.dest=${TARGET_DIR}/combined -Drepo.source=file://${TARGET_DIR}/e38-scala211-3.0 package
+mvn -Drepo.dest=${TARGET_DIR}/combined -Drepo.source=file://${TARGET_DIR}/e38-scala210-4.0 package
+mvn -Drepo.dest=${TARGET_DIR}/combined -Drepo.source=file://${TARGET_DIR}/e38-scala211-4.0 package
