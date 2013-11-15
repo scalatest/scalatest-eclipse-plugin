@@ -23,6 +23,7 @@ Require-Bundle:
  org.eclipse.ui.ide,
  org.scala-lang.scala-library,
  org.scala-lang.scala-compiler,
+ org.scala-lang.scala-reflect,
  org.scala-ide.sdt.core
 Import-Package: 
  com.ibm.icu.text;apply-aspects:=false;org.eclipse.swt.graphics;apply-aspects:=false,

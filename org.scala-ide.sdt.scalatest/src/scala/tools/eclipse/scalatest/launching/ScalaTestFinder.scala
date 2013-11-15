@@ -45,10 +45,10 @@ import scala.tools.eclipse.javaelements.ScalaElement
 import scala.tools.eclipse.ScalaPlugin
 import org.eclipse.core.resources.IProject
 import scala.tools.eclipse.javaelements.ScalaCompilationUnit
-import scala.tools.nsc.util.OffsetPosition
+import scala.reflect.internal.util.OffsetPosition
 import org.eclipse.jface.text.ITextSelection
 import org.scalatest.finders.Selection
-import scala.tools.nsc.util.BatchSourceFile
+import scala.reflect.internal.util.BatchSourceFile
 import scala.tools.eclipse.ScalaPresentationCompilerProxy
 
 class ScalaTestFinder(compiler: ScalaPresentationCompiler, loader: ClassLoader) {
