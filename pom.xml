@@ -84,6 +84,13 @@
       </properties>
     </profile>
     <profile>
+      <id>scala-ide-4.0</id>
+      <properties>
+        <version.tag>v-4</version.tag>
+        <repo.scala-ide>${repo.scala-ide.root}/sdk/e38/scala210/dev/site/</repo.scala-ide>
+      </properties>
+    </profile>
+    <profile>
       <id>scala-ide-2.0.2</id>
       <properties>
         <scala.version>2.9.2</scala.version>
