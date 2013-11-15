@@ -41,6 +41,7 @@ set -x
 rm -rf ${TARGET_DIR}
 
 build scala-ide-4.0-2_11 http://download.scala-ide.org/sdk/e38/scala211/dev/site/ 2.11.0-M5 e38-scala211-4.0 http://download.eclipse.org/releases/juno/
+git checkout .
 git checkout kepler-nightly
 build scala-ide-4.0 http://download.scala-ide.org/sdk/e38/scala210/dev/site/ 2.10.3 e38-scala210-4.0 http://download.eclipse.org/releases/juno/
 
