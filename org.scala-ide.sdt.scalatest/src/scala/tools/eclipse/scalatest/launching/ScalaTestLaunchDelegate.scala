@@ -39,7 +39,7 @@ package scala.tools.eclipse.scalatest.launching
 import org.eclipse.jdt.launching.{AbstractJavaLaunchConfigurationDelegate, JavaRuntime,
 	                                IRuntimeClasspathEntry, VMRunnerConfiguration, ExecutionArguments}
 import scala.tools.eclipse.ScalaPlugin
-import java.io.File
+import java.io.{File, FileWriter, PrintWriter}
 import com.ibm.icu.text.MessageFormat
 import org.eclipse.core.runtime.{Path, CoreException, IProgressMonitor, NullProgressMonitor}
 import org.eclipse.debug.core.{ILaunch, ILaunchConfiguration}
@@ -58,6 +58,7 @@ import scala.tools.eclipse.scalatest.ui.Node
 import scala.tools.eclipse.scalatest.ui.TestModel
 import scala.tools.eclipse.scalatest.ui.TestStatus
 import scala.annotation.tailrec
+import org.eclipse.core.runtime.{FileLocator, Platform}
 
 class ScalaTestLaunchDelegate extends AbstractJavaLaunchConfigurationDelegate {
   
@@ -72,7 +73,7 @@ class ScalaTestLaunchDelegate extends AbstractJavaLaunchConfigurationDelegate {
     try {
       monitor.subTask(LaunchingMessages.JavaLocalApplicationLaunchConfigurationDelegate_Verifying_launch_attributes____1) 
 							
-      val mainTypeName = "org.scalatest.tools.Runner"
+      val mainTypeName = "scala.tools.eclipse.scalatest.launching.ScalaTestLauncher"
       val runner = getVMRunner(configuration, mode)
 	
       val workingDir = verifyWorkingDirectory(configuration)
@@ -132,10 +133,37 @@ class ScalaTestLaunchDelegate extends AbstractJavaLaunchConfigurationDelegate {
         }
             
       val execArgs = new ExecutionArguments(vmArgs, pgmArgs)
+      
+      val bundle = Platform.getBundle("org.scala-ide.sdt.scalatest")
+      val bundleFile = FileLocator.getBundleFile(bundle)
+      val bundlePath = 
+        if (bundleFile.isDirectory) {
+          val targetClasses = new File(bundleFile, "target/classes")
+          if (targetClasses.exists)
+            targetClasses.getCanonicalPath
+          else
+            bundleFile.getCanonicalPath
+        }
+        else
+          bundleFile.getCanonicalPath
+      
+      // Create classpath file
+      val cpFile = File.createTempFile("st-launch", ".classpath")
+      val cpFileOut = new PrintWriter(new FileWriter(cpFile))
+      (classpath ::: missingScalaXml).map{ cp => cpFileOut.println(new File(cp.toString).getCanonicalPath) }
+      cpFileOut.flush()
+      cpFileOut.close()
+      
+      // Create args file
+      val argsFile = File.createTempFile("st-launch", ".args")
+      val argsFileOut = new PrintWriter(new FileWriter(argsFile))
+      execArgs.getProgramArgumentsArray().foreach(arg => argsFileOut.println(arg))
+      argsFileOut.flush()
+      argsFileOut.close()
 			
       // Create VM config
-      val runConfig = new VMRunnerConfiguration(mainTypeName, (classpath ::: missingScalaXml).toArray)
-      runConfig.setProgramArguments(execArgs.getProgramArgumentsArray())
+      val runConfig = new VMRunnerConfiguration(mainTypeName, Array(bundlePath))
+      runConfig.setProgramArguments(Array(cpFile.getAbsolutePath, argsFile.getAbsolutePath))
       runConfig.setEnvironment(envp)
       runConfig.setVMArguments(execArgs.getVMArgumentsArray())
       runConfig.setWorkingDirectory(workingDirName)
