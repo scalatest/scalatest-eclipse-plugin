@@ -44,7 +44,7 @@ build scala-ide-3.0 http://download.scala-ide.org/sdk/e37/scala29/stable/site/ 2
 build scala-ide-3.0 http://download.scala-ide.org/sdk/e38/scala29/stable/site/ 2.9.3-SNAPSHOT e38-scala29-3.0 http://download.eclipse.org/releases/juno/
 build scala-ide-3.0-2_10 http://download.scala-ide.org/sdk/e37/scala210/stable/site/ 2.10.2 e37-scala210-3.0 http://download.eclipse.org/releases/indigo/
 build scala-ide-3.0-2_10 http://download.scala-ide.org/sdk/e38/scala210/stable/site/ 2.10.2 e38-scala210-3.0 http://download.eclipse.org/releases/juno/
-build scala-ide-4.0-2_11 http://download.scala-ide.org/sdk/e38/scala211/dev/site/ 2.11.0-M5 e38-scala211-4.0 http://download.eclipse.org/releases/juno/
+build scala-ide-4.0-2_11 http://download.scala-ide.org/sdk/e38/scala211/dev/site/ 2.11.0-M7 e38-scala211-4.0 http://download.eclipse.org/releases/juno/
 git checkout .
 rm org.scala-ide.sdt.scalatest.feature/feature.xml.original
 rm org.scala-ide.sdt.scalatest.source.feature/feature.xml.original
