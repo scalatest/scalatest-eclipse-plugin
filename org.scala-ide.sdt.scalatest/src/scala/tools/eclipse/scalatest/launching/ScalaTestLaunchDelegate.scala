@@ -127,7 +127,7 @@ class ScalaTestLaunchDelegate extends AbstractJavaLaunchConfigurationDelegate {
           case e: Throwable => 
             val codeSource = Class.forName("scala.xml.Elem").getProtectionDomain.getCodeSource
             if (codeSource != null) // code source could be null
-              List(codeSource.getLocation.toExternalForm)
+              List(codeSource.getLocation.getFile)
             else
               List.empty[String]
         }
