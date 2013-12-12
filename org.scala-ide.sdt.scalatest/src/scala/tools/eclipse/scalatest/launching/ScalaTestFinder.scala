@@ -352,7 +352,7 @@ class ScalaTestFinder(val compiler: ScalaPresentationCompiler, loader: ClassLoad
     }
   
   private def getFinderClassNames(annotations: List[AnnotationInfo]): Array[String] = {
-    val finderClassNames = getFinderByFindersAnnotation(annotations)
+    val finderClassNames = compiler.askOption[Array[String]](() => getFinderByFindersAnnotation(annotations)).getOrElse(Array.empty[String])
     if (finderClassNames.size > 0) 
       finderClassNames
     else {
