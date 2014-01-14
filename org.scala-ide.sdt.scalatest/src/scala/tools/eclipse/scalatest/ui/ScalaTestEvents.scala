@@ -129,6 +129,7 @@ final case class TestCanceled (
   duration: Option[Long],
   formatter: Option[Formatter],
   location: Option[Location],
+  rerunner: Option[String], 
   threadName: String,
   timeStamp: Long
 ) extends Event

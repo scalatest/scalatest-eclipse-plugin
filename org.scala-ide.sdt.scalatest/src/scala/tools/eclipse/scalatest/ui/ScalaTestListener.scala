@@ -185,6 +185,7 @@ class ScalaTestListener extends Observable with Runnable {
                   longOpt(eventXml \ "duration"),
                   formatterOpt(eventXml \ "formatter"),
                   locationOpt(eventXml \ "location"),
+                  stringOpt(eventXml \ "rerunner"),
                   (eventXml \ "threadName").text,
                   (eventXml \ "timeStamp").text.toLong
                 )
