@@ -21,9 +21,11 @@ Require-Bundle:
  org.eclipse.ui.editors,
  org.eclipse.ui.forms,
  org.eclipse.ui.ide,
- org.scala-ide.scala.library,
- org.scala-ide.scala.compiler,
- org.scala-ide.sdt.core
+ org.scala-lang.scala-library,
+ org.scala-lang.scala-compiler,
+ org.scala-lang.scala-reflect,
+ org.scala-ide.sdt.core, 
+ org.scala-lang.modules.scala-xml;bundle-version="1.0.1"
 Import-Package: 
  com.ibm.icu.text;apply-aspects:=false;org.eclipse.swt.graphics;apply-aspects:=false,
  scala.tools.eclipse;apply-aspects:=false,
@@ -32,6 +34,6 @@ Export-Package:
  scala.tools.eclipse.scalatest,
  scala.tools.eclipse.scalatest.launching, 
  scala.tools.eclipse.scalatest.ui
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ClassPath: .,
  target/lib/scalatest-finders-0.9.6.jar

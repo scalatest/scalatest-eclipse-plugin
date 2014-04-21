@@ -54,11 +54,8 @@ import org.eclipse.ui.IFileEditorInput
 import scala.tools.eclipse.ScalaPlugin
 import scala.tools.eclipse.javaelements.ScalaElement
 import scala.tools.eclipse.javaelements.ScalaCompilationUnit
-import scala.tools.nsc.util.OffsetPosition
 import scala.tools.eclipse.javaelements.ScalaClassElement
 import scala.annotation.tailrec
-import scala.tools.nsc.util.Position
-import scala.tools.nsc.util.Position$
 import org.scalatest.finders.AstNode
 import org.scalatest.finders.Selection
 import java.net.URLClassLoader
@@ -77,7 +74,7 @@ import org.eclipse.ui.IEditorSite
 import org.eclipse.ui.IEditorInput
 import scala.reflect.NameTransformer
 import scala.tools.eclipse.ScalaPresentationCompiler
-import scala.tools.nsc.util.BatchSourceFile
+import scala.reflect.internal.util.BatchSourceFile
 
 class ScalaTestFileLaunchShortcut extends ILaunchShortcut {
   
