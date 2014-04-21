@@ -40,7 +40,6 @@ set -x
 
 rm -rf ${TARGET_DIR}
 
-build scala-ide-3.0-2_11 http://download.scala-ide.org/sdk/next/helium/e38/scala211/stable/site/ 2.11.0 e38-scala211-3.0 http://download.eclipse.org/releases/juno/
 build scala-ide-3.0-2_10 http://download.scala-ide.org/sdk/helium/e38/scala210/stable/site/ 2.10.4 e38-scala210-3.0 http://download.eclipse.org/releases/juno/
 build scala-ide-3.0-2_10 http://download.scala-ide.org/sdk/helium/e37/scala210/stable/site/ 2.10.2 e37-scala210-3.0 http://download.eclipse.org/releases/indigo/
 build scala-ide-3.0 http://download.scala-ide.org/sdk/helium/e38/scala29/stable/site/ 2.9.3-SNAPSHOT e38-scala29-3.0 http://download.eclipse.org/releases/juno/
@@ -58,6 +57,7 @@ rm org.scala-ide.sdt.scalatest.source.feature/feature.xml.original
 rm org.scala-ide.sdt.scalatest.tests/META-INF/MANIFEST.MF.original
 rm org.scala-ide.sdt.scalatest/META-INF/MANIFEST.MF.original
 git checkout kepler-nightly-2.11
+build scala-ide-3.0-2_11 http://download.scala-ide.org/sdk/next/helium/e38/scala211/stable/site/ 2.11.0 e38-scala211-3.0 http://download.eclipse.org/releases/juno/
 build scala-ide-4.0-2_11 http://download.scala-ide.org/sdk/lithium/e38/scala211/dev/site/ 2.11.0-M8 e38-scala211-4.0 http://download.eclipse.org/releases/juno/
 
 cd ${MERGE_TOOL_DIR}
@@ -65,6 +65,6 @@ mvn -Drepo.dest=${TARGET_DIR}/combined -Drepo.source=file://${TARGET_DIR}/e37-sc
 mvn -Drepo.dest=${TARGET_DIR}/combined -Drepo.source=file://${TARGET_DIR}/e38-scala29-3.0 package
 mvn -Drepo.dest=${TARGET_DIR}/combined -Drepo.source=file://${TARGET_DIR}/e37-scala210-3.0 package
 mvn -Drepo.dest=${TARGET_DIR}/combined -Drepo.source=file://${TARGET_DIR}/e38-scala210-3.0 package
-mvn -Drepo.dest=${TARGET_DIR}/combined -Drepo.source=file://${TARGET_DIR}/e38-scala211-3.0 package
 mvn -Drepo.dest=${TARGET_DIR}/combined -Drepo.source=file://${TARGET_DIR}/e38-scala210-4.0 package
+mvn -Drepo.dest=${TARGET_DIR}/combined -Drepo.source=file://${TARGET_DIR}/e38-scala211-3.0 package
 mvn -Drepo.dest=${TARGET_DIR}/combined -Drepo.source=file://${TARGET_DIR}/e38-scala211-4.0 package
