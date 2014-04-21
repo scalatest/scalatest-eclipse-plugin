@@ -80,7 +80,7 @@
         <version.suffix>2_11</version.suffix>
         <scala.version.short>2.11</scala.version.short>
         <version.tag>v-3</version.tag>
-        <repo.scala-ide>${repo.scala-ide.root}/sdk/e38/scala211/stable/site/</repo.scala-ide>
+        <repo.scala-ide>${repo.scala-ide.root}/sdk/next/helium/e38/scala211/stable/site/</repo.scala-ide>
       </properties>
     </profile>
     <profile>
