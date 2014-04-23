@@ -147,8 +147,8 @@
       <dependencies>
         <dependency>
           <groupId>org.scala-ide</groupId>
-          <artifactId>build-tools_2.9.2</artifactId>
-          <version>0.2.0</version>
+          <artifactId>build-tools_2.10</artifactId>
+          <version>0.4.1</version>
         </dependency>
       </dependencies>
       <build>
@@ -180,7 +180,7 @@
           <!-- extra repository containing the build package -->
           <id>typesafe-ide</id>
           <name>Typesafe IDE repository</name>
-          <url>http://repo.typesafe.com/typesafe/ide-2.9</url>
+          <url>http://repo.typesafe.com/typesafe/ide-2.10</url>
           <snapshots><enabled>true</enabled></snapshots>
         </repository>
       </repositories>
