@@ -64,7 +64,7 @@ rm org.scala-ide.sdt.scalatest.source.feature/feature.xml.original
 rm org.scala-ide.sdt.scalatest.tests/META-INF/MANIFEST.MF.original
 rm org.scala-ide.sdt.scalatest/META-INF/MANIFEST.MF.original
 git checkout kepler-nightly-2.11
-build scala-ide-4.0-2_11 http://download.scala-ide.org/sdk/lithium/e38/scala211/dev/site/ 2.11.1-M8 e38-scala211-4.0 http://download.eclipse.org/releases/juno/
+build scala-ide-4.0-2_11 http://download.scala-ide.org/sdk/lithium/e38/scala211/dev/site/ 2.11.1 e38-scala211-4.0 http://download.eclipse.org/releases/juno/
 
 cd ${MERGE_TOOL_DIR}
 mvn -Drepo.dest=${TARGET_DIR}/combined -Drepo.source=file://${TARGET_DIR}/e37-scala29-3.0 package
