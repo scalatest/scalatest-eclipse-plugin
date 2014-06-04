@@ -24,8 +24,7 @@ Require-Bundle:
  org.scala-lang.scala-library,
  org.scala-lang.scala-compiler,
  org.scala-lang.scala-reflect,
- org.scala-ide.sdt.core,
- org.scala-lang.modules.scala-xml;bundle-version="1.0.0"
+ org.scala-ide.sdt.core
 Import-Package: 
  com.ibm.icu.text;apply-aspects:=false;org.eclipse.swt.graphics;apply-aspects:=false,
  org.scalaide.core;apply-aspects:=false,
