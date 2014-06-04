@@ -48,7 +48,7 @@ import org.eclipse.jdt.internal.junit.ui.TextualTrace
 import org.eclipse.jdt.core.JavaCore
 import org.eclipse.core.resources.ResourcesPlugin
 import org.eclipse.jface.dialogs.MessageDialog
-import scala.tools.eclipse.ScalaProject
+import org.scalaide.core.internal.project.ScalaProject
 import org.eclipse.jface.action.ToolBarManager
 import org.eclipse.jface.action.Action
 import scala.tools.eclipse.scalatest.ScalaTestImages

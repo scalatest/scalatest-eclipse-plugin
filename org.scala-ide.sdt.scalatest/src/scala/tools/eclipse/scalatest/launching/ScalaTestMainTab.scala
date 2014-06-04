@@ -77,9 +77,9 @@ import com.ibm.icu.text.MessageFormat
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants
 import org.eclipse.core.runtime.CoreException
-import scala.tools.eclipse.ScalaPlugin
+import org.scalaide.core.ScalaPlugin
 import org.eclipse.core.runtime.IAdaptable
-import scala.tools.eclipse.javaelements.ScalaSourceFile
+import org.scalaide.core.internal.jdt.model.ScalaSourceFile
 import org.eclipse.ui.dialogs.FilteredResourcesSelectionDialog
 import org.eclipse.ui.dialogs.ResourceListSelectionDialog
 import org.eclipse.core.resources.IFile
@@ -96,7 +96,6 @@ import org.eclipse.jface.viewers.TableViewerColumn
 import org.eclipse.swt.widgets.TableItem
 import org.eclipse.swt.custom.TableEditor
 import org.eclipse.swt.events.SelectionAdapter
-import scala.tools.eclipse.ScalaProject
 
 class ScalaTestMainTab extends SharedJavaMainTab {
   // UI widgets

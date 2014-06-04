@@ -54,7 +54,7 @@ import org.eclipse.jface.viewers.LabelProviderChangedEvent
 import org.eclipse.swt.widgets.Control
 import org.eclipse.jface.viewers.StructuredViewer
 import org.eclipse.jface.action.Action
-import scala.tools.eclipse.ScalaProject
+import org.scalaide.core.internal.project.ScalaProject
 import org.eclipse.jdt.core.JavaCore
 import org.eclipse.core.resources.ResourcesPlugin
 import org.eclipse.jdt.ui.JavaUI

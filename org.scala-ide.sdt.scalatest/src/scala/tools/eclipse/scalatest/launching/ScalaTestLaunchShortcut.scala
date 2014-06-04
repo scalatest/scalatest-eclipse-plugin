@@ -42,19 +42,19 @@ import org.eclipse.ui.IEditorPart
 import org.eclipse.jdt.core.IType
 import org.eclipse.jdt.core.ITypeHierarchy
 import org.eclipse.core.runtime.IAdaptable
-import scala.tools.eclipse.javaelements.ScalaSourceFile
+import org.scalaide.core.internal.jdt.model.ScalaSourceFile
 import org.eclipse.jdt.core.IJavaElement
-import scala.tools.eclipse.javaelements.ScalaClassElement
+import org.scalaide.core.internal.jdt.model.ScalaClassElement
 import org.eclipse.jface.viewers.ISelectionProvider
 import org.eclipse.jdt.core.ITypeRoot
 import org.eclipse.jface.text.ITextSelection
 import org.eclipse.jdt.internal.ui.actions.SelectionConverter
 import org.eclipse.jdt.ui.JavaUI
 import org.eclipse.ui.IFileEditorInput
-import scala.tools.eclipse.ScalaPlugin
-import scala.tools.eclipse.javaelements.ScalaElement
-import scala.tools.eclipse.javaelements.ScalaCompilationUnit
-import scala.tools.eclipse.javaelements.ScalaClassElement
+import org.scalaide.core.ScalaPlugin
+import org.scalaide.core.internal.jdt.model.ScalaElement
+import org.scalaide.core.internal.jdt.model.ScalaCompilationUnit
+import org.scalaide.core.internal.jdt.model.ScalaClassElement
 import scala.annotation.tailrec
 import org.scalatest.finders.AstNode
 import org.scalatest.finders.Selection
@@ -73,7 +73,7 @@ import ScalaTestLaunchShortcut._
 import org.eclipse.ui.IEditorSite
 import org.eclipse.ui.IEditorInput
 import scala.reflect.NameTransformer
-import scala.tools.eclipse.ScalaPresentationCompiler
+import org.scalaide.core.compiler.ScalaPresentationCompiler
 import scala.reflect.internal.util.BatchSourceFile
 
 class ScalaTestFileLaunchShortcut extends ILaunchShortcut {

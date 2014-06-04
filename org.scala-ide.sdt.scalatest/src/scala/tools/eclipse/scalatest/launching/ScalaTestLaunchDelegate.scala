@@ -38,7 +38,7 @@ package scala.tools.eclipse.scalatest.launching
 
 import org.eclipse.jdt.launching.{AbstractJavaLaunchConfigurationDelegate, JavaRuntime,
 	                                IRuntimeClasspathEntry, VMRunnerConfiguration, ExecutionArguments}
-import scala.tools.eclipse.ScalaPlugin
+import org.scalaide.core.ScalaPlugin
 import java.io.{File, FileWriter, PrintWriter}
 import com.ibm.icu.text.MessageFormat
 import org.eclipse.core.runtime.{Path, CoreException, IProgressMonitor, NullProgressMonitor}
@@ -48,7 +48,7 @@ import scala.collection.JavaConversions._
 import scala.collection.mutable
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants
 import ScalaTestLaunchConstants._
-import scala.tools.eclipse.javaelements.ScalaSourceFile
+import org.scalaide.core.internal.jdt.model.ScalaSourceFile
 import org.eclipse.jface.dialogs.MessageDialog
 import org.eclipse.core.resources.ResourcesPlugin
 import java.net.URL

@@ -37,7 +37,6 @@
 package scala.tools.eclipse.scalatest.ui
 
 import org.eclipse.debug.core.ILaunch
-import scala.tools.eclipse.ScalaProject
 
 class ScalaTestRunSession(val fLaunch: ILaunch, val fRunName: String, val projectName: String) {
   

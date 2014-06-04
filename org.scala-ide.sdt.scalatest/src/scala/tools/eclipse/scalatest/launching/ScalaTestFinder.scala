@@ -36,20 +36,20 @@
 
 package scala.tools.eclipse.scalatest.launching
 
-import scala.tools.eclipse.ScalaPresentationCompiler
+import org.scalaide.core.compiler.ScalaPresentationCompiler
 import org.scalatest.finders.AstNode
 import scala.annotation.tailrec
 import org.eclipse.jdt.core.IJavaElement
-import scala.tools.eclipse.javaelements.ScalaClassElement
-import scala.tools.eclipse.javaelements.ScalaElement
-import scala.tools.eclipse.ScalaPlugin
+import org.scalaide.core.internal.jdt.model.ScalaClassElement
+import org.scalaide.core.internal.jdt.model.ScalaElement
+import org.scalaide.core.ScalaPlugin
 import org.eclipse.core.resources.IProject
-import scala.tools.eclipse.javaelements.ScalaCompilationUnit
+import org.scalaide.core.internal.jdt.model.ScalaCompilationUnit
 import scala.reflect.internal.util.OffsetPosition
 import org.eclipse.jface.text.ITextSelection
 import org.scalatest.finders.Selection
 import scala.reflect.internal.util.BatchSourceFile
-import scala.tools.eclipse.ScalaPresentationCompilerProxy
+import org.scalaide.core.compiler.ScalaPresentationCompilerProxy
 
 class ScalaTestFinder(compiler: ScalaPresentationCompiler, loader: ClassLoader) {
   

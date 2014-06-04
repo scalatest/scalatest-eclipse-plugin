@@ -37,14 +37,14 @@
 package scala.tools.eclipse.scalatest.launching
 
 import org.eclipse.core.expressions.PropertyTester
-import scala.tools.eclipse.javaelements.ScalaSourceFile
+import org.scalaide.core.internal.jdt.model.ScalaSourceFile
 import org.eclipse.jdt.core.IType
 import org.eclipse.jdt.core.ITypeHierarchy
 import org.eclipse.jdt.core.IJavaElement
 import org.eclipse.core.runtime.IAdaptable
 import org.eclipse.jdt.internal.core.PackageFragment
-import scala.tools.eclipse.ScalaSourceFileEditor
-import scala.tools.eclipse.javaelements.ScalaClassElement
+import org.scalaide.ui.internal.editor.ScalaSourceFileEditor
+import org.scalaide.core.internal.jdt.model.ScalaClassElement
 import org.eclipse.jdt.ui.JavaUI
 import org.eclipse.jface.text.ITextSelection
 import org.eclipse.jdt.internal.ui.actions.SelectionConverter
