@@ -38,7 +38,7 @@ package scala.tools.eclipse.scalatest.launching
 
 import org.junit.Test
 import org.junit.Assert._
-import scala.tools.eclipse.javaelements.ScalaSourceFile
+import org.scalaide.core.internal.jdt.model.ScalaSourceFile
 import org.junit.Ignore
 
 class ScalaTestLaunchShortcutTest {
