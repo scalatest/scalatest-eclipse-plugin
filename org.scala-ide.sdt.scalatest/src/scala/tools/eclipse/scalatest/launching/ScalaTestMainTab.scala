@@ -438,7 +438,7 @@ class ScalaTestMainTab extends SharedJavaMainTab {
     val items = fTestNamesTable.getItems
     items.foreach(i => testNameSet.add(i.getText(0)))
     
-    val configMap = new java.util.HashMap[Any, Any]()
+    val configMap = new java.util.HashMap[String, Any]()
     configMap.put(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, fProjText.getText.trim)
     configMap.put(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, fMainText.getText.trim) 
     configMap.put(SCALATEST_LAUNCH_TYPE_NAME, launchType) 
