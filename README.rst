@@ -10,17 +10,13 @@ Building
 
 Maven is used to manage the build process.  You can build the project for Scala IDE nightly releases.
 
-For Scala IDE 3.0.0/3.0.1 (Stable) releases, we recommend you to install from update sites listed here:-
+For Scala IDE 3.0.x (Stable) releases, we recommend you to install from update sites listed here:-
 
-*   3.0.x for Scala 2.9 (Indigo)  - http://download.scala-ide.org/sdk/e37/scala29/stable/site
-*   3.0.x for Scala 2.10 (Indigo) - http://download.scala-ide.org/sdk/e37/scala210/stable/site
-*   3.0.x for Scala 2.9 (Juno)    - http://download.scala-ide.org/sdk/e38/scala29/stable/site
-*   3.0.x for Scala 2.10 (Juno/Kepler)   - http://download.scala-ide.org/sdk/e38/scala210/stable/site
+*   http://scala-ide.org/download/current.html
 
-For Scala IDE 3.0.2-RC01 (Milestones) releases, we recommend you to install from update sites listed here:-
+For Scala IDE 4.0 (Milestones) releases, we recommend you to install from update sites listed here:-
 
-*   3.0.2-RC01 for Scala 2.10.3-RC2 (Juno/Kepler) - http://download.scala-ide.org/sdk/e38/scala210/dev/site
-*   3.0.2-RC01 for Scala 2.11.0-M5 (Juno/Kepler)  - http://download.scala-ide.org/sdk/e38/scala211/dev/site
+*   http://scala-ide.org/download/milestone.html
 
 To build for Scala IDE nightly, please make sure you have the following installed:-
 
@@ -34,7 +30,7 @@ You then clone and checkout master trunk:-
     
     `$ cd scalatest-eclipse-plugin`
 
-    `$ git checkout kepler-nightly`
+    `$ git checkout kepler-nightly-2.11`
 
 Finally use the following commands to build for Scala IDE nightly: 
 
@@ -73,17 +69,17 @@ Using ScalaTest in a Scala project
 
 To use ScalaTest in your Scala project, you must download ScalaTest and include it in Build path of your project.
 
-You can use ScalaTest 1.x or the latest 2.0.RC1 (recommended).  Using ScalaTest 2.0 enables the following:-
+You can use ScalaTest 1.x or the latest 2.x (recommended).  Using ScalaTest 2.x enables the following:-
 
 *   Test result view built in the eclipse workspace.
 *   Running of selected specific test or scope.
 
 When using ScalaTest 1.x, the GUI Runner provided by ScalaTest will be used instead of the built-in test result view.
 
-*   Run using ScalaTest 2.0.RC1
+*   Run using ScalaTest 2.x
 
 .. image:: http://www.scalatest.org/assets/images/eclipseScreenshot.png
-       :alt: Run using ScalaTest 2.0.RC1
+       :alt: Run using ScalaTest 2.x
        :width: 100%
        :target: http://www.scalatest.org/assets/images/eclipseScreenshot.png
 
