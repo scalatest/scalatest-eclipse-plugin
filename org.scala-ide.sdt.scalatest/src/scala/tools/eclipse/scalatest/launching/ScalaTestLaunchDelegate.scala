@@ -102,8 +102,13 @@ class ScalaTestLaunchDelegate extends AbstractJavaLaunchConfigurationDelegate {
 
       val bootClassPath = getBootpath(configuration)
       
-      val bootClassLoader = new URLClassLoader(bootClassPath.map(new File(_).toURI.toURL))
-      val loader:ClassLoader = new URLClassLoader(loaderUrls.toArray, bootClassLoader)
+      val loader: ClassLoader = if (bootClassPath == null) {
+        new URLClassLoader(loaderUrls.toArray)
+      } else {
+        val bootClassLoader = new URLClassLoader(bootClassPath.map(new File(_).toURI.toURL))
+        new URLClassLoader(loaderUrls.toArray, bootClassLoader)
+      }
+
       
       val pgmArgs = 
       try {
