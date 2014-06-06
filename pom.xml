@@ -30,9 +30,9 @@
     <repo.scala-ide.root>http://download.scala-ide.org</repo.scala-ide.root>
 
     <!-- fixed versions -->
-    <tycho.version>0.15.0</tycho.version>
+    <tycho.version>0.18.1</tycho.version>
     <scalatest-finders.version>0.9.6</scalatest-finders.version>
-    <scala.plugin.version>3.0.2</scala.plugin.version>
+    <scala.plugin.version>3.1.5</scala.plugin.version>
 
     <!-- tycho test related -->
     <tycho.test.OSspecific></tycho.test.OSspecific>
