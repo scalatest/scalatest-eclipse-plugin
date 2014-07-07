@@ -190,10 +190,9 @@
             </executions>
             <configuration>
               <classpathScope>compile</classpathScope>
-              <mainClass>org.scalaide.buildtools.UpdateScalaIDEManifests</mainClass>
+              <mainClass>org.scalaide.buildtools.UpdateAddonManifests</mainClass>
               <arguments>
-                <argument>${scala.version}</argument>
-                <argument>${settings.localRepository}</argument>
+                <argument>${repo.scala-ide}</argument>
               </arguments>
             </configuration>
           </plugin>
