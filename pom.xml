@@ -167,6 +167,12 @@
           <artifactId>build-tools_2.10</artifactId>
           <version>0.4.4</version>
         </dependency>
+        <!-- We need the 2.10 Scala library, instead of whatever cross-version we happen to build -->
+        <dependency>
+          <groupId>org.scala-lang</groupId>
+          <artifactId>scala-library</artifactId>
+          <version>2.10.0</version>
+        </dependency>
       </dependencies>
       <build>
         <plugins>
@@ -176,7 +182,7 @@
             <version>1.2.1</version>
             <executions>
               <execution>
-                <id>set-versions</id>
+                <id>copy.reflect</id>
                 <goals>
                   <goal>java</goal>
                 </goals>
@@ -184,9 +190,10 @@
             </executions>
             <configuration>
               <classpathScope>compile</classpathScope>
-              <mainClass>org.scalaide.buildtools.UpdateAddonManifests</mainClass>
+              <mainClass>org.scalaide.buildtools.UpdateScalaIDEManifests</mainClass>
               <arguments>
-                <argument>${repo.scala-ide}</argument>
+                <argument>${scala.version}</argument>
+                <argument>${settings.localRepository}</argument>
               </arguments>
             </configuration>
           </plugin>
@@ -197,7 +204,7 @@
           <!-- extra repository containing the build package -->
           <id>typesafe-ide</id>
           <name>Typesafe IDE repository</name>
-          <url>http://repo.typesafe.com/typesafe/ide-2.9</url>
+          <url>http://private-repo.typesafe.com/typesafe/ide-2.10</url>
           <snapshots><enabled>true</enabled></snapshots>
         </repository>
       </repositories>
