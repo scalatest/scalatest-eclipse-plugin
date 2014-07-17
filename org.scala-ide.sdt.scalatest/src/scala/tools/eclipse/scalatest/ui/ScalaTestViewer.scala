@@ -82,7 +82,7 @@ import scala.reflect.NameTransformer
 import org.eclipse.core.runtime.NullProgressMonitor
 
 class ScalaTestViewer(parent: Composite, fTestRunnerPart: ScalaTestRunnerViewPart) {
-  
+
   private class TestSelectionListener extends ISelectionChangedListener {
     def selectionChanged(event: SelectionChangedEvent) {
       handleSelected()
@@ -94,24 +94,24 @@ class ScalaTestViewer(parent: Composite, fTestRunnerPart: ScalaTestRunnerViewPar
   private var fTreeContentProvider: TestSessionTreeContentProvider = null
   private var fTreeLabelProvider: TestSessionLabelProvider = null
   private var fSelectionProvider: SelectionProviderMediator = null
-  
+
   private var fTreeNeedsRefresh = false
   private var fNeedUpdate: Set[Node] = null
   private var fAutoScrollTarget: Node = null
-  
+
   private var fAutoClose: List[Node] = Nil
   private var fAutoExpand: List[Node] = Nil
-  
+
   private var fLayoutMode: Int = ScalaTestRunnerViewPart.LAYOUT_HIERARCHICAL
-  
+
   private val fFailedTestsOnlyFilter = new FailedTestsOnlyFilter()
-  
+
   createTestViewers(parent)
 
   registerViewersRefresh()
 
   initContextMenu()
-  
+
   private def initContextMenu() {
     val menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
     menuMgr.setRemoveAllWhenShown(true)
@@ -125,7 +125,7 @@ class ScalaTestViewer(parent: Composite, fTestRunnerPart: ScalaTestRunnerViewPar
     fTreeViewer.getTree.setMenu(menu);
     //fTableViewer.getTable().setMenu(menu);
   }
-  
+
   private def createTestViewers(parent: Composite) {
     fViewerbook = new PageBook(parent, SWT.NULL);
 
@@ -154,21 +154,21 @@ class ScalaTestViewer(parent: Composite, fTestRunnerPart: ScalaTestRunnerViewPar
 
     fViewerbook.showPage(fTreeViewer.getTree());
   }
-  
+
   def handleMenuAboutToShow(manager: IMenuManager) {
     val selection = fSelectionProvider.getSelection.asInstanceOf[IStructuredSelection]
     if (!selection.isEmpty) {
       val node = selection.getFirstElement.asInstanceOf[Node]
       node match {
-        case test: TestModel => 
+        case test: TestModel =>
           test.rerunner match {
-            case Some(rerunner) => 
+            case Some(rerunner) =>
               manager.add(new RerunTestAction("Rerun Test", fTestRunnerPart, rerunner, test.suiteId, test.testName))
-            case None => 
+            case None =>
           }
-        case suite: SuiteModel => 
+        case suite: SuiteModel =>
           suite.rerunner match {
-            case Some(rerunner) => 
+            case Some(rerunner) =>
               manager.add(new RerunSuiteAction("Rerun Suite", fTestRunnerPart, rerunner, suite.suiteId))
             case None =>
           }
@@ -176,7 +176,7 @@ class ScalaTestViewer(parent: Composite, fTestRunnerPart: ScalaTestRunnerViewPar
       }
     }
   }
-  
+
   def registerViewersRefresh() {
 	synchronized {
       fTreeNeedsRefresh= true
@@ -184,12 +184,12 @@ class ScalaTestViewer(parent: Composite, fTestRunnerPart: ScalaTestRunnerViewPar
       //clearUpdateAndExpansion()
     }
   }
-  
+
   private def clearUpdateAndExpansion() {
     fNeedUpdate = Set[Node]()
     fAutoClose = List[Node]()
   }
-  
+
   def registerNodeAdded(node: Node) {
     synchronized {
       //TODO: performance: would only need to refresh parent of added element
@@ -226,16 +226,16 @@ class ScalaTestViewer(parent: Composite, fTestRunnerPart: ScalaTestRunnerViewPar
   def expandFirstLevel() {
     fTreeViewer.expandToLevel(2)
   }
-  
+
   def getTestViewerControl: Control = fViewerbook
-  
+
   private def getActiveViewer(): StructuredViewer = {
     //if (fLayoutMode == ScalaTestRunnerViewPart.LAYOUT_HIERARCHICAL)
       return fTreeViewer;
     //else
       //return fTableViewer;
   }
-  
+
   private def getActiveViewerNeedsRefresh: Boolean = {
     //if (fLayoutMode == ScalaTestRunnerViewPart.LAYOUT_HIERARCHICAL)
       return fTreeNeedsRefresh;
@@ -249,7 +249,7 @@ class ScalaTestViewer(parent: Composite, fTestRunnerPart: ScalaTestRunnerViewPar
     //else
       //fTableNeedsRefresh= needsRefresh;
   }
-  
+
   def processChangesInUI() {
     if (fTestRunnerPart.getSession == null) {
       registerViewersRefresh()
@@ -267,7 +267,7 @@ class ScalaTestViewer(parent: Composite, fTestRunnerPart: ScalaTestRunnerViewPar
       clearUpdateAndExpansion()
       setActiveViewerNeedsRefresh(false)
       viewer.setInput(testRoot)
-    } 
+    }
     else {
       var toUpdate: Array[Node] = null
       synchronized {
@@ -303,7 +303,7 @@ class ScalaTestViewer(parent: Composite, fTestRunnerPart: ScalaTestRunnerViewPar
     }
     //autoScrollInUI()
   }
-  
+
   def autoExpandFailedTests() {
 
     synchronized {
@@ -313,16 +313,15 @@ class ScalaTestViewer(parent: Composite, fTestRunnerPart: ScalaTestRunnerViewPar
       }
     }
 
-    val current = fAutoScrollTarget
     fAutoScrollTarget = null
-    
-    if (fAutoExpand.length > 0) {
+
+    if (fAutoExpand.nonEmpty) {
       val last = fAutoExpand.last
       fTreeViewer.reveal(last)
       getActiveViewer.setSelection(new StructuredSelection(last), true)
     }
   }
-  
+
   def selectedNode = {
     val selection = getActiveViewer.getSelection.asInstanceOf[IStructuredSelection]
     if (!selection.isEmpty)
@@ -330,22 +329,22 @@ class ScalaTestViewer(parent: Composite, fTestRunnerPart: ScalaTestRunnerViewPar
     else
       None
   }
-  
+
   def selectNode(node: Node) {
     fTreeViewer.reveal(node)
     getActiveViewer.setSelection(new StructuredSelection(node), true)
   }
-  
+
   private def handleSelected() {
     val selection = fSelectionProvider.getSelection.asInstanceOf[IStructuredSelection]
-    val node = 
+    val node =
       if (selection.size == 1)
         Some(selection.getFirstElement.asInstanceOf[Node])
       else
         None
     fTestRunnerPart.handleTestSelected(node)
   }
-  
+
   def setShowFailedTestsOnly(failedTestsOnly: Boolean) {
     synchronized {
       val viewer = getActiveViewer()
@@ -362,16 +361,14 @@ class ScalaTestViewer(parent: Composite, fTestRunnerPart: ScalaTestRunnerViewPar
 }
 
 private class TestSessionTreeContentProvider extends ITreeContentProvider {
-  
-  private val NO_CHILDREN = Array.empty[AnyRef]
-  
+
   def dispose() {
   }
-  
+
   def getChildren(parentElement: AnyRef): Array[AnyRef] = {
     Array.empty[AnyRef] ++ parentElement.asInstanceOf[Node].children
   }
-  
+
   def getElements(inputElement: AnyRef): Array[AnyRef] = {
     Array.empty[AnyRef] ++ inputElement.asInstanceOf[RunModel].children
   }
@@ -392,12 +389,12 @@ private class TestSessionLabelProvider(fTestRunnerPart: ScalaTestRunnerViewPart,
 
   private var fShowTime = true
   private val timeFormat: NumberFormat = NumberFormat.getNumberInstance()
-  
+
   timeFormat.setGroupingUsed(true)
   timeFormat.setMinimumFractionDigits(3)
   timeFormat.setMaximumFractionDigits(3)
   timeFormat.setMinimumIntegerDigits(1)
-  
+
   def getStyledText(element: AnyRef): StyledString = {
     val label= getSimpleLabel(element)
     if (label == null) {
@@ -405,7 +402,7 @@ private class TestSessionLabelProvider(fTestRunnerPart: ScalaTestRunnerViewPart,
     }
     val text = new StyledString(label)
 
-    val duration = 
+    val duration =
       element match {
         case test: TestModel => test.duration
         case scope: ScopeModel => None
@@ -415,7 +412,7 @@ private class TestSessionLabelProvider(fTestRunnerPart: ScalaTestRunnerViewPart,
       }
     return addElapsedTime(text, duration)
   }
-  
+
   private def addElapsedTime(styledString: StyledString, time: Option[Long]): StyledString = {
     val string = styledString.getString()
     val decorated= addElapsedTime(string, time)
@@ -424,23 +421,22 @@ private class TestSessionLabelProvider(fTestRunnerPart: ScalaTestRunnerViewPart,
 
   private def addElapsedTime(string: String, time: Option[Long]): String = {
     time match {
-      case Some(time) => 
+      case Some(time) =>
         val seconds = time / 1000.0
-        if (!fShowTime || seconds == Double.NaN)
+        if (!fShowTime || seconds.isNaN)
           string
         else {
           val formattedTime = timeFormat.format(seconds);
           string + " (" + formattedTime + " s)"
         }
-      case None => 
+      case None =>
         string
     }
   }
-  
+
   private def getDisplayLabel(formatter: Option[Formatter], orElse: String, postfix: String): String = {
-    val a = formatter
     NameTransformer.decode(formatter match {
-      case Some(indText: IndentedText) => 
+      case Some(indText: IndentedText) =>
         val formattedText = indText.formattedText.trim
         if (formattedText.startsWith("+ ") || formattedText.startsWith("- "))
           formattedText.substring(2)
@@ -449,11 +445,11 @@ private class TestSessionLabelProvider(fTestRunnerPart: ScalaTestRunnerViewPart,
       case _ => orElse
     }) + postfix
   }
-    
-  private def getFormatter(startFormatter: Option[Formatter], endFormatter: Option[Formatter]) = 
+
+  private def getFormatter(startFormatter: Option[Formatter], endFormatter: Option[Formatter]) =
     if (endFormatter.isDefined) endFormatter else startFormatter
-  
-  private def getPostfix(test: TestModel) = { 
+
+  private def getPostfix(test: TestModel) = {
     import TestStatus.{IGNORED, PENDING, CANCELED}
     test.status match {
       case IGNORED => " !!! IGNORED !!!"
@@ -462,7 +458,7 @@ private class TestSessionLabelProvider(fTestRunnerPart: ScalaTestRunnerViewPart,
       case _ => ""
     }
   }
-  
+
   private def getPostfix(scope: ScopeModel) = {
     import ScopeStatus.PENDING
     scope.status match {
@@ -470,7 +466,7 @@ private class TestSessionLabelProvider(fTestRunnerPart: ScalaTestRunnerViewPart,
       case _ => ""
     }
   }
-    
+
   private def getSimpleLabel(element: AnyRef): String = {
     element match {
       case test: TestModel => getDisplayLabel(getFormatter(test.startFormatter, test.endFormatter), test.testText, getPostfix(test))
@@ -481,13 +477,13 @@ private class TestSessionLabelProvider(fTestRunnerPart: ScalaTestRunnerViewPart,
       case _ => element.toString
     }
   }
-  
+
   override def getText(element: AnyRef): String = {
     val label = getSimpleLabel(element)
     if (label == null) {
       return element.toString()
     }
-    val duration = 
+    val duration =
       element match {
         case test: TestModel => test.duration
         case scope: ScopeModel => None
@@ -497,40 +493,40 @@ private class TestSessionLabelProvider(fTestRunnerPart: ScalaTestRunnerViewPart,
       }
     return addElapsedTime(label, duration)
   }
-  
+
   override def getImage(element: AnyRef): Image = {
     element match {
-      case test: TestModel => 
+      case test: TestModel =>
         test.status match {
           case TestStatus.STARTED =>
             fTestRunnerPart.testRunIcon
           case TestStatus.SUCCEEDED =>
             fTestRunnerPart.testSucceedIcon
-          case TestStatus.FAILED => 
+          case TestStatus.FAILED =>
             fTestRunnerPart.testFailedIcon
-          case TestStatus.IGNORED => 
+          case TestStatus.IGNORED =>
             fTestRunnerPart.testIgnoredIcon
-          case TestStatus.PENDING => 
+          case TestStatus.PENDING =>
             fTestRunnerPart.testIgnoredIcon
           case TestStatus.CANCELED =>
             fTestRunnerPart.testIgnoredIcon
         }
-      case scope: ScopeModel => 
+      case scope: ScopeModel =>
         fTestRunnerPart.scopeIcon
-      case suite: SuiteModel => 
+      case suite: SuiteModel =>
         suite.status match {
-          case SuiteStatus.STARTED => 
+          case SuiteStatus.STARTED =>
             fTestRunnerPart.suiteRunIcon
           case SuiteStatus.SUCCEED =>
             fTestRunnerPart.suiteSucceedIcon
-          case SuiteStatus.FAILED => 
+          case SuiteStatus.FAILED =>
             fTestRunnerPart.suiteFailIcon
           case SuiteStatus.ABORTED =>
             fTestRunnerPart.suiteAbortedIcon
         }
-      case info: InfoModel => 
+      case info: InfoModel =>
         fTestRunnerPart.infoIcon
-      case _ => 
+      case _ =>
         throw new IllegalArgumentException(String.valueOf(element))
     }
   }
@@ -546,7 +542,7 @@ private class OpenSourceCodeListener(fTestRunnerPart: ScalaTestRunnerViewPart, f
     val selection= fSelectionProvider.getSelection().asInstanceOf[IStructuredSelection]
     if (selection.size() != 1)
       return
-      
+
     val node = selection.getFirstElement.asInstanceOf[Node]
     val action = new GoToSourceAction(node, fTestRunnerPart)
     if (action.isEnabled)
@@ -555,10 +551,10 @@ private class OpenSourceCodeListener(fTestRunnerPart: ScalaTestRunnerViewPart, f
 }
 
 private class GoToSourceAction(node: Node, fTestRunnerPart: ScalaTestRunnerViewPart) extends Action {
-  
+
   override def run() {
     node match {
-      case test: TestModel => 
+      case test: TestModel =>
         goToLocation(test.location, test.errorDepth, test.errorStackTrace)
       case scope: ScopeModel =>
         goToLocation(scope.location, None, None)
@@ -569,23 +565,23 @@ private class GoToSourceAction(node: Node, fTestRunnerPart: ScalaTestRunnerViewP
       case _ =>
     }
   }
-  
+
   private def getShell = fTestRunnerPart.getSite.getShell
-  
+
   private def notifyLocationNotFound() {
-    MessageDialog.openError(getShell, "Cannot Open Editor", 
+    MessageDialog.openError(getShell, "Cannot Open Editor",
                             "Cannot open source location of the selected element")
   }
-  
+
   def openSourceFileLineNumber(scProj: ScalaProject, fileName: String, lineNumber: Int) {
     val sourceFile = scProj.allSourceFiles.find(file => file.getName == fileName)
     sourceFile match {
-      case Some(sourceFile) => 
+      case Some(sourceFile) =>
         val page = PlatformUI.getWorkbench.getActiveWorkbenchWindow.getActivePage
         val desc = PlatformUI.getWorkbench.getEditorRegistry.getDefaultEditor(sourceFile.getName)
         val editorPart = page.openEditor(new FileEditorInput(sourceFile), desc.getId)
         editorPart match {
-          case textEditor: ITextEditor => 
+          case textEditor: ITextEditor =>
             val document = textEditor.getDocumentProvider.getDocument(textEditor.getEditorInput)
             val lineOffset = document.getLineOffset(lineNumber - 1)
             val lineLength = document.getLineLength(lineNumber - 1)
@@ -593,22 +589,22 @@ private class GoToSourceAction(node: Node, fTestRunnerPart: ScalaTestRunnerViewP
           case _ =>
             notifyLocationNotFound()
         }
-      case None => 
+      case None =>
         notifyLocationNotFound()
     }
   }
-  
-  /*private def getClassNameToOpen(className: String): String = 
+
+  /*private def getClassNameToOpen(className: String): String =
     if (className.endsWith("$"))
       NameTransformer.decode(className.substring(0, className.length - 1)).replaceAll("\\$", ".").split("\\.").map(NameTransformer.encode(_)).mkString(".") + "$"
     else
       NameTransformer.decode(className).replaceAll("\\$", ".").split("\\.").map(NameTransformer.encode(_)).mkString(".")*/
-  
+
   private def getClassNameToOpen(className: String, scProj: ScalaProject): String = {
     import collection.mutable.ListBuffer
     val buffer = new ListBuffer[String]()
     val tokens = className.split("\\.")
-    tokens.foreach { token => 
+    tokens.foreach { token =>
       val decoded = NameTransformer.decode(token)
       if (decoded.indexOf("$") >= 0) {
         val innerTokens = decoded.split("\\$")
@@ -618,24 +614,24 @@ private class GoToSourceAction(node: Node, fTestRunnerPart: ScalaTestRunnerViewP
           if (innerIType == null)
             buffer += innerEncoded + "$"
           else
-            buffer += innerEncoded  
+            buffer += innerEncoded
         }
-        
+
       }
       else
         buffer += token
     }
     buffer.mkString(".")
   }
-  
+
   private def goToLocation(location: Option[Location], errorDepth: Option[Int], errorStackTraces: Option[Array[StackTraceElement]]) {
     location match {
       case Some(location) =>
         location match {
-          case topOfClass: TopOfClass => 
+          case topOfClass: TopOfClass =>
             val scProj = getScalaProject(fTestRunnerPart.getSession.projectName)
             scProj match {
-              case Some(scProj) => 
+              case Some(scProj) =>
                 val className = getClassNameToOpen(topOfClass.className, scProj)
                 val iType = scProj.javaProject.findType(className, new NullProgressMonitor())
                 if (iType != null)
@@ -645,16 +641,16 @@ private class GoToSourceAction(node: Node, fTestRunnerPart: ScalaTestRunnerViewP
               case None =>
                 notifyLocationNotFound()
             }
-          case topOfMethod: TopOfMethod => 
+          case topOfMethod: TopOfMethod =>
             val scProj = getScalaProject(fTestRunnerPart.getSession.projectName)
             scProj match {
-              case Some(scProj) => 
+              case Some(scProj) =>
                 val className = getClassNameToOpen(topOfMethod.className, scProj)
                 val iType = scProj.javaProject.findType(className, new NullProgressMonitor())
                 val methodId = topOfMethod.methodId
                 val methodName = methodId.substring(methodId.lastIndexOf('.') + 1, methodId.lastIndexOf('('))
                 val methodRawParamTypes = methodId.substring(methodId.lastIndexOf('(') + 1, methodId.length - 1)
-                val methodParamTypes = 
+                val methodParamTypes =
                   if (methodRawParamTypes.length > 0)
                     methodRawParamTypes.split(",").map(paramType => paramType.trim)
                   else
@@ -674,7 +670,7 @@ private class GoToSourceAction(node: Node, fTestRunnerPart: ScalaTestRunnerViewP
                 val fileName = lineInFile.fileName
                 val lineNumber = lineInFile.lineNumber
                 openSourceFileLineNumber(scProj, fileName, lineNumber)
-              case None => 
+              case None =>
                 notifyLocationNotFound()
             }
           case SeeStackDepthException =>
@@ -694,15 +690,15 @@ private class GoToSourceAction(node: Node, fTestRunnerPart: ScalaTestRunnerViewP
                 }
                 else
                   notifyLocationNotFound()
-              case None => 
+              case None =>
                 notifyLocationNotFound()
             }
-        }  
+        }
       case None =>
         notifyLocationNotFound()
     }
   }
-  
+
   private def getScalaProject(projectName: String): Option[ScalaProject] = {
     val model = JavaCore.create(ResourcesPlugin.getWorkspace.getRoot)
     val javaProject = model.getJavaProject(projectName)
@@ -714,7 +710,7 @@ private class GoToSourceAction(node: Node, fTestRunnerPart: ScalaTestRunnerViewP
 }
 
 object RerunHelper {
-  
+
   def rerun(fTestRunnerPart: ScalaTestRunnerViewPart, delegate: ScalaTestLaunchDelegate, stArgs: String) {
     val launch = fTestRunnerPart.getSession.fLaunch
     if (launch != null) {
@@ -726,17 +722,17 @@ object RerunHelper {
         delegate.launchScalaTest(launchConfig, launch.getLaunchMode, launch, null, stArgs)
       }
       else
-        MessageDialog.openError(fTestRunnerPart.getSite.getShell, "Error", 
+        MessageDialog.openError(fTestRunnerPart.getSite.getShell, "Error",
                             "Cannot find launch configuration.")
     }
     else
-      MessageDialog.openError(fTestRunnerPart.getSite.getShell, "Error", 
+      MessageDialog.openError(fTestRunnerPart.getSite.getShell, "Error",
                             "Cannot find launch object.")
   }
-  
+
 }
 
-private class RerunSuiteAction(actionName: String, fTestRunnerPart: ScalaTestRunnerViewPart, suiteClassName: String, 
+private class RerunSuiteAction(actionName: String, fTestRunnerPart: ScalaTestRunnerViewPart, suiteClassName: String,
                                suiteId: String) extends Action(actionName) {
   override def run() {
     val delegate = new ScalaTestLaunchDelegate()
@@ -745,7 +741,7 @@ private class RerunSuiteAction(actionName: String, fTestRunnerPart: ScalaTestRun
   }
 }
 
-private class RerunTestAction(actionName: String, fTestRunnerPart: ScalaTestRunnerViewPart, suiteClassName: String, 
+private class RerunTestAction(actionName: String, fTestRunnerPart: ScalaTestRunnerViewPart, suiteClassName: String,
                                suiteId: String, testName: String) extends Action(actionName) {
   override def run() {
     val delegate = new ScalaTestLaunchDelegate()
@@ -755,20 +751,20 @@ private class RerunTestAction(actionName: String, fTestRunnerPart: ScalaTestRunn
 }
 
 private class FailedTestsOnlyFilter extends ViewerFilter {
-  
+
   override def select(viewer: Viewer, parentElement: AnyRef, element: AnyRef): Boolean = {
     select(element.asInstanceOf[Node])
   }
-  
+
   private def select(node: Node): Boolean = {
     node match {
-      case test: TestModel => 
+      case test: TestModel =>
         test.status == TestStatus.FAILED
-      case suite: SuiteModel => 
+      case suite: SuiteModel =>
         suite.status == SuiteStatus.FAILED
       case _ =>
         true
     }
   }
-  
+
 }

@@ -52,28 +52,28 @@ import org.eclipse.ui.part.FileEditorInput
 import org.eclipse.ui.PlatformUI
 
 class ScalaTestPackageTester extends PropertyTester {
-  
+
   def test(receiver: Object, property: String, args: Array[Object], expectedValue: Object): Boolean = {
     receiver match {
-      case packageFragment: PackageFragment => 
+      case packageFragment: PackageFragment =>
         true
-      case _ => 
+      case _ =>
         false
     }
   }
 }
 
 class ScalaTestTestTester extends PropertyTester {
-  
+
   def test(receiver: Object, property: String, args: Array[Object], expectedValue: Object): Boolean = {
     receiver match {
-      case scEditor: ScalaSourceFileEditor => 
+      case scEditor: ScalaSourceFileEditor =>
         try {
           val selectionOpt = ScalaTestLaunchShortcut.resolveSelectedAst(scEditor.getEditorInput, scEditor.getEditorSite.getSelectionProvider)
           selectionOpt match {
-            case Some(selection) => 
+            case Some(selection) =>
               true
-            case None => 
+            case None =>
               false
           }
         }
@@ -87,13 +87,13 @@ class ScalaTestTestTester extends PropertyTester {
 }
 
 class ScalaTestSuiteTester extends PropertyTester {
-  
+
   def test(receiver: Object, property: String, args: Array[Object], expectedValue: Object): Boolean = {
     try {
       receiver match {
-        case classElement: ScalaClassElement => 
+        case classElement: ScalaClassElement =>
           ScalaTestLaunchShortcut.isScalaTestSuite(classElement)
-        case editorInput: FileEditorInput => 
+        case editorInput: FileEditorInput =>
           val editorPart = PlatformUI.getWorkbench.getActiveWorkbenchWindow.getActivePage.getActiveEditor
           val typeRoot = JavaUI.getEditorInputTypeRoot(editorInput)
           if (editorPart != null) {
@@ -105,7 +105,6 @@ class ScalaTestSuiteTester extends PropertyTester {
               if (!selection.isInstanceOf[ITextSelection])
                 false
               else {
-                val textSelection:ITextSelection = selection.asInstanceOf[ITextSelection]
                 val element = SelectionConverter.getElementAtOffset(typeRoot, selection.asInstanceOf[ITextSelection])
                 ScalaTestLaunchShortcut.getScalaTestSuite(element) match {
                   case Some(_) => true
@@ -130,13 +129,13 @@ class ScalaTestFileTester extends PropertyTester {
   def test(receiver: Object, property: String, args: Array[Object], expectedValue: Object): Boolean = {
     try {
       receiver match {
-        case scSrcFile: ScalaSourceFile => 
+        case scSrcFile: ScalaSourceFile =>
           ScalaTestLaunchShortcut.containsScalaTestSuite(scSrcFile)
-        case editorInput: FileEditorInput => 
+        case editorInput: FileEditorInput =>
           if(receiver.isInstanceOf[IAdaptable]) {
             val je = receiver.asInstanceOf[IAdaptable].getAdapter(classOf[IJavaElement]).asInstanceOf[IJavaElement]
             je.getOpenable match {
-              case scSrcFile: ScalaSourceFile => 
+              case scSrcFile: ScalaSourceFile =>
                 ScalaTestLaunchShortcut.containsScalaTestSuite(scSrcFile)
               case _ => false
             }
