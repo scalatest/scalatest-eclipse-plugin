@@ -76,14 +76,14 @@ import SuiteStatus._
 import RunStatus._
 
 sealed abstract class Node {
-  private var childrenBuffer = new ListBuffer[Node]()
+  private val childrenBuffer = new ListBuffer[Node]()
   var parent: Node = null
   def addChild(child: Node) {
     synchronized {
       childrenBuffer += child
       child.parent = this
     }
-  } 
+  }
   def children = childrenBuffer.toArray
   def hasChildren = children.length > 0
   def getStackTraces: Option[Array[StackTraceElement]]
@@ -93,20 +93,20 @@ sealed abstract class Node {
 }
 
 final case class TestModel(
-  suiteId: String, 
+  suiteId: String,
   testName: String,
   testText: String,
   var duration: Option[Long],
   var errorClassName: Option[String],
-  var errorMessage: Option[String], 
-  var errorDepth: Option[Int], 
-  var errorStackTrace: Option[Array[StackTraceElement]], 
+  var errorMessage: Option[String],
+  var errorDepth: Option[Int],
+  var errorStackTrace: Option[Array[StackTraceElement]],
   startFormatter: Option[Formatter],
   var endFormatter: Option[Formatter],
   var location: Option[Location],
   rerunner: Option[String],
   threadName: String,
-  timeStamp: Long, 
+  timeStamp: Long,
   var status: TestStatus
 ) extends Node {
   def getStackTraces = errorStackTrace
@@ -122,23 +122,23 @@ final case class ScopeModel(
   var endFormatter: Option[Formatter],
   location: Option[Location],
   threadName: String,
-  timeStamp: Long, 
+  timeStamp: Long,
   var status: ScopeStatus
 ) extends Node {
-  
+
   def scopeSucceed: Boolean = {
-    children.forall { child => 
+    children.forall { child =>
       child match {
-        case test: TestModel => 
+        case test: TestModel =>
           test.status != TestStatus.FAILED
-        case scope: ScopeModel => 
+        case scope: ScopeModel =>
           scope.scopeSucceed
         case _ =>
           true
       }
     }
   }
-  
+
   def getStackTraces = None
   def getStackDepth = None
   def getErrorMessage = None
@@ -155,40 +155,40 @@ final case class SuiteModel(
   rerunner: Option[String],
   var duration: Option[Long] = None,
   var errorClassName: Option[String],
-  var errorMessage: Option[String], 
-  var errorDepth: Option[Int], 
-  var errorStackTrace: Option[Array[StackTraceElement]], 
+  var errorMessage: Option[String],
+  var errorDepth: Option[Int],
+  var errorStackTrace: Option[Array[StackTraceElement]],
   threadName: String,
-  timeStamp: Long, 
+  timeStamp: Long,
   var status: SuiteStatus
 ) extends Node {
-  
+
   private val scopeStack: Stack[Node] = Stack[Node]()
-  private var flatTestsCache: ListBuffer[TestModel] = new ListBuffer[TestModel]()
-  
+  private val flatTestsCache: ListBuffer[TestModel] = new ListBuffer[TestModel]()
+
   override def addChild(child: Node) {
     if (scopeStack.isEmpty)
       super.addChild(child)
-    else 
+    else
       scopeStack.head.addChild(child)
-    
+
     child match {
-      case scope: ScopeModel => 
+      case scope: ScopeModel =>
         scopeStack.push(scope)
       case test: TestModel =>
         scopeStack.push(test)
         flatTestsCache += test
-      case _ => 
+      case _ =>
         // Do nothing for other type of child
     }
   }
-  
+
   def closeScope() = scopeStack.pop()
-  
+
   def updateTest(testName: String, status: TestStatus, duration: Option[Long], formatter: Option[Formatter], location: Option[Location], errorClassName: Option[String], errorMessage: Option[String], errorDepth: Option[Int], errorStackTrace: Option[Array[StackTraceElement]]) = {
     val node = flatTestsCache.toArray.find(node => node.isInstanceOf[TestModel] && node.asInstanceOf[TestModel].testName == testName)
     node match {
-      case Some(node) => 
+      case Some(node) =>
         val test = node.asInstanceOf[TestModel]
         test.status = status
         test.duration = duration
@@ -199,16 +199,16 @@ final case class SuiteModel(
         test.errorDepth = errorDepth
         test.errorStackTrace = errorStackTrace
         test
-      case None => 
+      case None =>
         // Should not happen
         throw new IllegalStateException("Unable to find test name: " + testName + ", suiteId: " + suiteId)
     }
   }
-  
+
   def suiteSucceeded = {
     flatTestsCache.toArray.forall(child => child.status != TestStatus.FAILED)
   }
-  
+
   def getStackTraces = errorStackTrace
   def getStackDepth = errorDepth
   def getErrorMessage = errorMessage
@@ -216,15 +216,15 @@ final case class SuiteModel(
 }
 
 final case class RunModel(
-  testCount: Int, 
+  testCount: Int,
   var duration: Option[Long] = None,
   var summary: Option[Summary] = None,
   var errorClassName: Option[String],
-  var errorMessage: Option[String], 
+  var errorMessage: Option[String],
   var errorDepth: Option[Int],
-  var errorStackTrace: Option[Array[StackTraceElement]], 
+  var errorStackTrace: Option[Array[StackTraceElement]],
   threadName: String,
-  timeStamp: Long, 
+  timeStamp: Long,
   var status: RunStatus
 ) extends Node {
   def getStackTraces = errorStackTrace
@@ -239,11 +239,11 @@ final case class InfoModel(
   aboutAPendingTest: Option[Boolean],
   aboutACanceledTest: Option[Boolean],
   errorClassName: Option[String],
-  errorMessage: Option[String], 
+  errorMessage: Option[String],
   errorDepth: Option[Int],
-  errorStackTrace: Option[Array[StackTraceElement]], 
+  errorStackTrace: Option[Array[StackTraceElement]],
   formatter: Option[Formatter],
-  location: Option[Location], 
+  location: Option[Location],
   threadName: String,
   timeStamp: Long
 ) extends Node {

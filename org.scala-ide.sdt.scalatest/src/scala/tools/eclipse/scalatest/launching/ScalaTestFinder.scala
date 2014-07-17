@@ -52,11 +52,11 @@ import scala.reflect.internal.util.BatchSourceFile
 import org.scalaide.core.compiler.ScalaPresentationCompilerProxy
 
 class ScalaTestFinder(compiler: ScalaPresentationCompiler, loader: ClassLoader) {
-  
+
   import compiler._
 
   trait TreeSupport {
-  
+
     def getParent(className: String, root: Tree, node: Tree): AstNode = {
       val parentTreeOpt = getParentTree(root, node)
       parentTreeOpt match {
@@ -64,32 +64,32 @@ class ScalaTestFinder(compiler: ScalaPresentationCompiler, loader: ClassLoader) 
           val skippedParentTree = skipApplyToImplicit(parentTree, root)
           transformAst(className, skippedParentTree, root).getOrElse(null)
         }
-        case None => 
+        case None =>
           null
       }
     }
-    
+
     @tailrec
     private def skipApplyToImplicit(nodeTree: Tree, rootTree: Tree): Tree = {
       nodeTree match {
-        case _: ApplyToImplicitArgs | 
-             _: ApplyImplicitView =>  
+        case _: ApplyToImplicitArgs |
+             _: ApplyImplicitView =>
           val nextParentOpt = getParentTree(rootTree, nodeTree)
           nextParentOpt match {
-            case Some(nextParent) => 
+            case Some(nextParent) =>
               skipApplyToImplicit(nextParent, rootTree)
-            case None => 
+            case None =>
               nodeTree
           }
         case _ =>
           nodeTree
       }
     }
-    
+
     @tailrec
     private def findBlock(apply: Apply): Option[Block] = {
       apply.args.lastOption match {
-        case Some(b: Block) => 
+        case Some(b: Block) =>
           Some(b)
         case _ =>
           apply.args match {
@@ -100,12 +100,12 @@ class ScalaTestFinder(compiler: ScalaPresentationCompiler, loader: ClassLoader) 
           }
       }
     }
-  
+
     def getChildren(className: String, root: Tree, node: Tree): Array[AstNode] = {
       val children = node match {
-        case implArgs: ApplyToImplicitArgs => 
+        case implArgs: ApplyToImplicitArgs =>
           implArgs.children.head match {
-            case implApply: Apply => 
+            case implApply: Apply =>
               implApply.children.last.children
             case _ =>
               node.children
@@ -113,43 +113,43 @@ class ScalaTestFinder(compiler: ScalaPresentationCompiler, loader: ClassLoader) 
         case apply: Apply =>
           val blockOpt = findBlock(apply)
           blockOpt match {
-            case Some(block) => 
+            case Some(block) =>
               block.children
-            case None => 
+            case None =>
               List.empty
           }
         case _ =>
           node.children
       }
-      children.map(mapAst(className, _, root)).filter(_.isDefined).map(_.get).toArray
+      children.map(mapAst(className, _, root)).flatten.toArray
     }
   }
-  
-  private case class ClassDefinition(pClassName: String, rootTree: Tree, nodeTree: Tree, pName: String, pParamTypes: String*) 
+
+  private case class ClassDefinition(pClassName: String, rootTree: Tree, nodeTree: Tree, pName: String, pParamTypes: String*)
     extends org.scalatest.finders.ClassDefinition(pClassName, null, Array.empty, pName, pParamTypes.toList: _*) with TreeSupport {
     override def parent() = getParent(pClassName, rootTree, nodeTree)
     override lazy val children = getChildren(pClassName, rootTree, nodeTree)
-    override def equals(other: Any) = if (other != null && other.isInstanceOf[ClassDefinition]) nodeTree eq other.asInstanceOf[ClassDefinition].nodeTree else false 
+    override def equals(other: Any) = if (other != null && other.isInstanceOf[ClassDefinition]) nodeTree eq other.asInstanceOf[ClassDefinition].nodeTree else false
     override def hashCode = nodeTree.hashCode
   }
-  
-  private case class ModuleDefinition(pClassName: String, rootTree: Tree, nodeTree: Tree, pName: String) 
+
+  private case class ModuleDefinition(pClassName: String, rootTree: Tree, nodeTree: Tree, pName: String)
     extends org.scalatest.finders.ModuleDefinition(pClassName, null, Array.empty, pName) with TreeSupport {
     override def parent() = getParent(pClassName, rootTree, nodeTree)
     override lazy val children = getChildren(pClassName, rootTree, nodeTree)
-    override def equals(other: Any) = if (other != null && other.isInstanceOf[ModuleDefinition]) nodeTree eq other.asInstanceOf[ModuleDefinition].nodeTree else false 
+    override def equals(other: Any) = if (other != null && other.isInstanceOf[ModuleDefinition]) nodeTree eq other.asInstanceOf[ModuleDefinition].nodeTree else false
     override def hashCode = nodeTree.hashCode
   }
-  
+
   private case class TraitDefinition(pClassName: String, rootTree: Tree, nodeTree: Tree, pName: String)
     extends org.scalatest.finders.TraitDefinition(pClassName, null, Array.empty, pName) with TreeSupport  {
     override def parent() = getParent(pClassName, rootTree, nodeTree)
     override lazy val children = getChildren(pClassName, rootTree, nodeTree)
-    override def equals(other: Any) = if (other != null && other.isInstanceOf[TraitDefinition]) nodeTree eq other.asInstanceOf[TraitDefinition].nodeTree else false 
+    override def equals(other: Any) = if (other != null && other.isInstanceOf[TraitDefinition]) nodeTree eq other.asInstanceOf[TraitDefinition].nodeTree else false
     override def hashCode = nodeTree.hashCode
   }
-  
-  private case class ConstructorBlock(pClassName: String, rootTree: Tree, nodeTree: Tree) 
+
+  private case class ConstructorBlock(pClassName: String, rootTree: Tree, nodeTree: Tree)
     extends org.scalatest.finders.ConstructorBlock(pClassName, null, Array.empty) with TreeSupport {
     override def parent() = getParent(pClassName, rootTree, nodeTree)
     override lazy val children = {
@@ -164,13 +164,13 @@ class ScalaTestFinder(compiler: ScalaPresentationCompiler, loader: ClassLoader) 
           org.eclipse.jface.dialogs.MessageDialog.openInformation(null, "Without Primary Constructor", rawChildren.map(getNodeDisplay(_)).mkString("\n===============\n"))
           rawChildren.toArray
       }*/
-      
-      if (rawChildren.size > 0 && rawChildren.head.isInstanceOf[MethodDefinition] && rawChildren.head.asInstanceOf[MethodDefinition].pName == "this") 
+
+      if (rawChildren.nonEmpty && rawChildren.head.isInstanceOf[MethodDefinition] && rawChildren.head.asInstanceOf[MethodDefinition].pName == "this")
         rawChildren.tail.toArray
-      else 
+      else
         rawChildren.toArray
     }
-    override def equals(other: Any) = if (other != null && other.isInstanceOf[ConstructorBlock]) nodeTree eq other.asInstanceOf[ConstructorBlock].nodeTree else false 
+    override def equals(other: Any) = if (other != null && other.isInstanceOf[ConstructorBlock]) nodeTree eq other.asInstanceOf[ConstructorBlock].nodeTree else false
     override def hashCode = nodeTree.hashCode
   }
 
@@ -178,7 +178,7 @@ class ScalaTestFinder(compiler: ScalaPresentationCompiler, loader: ClassLoader) 
     pClassName: String,
     rootTree: Tree,
     nodeTree: Tree,
-    pName: String, 
+    pName: String,
     pParamTypes: String*)
     extends org.scalatest.finders.MethodDefinition(pClassName, null, Array.empty, pName, pParamTypes.toList: _*) with TreeSupport {
     override def parent() = getParent(pClassName, rootTree, nodeTree)
@@ -186,13 +186,13 @@ class ScalaTestFinder(compiler: ScalaPresentationCompiler, loader: ClassLoader) 
     override def equals(other: Any) = if (other != null && other.isInstanceOf[MethodDefinition]) nodeTree eq other.asInstanceOf[MethodDefinition].nodeTree else false
     override def hashCode = nodeTree.hashCode
   }
-  
+
   private case class MethodInvocation(
     pClassName: String,
-    pTarget: AstNode, 
+    pTarget: AstNode,
     rootTree: Tree,
     nodeTree: Tree,
-    pName: String, 
+    pName: String,
     pArgs: AstNode*)
     extends org.scalatest.finders.MethodInvocation(pClassName, pTarget, null, Array.empty, pName, pArgs.toList: _*) with TreeSupport {
     override def parent() = getParent(pClassName, rootTree, nodeTree)
@@ -200,22 +200,22 @@ class ScalaTestFinder(compiler: ScalaPresentationCompiler, loader: ClassLoader) 
     override def equals(other: Any) = if (other != null && other.isInstanceOf[MethodInvocation]) nodeTree eq other.asInstanceOf[MethodInvocation].nodeTree else false
     override def hashCode = nodeTree.hashCode
   }
-  
+
   private case class StringLiteral(pClassName: String, rootTree: Tree, nodeTree: Tree, pValue: String)
     extends org.scalatest.finders.StringLiteral(pClassName, null, pValue) with TreeSupport {
     override def parent() = getParent(pClassName, rootTree, nodeTree)
     override def equals(other: Any) = if (other != null && other.isInstanceOf[StringLiteral]) nodeTree eq other.asInstanceOf[StringLiteral].nodeTree else false
     override def hashCode = nodeTree.hashCode
   }
-  
-  private case class ToStringTarget(pClassName: String, rootTree: Tree, nodeTree: Tree, pTarget: AnyRef) 
+
+  private case class ToStringTarget(pClassName: String, rootTree: Tree, nodeTree: Tree, pTarget: AnyRef)
     extends org.scalatest.finders.ToStringTarget(pClassName, null, Array.empty, pTarget) with TreeSupport {
     override def parent() = getParent(pClassName, rootTree, nodeTree)
     override lazy val children = getChildren(pClassName, rootTree, nodeTree)
     override def equals(other: Any) = if (other != null && other.isInstanceOf[ToStringTarget]) nodeTree eq other.asInstanceOf[ToStringTarget].nodeTree else false
     override def hashCode = nodeTree.hashCode
   }
-  
+
   @tailrec
   private def getParentTree(candidate: Tree, node: Tree): Option[Tree] = {
     val foundOpt = candidate.children.find(c => c == node)
@@ -225,59 +225,59 @@ class ScalaTestFinder(compiler: ScalaPresentationCompiler, loader: ClassLoader) 
       case _ =>
         val nextCandidateOpt = candidate.children.find(c => c.pos includes node.pos)
         nextCandidateOpt match {
-          case Some(nextCandidate) => 
+          case Some(nextCandidate) =>
             getParentTree(nextCandidate, node)
-          case None => 
+          case None =>
             None
         }
     }
   }
-   
+
   private def getTarget(className: String, apply: GenericApply, rootTree: Tree): AstNode = {
     apply.fun match {
-      case Select(Literal(value), _) => 
+      case Select(Literal(value), _) =>
         new ToStringTarget(className, rootTree, apply, value.stringValue)
       case Select(impl: ApplyImplicitView, _) =>
         val implFirstArg: Tree = impl.args(0)
         implFirstArg match {
           case Literal(value) =>
             new ToStringTarget(className, rootTree, apply, value.stringValue)
-          case Apply(fun: Apply, _) => 
+          case Apply(fun: Apply, _) =>
             mapApplyToMethodInvocation(className, fun, rootTree)
-          case Apply(fun, _) => 
+          case Apply(fun, _) =>
             new ToStringTarget(className, rootTree, impl, fun)
-          case _ => 
+          case _ =>
             new ToStringTarget(className, rootTree, impl, implFirstArg.toString)
         }
-      case Select(apply: Apply, _) => 
+      case Select(apply: Apply, _) =>
         mapApplyToMethodInvocation(className, apply, rootTree)
-      case Select(select: Select, _) => 
+      case Select(select: Select, _) =>
         new ToStringTarget(className, rootTree, select, select.name)
-      case select: Select => 
+      case select: Select =>
         new ToStringTarget(className, rootTree, select.qualifier, select.name)
-      case funApply: Apply => 
+      case funApply: Apply =>
         getTarget(className, funApply, rootTree)
-      case typeApply: TypeApply => 
+      case typeApply: TypeApply =>
         getTarget(className, typeApply, rootTree)
       case other =>
         new ToStringTarget(className, rootTree, apply.fun, apply.fun.toString)
     }
   }
-  
+
   private def mapApplyToMethodInvocation(className: String, apply: Apply, rootTree: Tree): MethodInvocation = {
     val target = getTarget(className, apply, rootTree)
     val name = apply.symbol.decodedName
     val rawArgs = if (apply.fun.hasSymbol) apply.args else apply.fun.asInstanceOf[GenericApply].args
-    val args = rawArgs.map(arg => arg match {
+    val args = rawArgs.map{
       case lit: Literal =>
         new StringLiteral(className, rootTree, apply, lit.value.stringValue)
-      case _ =>
+      case arg@_ =>
         new ToStringTarget(className, rootTree, apply, arg.toString)
-    })
+    }
     new MethodInvocation(className, target, rootTree, apply, name, args: _*)
   }
-  
-  private def mapAst(className: String, selectedTree: Tree, rootTree: Tree): Option[AstNode] = {    
+
+  private def mapAst(className: String, selectedTree: Tree, rootTree: Tree): Option[AstNode] = {
     selectedTree match {
       case defDef: DefDef =>
         val defDefSym = defDef.symbol
@@ -296,22 +296,21 @@ class ScalaTestFinder(compiler: ScalaPresentationCompiler, loader: ClassLoader) 
         if (classDef.mods hasFlag 0x02000000)  // From deprecated scala.reflect.generic.ModifierFlags, where is the replacement?
           Some(new TraitDefinition(className, rootTree, selectedTree, classDef.symbol.decodedName))
         else {
-          val args = compiler.askOption[List[String]](() => classDef.symbol.info.paramTypes.map(t => t.typeSymbol.fullName)).getOrElse(List.empty)
           Some(new ClassDefinition(className, rootTree, selectedTree, classDef.symbol.decodedName))
         }
-      case moduleDef: ModuleDef => 
+      case moduleDef: ModuleDef =>
         Some(new ModuleDefinition(className, rootTree, selectedTree, moduleDef.symbol.decodedName))
       case _ =>
         None
     }
   }
-  
+
   @tailrec
   private def transformAst(className: String, selectedTree: Tree, rootTree: Tree): Option[AstNode] = {
     val astNodeOpt = mapAst(className, selectedTree, rootTree)
     astNodeOpt match {
       case Some(astNode) => astNodeOpt
-      case None => 
+      case None =>
         val parentOpt = getParentTree(rootTree, selectedTree)
         parentOpt match {
           case Some(parent) =>
@@ -321,13 +320,13 @@ class ScalaTestFinder(compiler: ScalaPresentationCompiler, loader: ClassLoader) 
         }
     }
   }
-  
+
   // this should be removed since @Style is already removed from 2.0, it only works for version prior to 2.0.M4.
-  private def getFinderByStyleAnnotation(annotations: List[AnnotationInfo]): Option[String] = 
+  private def getFinderByStyleAnnotation(annotations: List[AnnotationInfo]): Option[String] =
     annotations.find(aInfo => aInfo.atp.toString == "org.scalatest.Style") match {
-      case Some(styleAnnotation) => 
+      case Some(styleAnnotation) =>
         styleAnnotation.assocs.find(a => a._1.toString == "value") match {
-          case Some(annotationValue) => 
+          case Some(annotationValue) =>
             annotationValue._2 match {
               case LiteralAnnotArg(const) => Some(const.stringValue)
               case _ => None
@@ -336,14 +335,14 @@ class ScalaTestFinder(compiler: ScalaPresentationCompiler, loader: ClassLoader) 
         }
       case None => None
     }
-  
-  private def getFinderByFindersAnnotation(annotations: List[AnnotationInfo]): Array[String] = 
+
+  private def getFinderByFindersAnnotation(annotations: List[AnnotationInfo]): Array[String] =
     annotations.find(aInfo => aInfo.atp.toString == "org.scalatest.Finders") match {
-      case Some(findersAnnotation) => 
+      case Some(findersAnnotation) =>
         findersAnnotation.assocs.find(a => a._1.toString == "value") match {
           case Some(annotationValue) =>
             annotationValue._2 match {
-              case ArrayAnnotArg(args) => 
+              case ArrayAnnotArg(args) =>
                 args.filter(_.isInstanceOf[LiteralAnnotArg]).map(_.asInstanceOf[LiteralAnnotArg].const.stringValue)
               case _ => Array.empty
             }
@@ -351,10 +350,10 @@ class ScalaTestFinder(compiler: ScalaPresentationCompiler, loader: ClassLoader) 
         }
       case None => Array.empty
     }
-  
+
   private def getFinderClassNames(annotations: List[AnnotationInfo]): Array[String] = {
     val finderClassNames = compiler.askOption[Array[String]](() => getFinderByFindersAnnotation(annotations)).getOrElse(Array.empty[String])
-    if (finderClassNames.size > 0) 
+    if (finderClassNames.size > 0)
       finderClassNames
     else {
       getFinderByStyleAnnotation(annotations) match {
@@ -363,10 +362,10 @@ class ScalaTestFinder(compiler: ScalaPresentationCompiler, loader: ClassLoader) 
       }
     }
   }
-  
+
   def find(textSelection: ITextSelection, element: IJavaElement): Option[Selection] = {
     element match {
-      case scElement: ScalaElement => 
+      case scElement: ScalaElement =>
         val classElement = ScalaTestLaunchShortcut.getClassElement(element)
         if (classElement != null) {
           // Let's get the ClassDef for the classElement
@@ -378,18 +377,18 @@ class ScalaTestFinder(compiler: ScalaPresentationCompiler, loader: ClassLoader) 
               case classDef: ClassDef if classDef.symbol.fullName == classElement.getFullyQualifiedName => true
               case _ => false
             } match {
-              case Some(classDef: ClassDef) => 
+              case Some(classDef: ClassDef) =>
                 // We got ClassDef
                 val wrapWithAnnotation = classDef.symbol.annotations.find(a => a.atp.toString == "org.scalatest.WrapWith")
-                
-                val finderClassNames: Array[String] = 
+
+                val finderClassNames: Array[String] =
                   wrapWithAnnotation match {
                     case Some(wrapWithAnnotation) =>
                       // @WrapWith found, will lookup the @Style from the runner.
                       wrapWithAnnotation.assocs.find(a => a._1.toString == "value") match {
-                        case Some(tuple) => 
+                        case Some(tuple) =>
                           tuple._2 match {
-                            case LiteralAnnotArg(const) => 
+                            case LiteralAnnotArg(const) =>
                               val runnerSymbol = const.typeValue
                               getFinderClassNames(runnerSymbol.typeSymbol.annotations)
                             case _ => Array.empty
@@ -401,7 +400,7 @@ class ScalaTestFinder(compiler: ScalaPresentationCompiler, loader: ClassLoader) 
                       val linearizedBaseClasses = compiler.askOption[List[Symbol]](() => classDef.symbol.info.baseClasses).getOrElse(List.empty)
                       getFinderClassNames(linearizedBaseClasses.flatMap(_.annotations))
                   }
-                
+
                 var selectionOpt: Option[Selection] = None
                 finderClassNames.find { finderClassName =>
                   val finderClass = loader.loadClass(finderClassName)
@@ -411,14 +410,13 @@ class ScalaTestFinder(compiler: ScalaPresentationCompiler, loader: ClassLoader) 
                   val response = new Response[Tree]
                   compiler.askTypeAt(position, response)
                   val selectedTree = response.get match {
-                    case Left(tree) => tree 
+                    case Left(tree) => tree
                     case Right(thr) => throw thr
                   }
 
                   val scalatestAstOpt = transformAst(classElement.getFullyQualifiedName, selectedTree, classDef)
                   scalatestAstOpt match {
-                    case Some(scalatestAst) => 
-                      val parent = scalatestAst.parent
+                    case Some(scalatestAst) =>
                       val findMethod = finder.getClass.getMethods.find { mtd =>
                         mtd.getName == "find" && mtd.getParameterTypes.length == 1 && mtd.getParameterTypes()(0).getName == "org.scalatest.finders.AstNode"
                       }.get
@@ -433,17 +431,17 @@ class ScalaTestFinder(compiler: ScalaPresentationCompiler, loader: ClassLoader) 
                   }
                 }
                 selectionOpt
-                
+
               case _ =>
                 None
             }
-            case Right(thr) => 
+            case Right(thr) =>
               None
           }
         }
         else
           None
-      case _ => 
+      case _ =>
         None
     }
   }
