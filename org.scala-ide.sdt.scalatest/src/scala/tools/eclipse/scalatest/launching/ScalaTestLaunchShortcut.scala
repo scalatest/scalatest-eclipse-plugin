@@ -77,61 +77,60 @@ import org.scalaide.core.compiler.ScalaPresentationCompiler
 import scala.reflect.internal.util.BatchSourceFile
 
 class ScalaTestFileLaunchShortcut extends ILaunchShortcut {
-  
+
   def launch(selection:ISelection, mode:String) {
     selection match {
-      case treeSelection: ITreeSelection => 
+      case treeSelection: ITreeSelection =>
         treeSelection.getFirstElement match {
-          case scSrcFile: ScalaSourceFile => 
+          case scSrcFile: ScalaSourceFile =>
             launchScalaSourceFile(scSrcFile, mode)
-          case _ => 
+          case _ =>
             MessageDialog.openError(null, "Error", "Please select a Scala source file.")
         }
-      case _ => 
+      case _ =>
         MessageDialog.openError(null, "Error", "Please select a Scala source file.")
     }
   }
-  
+
   def launch(editorPart:IEditorPart, mode:String) {
     val typeRoot = JavaUI.getEditorInputTypeRoot(editorPart.getEditorInput)
     typeRoot match {
-      case scSrcFile: ScalaSourceFile => 
+      case scSrcFile: ScalaSourceFile =>
         launchScalaSourceFile(scSrcFile, mode)
-      case _ => 
+      case _ =>
         MessageDialog.openError(null, "Error", "Please select a Scala source file.")
     }
   }
 }
 
 class ScalaTestSuiteLaunchShortcut extends ILaunchShortcut {
-  
+
   def launch(selection:ISelection, mode:String) {
     selection match {
-      case treeSelection: ITreeSelection => 
+      case treeSelection: ITreeSelection =>
         treeSelection.getFirstElement match {
-          case classElement: ScalaClassElement => 
+          case classElement: ScalaClassElement =>
             launchSuite(classElement, mode)
-          case _ => 
+          case _ =>
             MessageDialog.openError(null, "Error", "Please select a ScalaTest suite to launch.")
         }
-      case _ => 
+      case _ =>
         MessageDialog.openError(null, "Error", "Please select a ScalaTest suite to launch.")
     }
   }
-  
+
   def launch(editorPart:IEditorPart, mode:String) {
     // This get called when user right-clicked within the opened file editor and choose 'Run As' -> ScalaTest
     val typeRoot = JavaUI.getEditorInputTypeRoot(editorPart.getEditorInput())
     val selectionProvider:ISelectionProvider = editorPart.getSite().getSelectionProvider()
     if (selectionProvider != null) {
       val selection:ISelection = selectionProvider.getSelection()
-      val textSelection:ITextSelection = selection.asInstanceOf[ITextSelection]
       val element = SelectionConverter.getElementAtOffset(typeRoot, selection.asInstanceOf[ITextSelection])
       val classElementOpt = ScalaTestLaunchShortcut.getScalaTestSuite(element)
       classElementOpt match {
-        case Some(classElement) => 
+        case Some(classElement) =>
           launchSuite(classElement, mode)
-        case None => 
+        case None =>
           MessageDialog.openError(null, "Error", "Please select a ScalaTest suite to launch.")
       }
     }
@@ -141,38 +140,38 @@ class ScalaTestSuiteLaunchShortcut extends ILaunchShortcut {
 }
 
 class ScalaTestPackageLaunchShortcut extends ILaunchShortcut {
-  
+
   def launch(selection:ISelection, mode:String) {
     selection match {
-      case treeSelection: ITreeSelection => 
+      case treeSelection: ITreeSelection =>
         treeSelection.getFirstElement match {
-          case packageFragment: PackageFragment => 
+          case packageFragment: PackageFragment =>
             launchPackage(packageFragment, mode)
-          case _ => 
+          case _ =>
             MessageDialog.openError(null, "Error", "Please select a package.")
         }
-      case _ => 
+      case _ =>
         MessageDialog.openError(null, "Error", "Please select a package.")
     }
   }
-  
+
   def launch(editorPart:IEditorPart, mode:String) {
-    
+
   }
 }
 
 class ScalaTestTestLaunchShortcut extends ILaunchShortcut {
-  
+
   def launch(selection:ISelection, mode:String) {
     // This get called when user right-clicked .scala file on package navigator and choose 'Run As' -> ScalaTest
     // Not applicable for launch selected test in source now, unless more details of class is shown in package navigator.
   }
-  
+
   def launch(editorPart:IEditorPart, mode:String) {
     val typeRoot = JavaUI.getEditorInputTypeRoot(editorPart.getEditorInput())
     val selectionOpt = ScalaTestLaunchShortcut.resolveSelectedAst(editorPart.getEditorInput, editorPart.getEditorSite.getSelectionProvider)
     selectionOpt match {
-      case Some(selection) => 
+      case Some(selection) =>
         launchTests(typeRoot.getJavaProject.getProject, selection.className, selection.displayName, selection.testNames, mode)
       case None =>
         MessageDialog.openError(null, "Error", "Sorry, unable to determine selected test.")
@@ -181,28 +180,28 @@ class ScalaTestTestLaunchShortcut extends ILaunchShortcut {
 }
 
 object ScalaTestLaunchShortcut {
-  
+
   def isScalaTestSuite(iType: IType): Boolean = {
     if (iType.isClass) {
       val project = iType.getJavaProject.getProject
       val scProject = ScalaPlugin.plugin.getScalaProject(project)
       scProject.presentationCompiler { compiler =>
         import compiler._
-      
+
         val scu = iType.getCompilationUnit.asInstanceOf[ScalaCompilationUnit]
         val response = new Response[Tree]
         compiler.askParsedEntered(new BatchSourceFile(scu.file, scu.getContents), false, response)
         response.get match {
-          case Left(tree) => 
+          case Left(tree) =>
             tree.children.find {
-              case classDef: ClassDef if classDef.symbol.fullName == iType.getFullyQualifiedName => 
+              case classDef: ClassDef if classDef.symbol.fullName == iType.getFullyQualifiedName =>
                 val linearizedBaseClasses = compiler.askOption[List[compiler.Symbol]](() => classDef.symbol.info.baseClasses).getOrElse(List.empty)
-                linearizedBaseClasses.find { baseClass => 
-                  baseClass.fullName == "org.scalatest.Suite" 
+                linearizedBaseClasses.find { baseClass =>
+                  baseClass.fullName == "org.scalatest.Suite"
                 } match {
-                  case Some(_) => 
+                  case Some(_) =>
                     true
-                  case None => 
+                  case None =>
                     classDef.symbol.annotations.exists(aInfo => aInfo.atp.toString == "org.scalatest.WrapWith")
                 }
               case _ => false
@@ -217,7 +216,7 @@ object ScalaTestLaunchShortcut {
     else
       false
   }
-  
+
   def containsScalaTestSuite(scSrcFile: ScalaSourceFile): Boolean = {
     val suiteOpt = scSrcFile.getAllTypes().find { tpe => isScalaTestSuite(tpe) }
     suiteOpt match {
@@ -225,12 +224,12 @@ object ScalaTestLaunchShortcut {
       case None => false
     }
   }
-  
+
   def getScalaTestSuite(element: IJavaElement): Option[ScalaClassElement] = {
     element match {
-      case scElement: ScalaElement => 
+      case scElement: ScalaElement =>
         val classElement = ScalaTestLaunchShortcut.getClassElement(element)
-        if (classElement != null && ScalaTestLaunchShortcut.isScalaTestSuite(classElement)) 
+        if (classElement != null && ScalaTestLaunchShortcut.isScalaTestSuite(classElement))
           Some(classElement)
         else
           None
@@ -238,13 +237,13 @@ object ScalaTestLaunchShortcut {
         None
     }
   }
-  
+
   def resolveSelectedAst(editorInput: IEditorInput, selectionProvider: ISelectionProvider): Option[Selection] = {
     val typeRoot: ITypeRoot = JavaUI.getEditorInputTypeRoot(editorInput)
     if(selectionProvider == null)
       None
     val selection:ISelection = selectionProvider.getSelection()
-    
+
     if(!selection.isInstanceOf[ITextSelection])
       None
     else {
@@ -254,27 +253,26 @@ object ScalaTestLaunchShortcut {
       val scProject = ScalaPlugin.plugin.getScalaProject(project)
       val loaderUrls = scProject.scalaClasspath.fullClasspath.map { cp => cp.toURI.toURL }
       val loader:ClassLoader = new URLClassLoader(loaderUrls.toArray, getClass.getClassLoader)
-      
+
       try {
-        scProject.presentationCompiler { compiler => 
+        scProject.presentationCompiler { compiler =>
           val scalatestFinder = new ScalaTestFinder(compiler, loader)
           scalatestFinder.find(textSelection, element)
         } getOrElse None
       }
       catch {
         // This could due to custom classes not compiled.
-        case e: Throwable => 
-          val a = e
+        case e: Throwable =>
           e.printStackTrace()
         None
       }
     }
   }
-  
+
   @tailrec
   def getClassElement(element: IJavaElement): ScalaClassElement = {
     element match {
-      case scClassElement: ScalaClassElement => 
+      case scClassElement: ScalaClassElement =>
         scClassElement
       case _ =>
         if (element.getParent != null)
@@ -283,9 +281,9 @@ object ScalaTestLaunchShortcut {
           null
     }
   }
-  
+
   def getLaunchManager = DebugPlugin.getDefault.getLaunchManager
-  
+
   def launchScalaSourceFile(scSrcFile: ScalaSourceFile, mode: String) {
     val configType = getLaunchManager.getLaunchConfigurationType("scala.scalatest")
     val existingConfigs = getLaunchManager.getLaunchConfigurations(configType)
@@ -293,10 +291,9 @@ object ScalaTestLaunchShortcut {
     val existingConfigOpt = existingConfigs.find(config => config.getName == simpleName)
     val config = existingConfigOpt match {
                    case Some(existingConfig) => existingConfig
-                   case None => 
+                   case None =>
                      val wc = configType.newInstance(null, getLaunchManager.generateLaunchConfigurationName(simpleName.replaceAll(":", "-").replaceAll("\"", "'")))
                      val project = scSrcFile.getJavaProject.getProject
-                     val scProject = ScalaPlugin.plugin.getScalaProject(project)
                      wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, scSrcFile.getPath.toPortableString)
                      wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, project.getName)
                      wc.setAttribute(SCALATEST_LAUNCH_TYPE_NAME, TYPE_FILE)
@@ -305,7 +302,7 @@ object ScalaTestLaunchShortcut {
                    }
     DebugUITools.launch(config, mode)
   }
-  
+
   def launchPackage(packageFragment: PackageFragment, mode: String) {
     val configType = getLaunchManager.getLaunchConfigurationType("scala.scalatest")
     val existingConfigs = getLaunchManager.getLaunchConfigurations(configType)
@@ -313,10 +310,9 @@ object ScalaTestLaunchShortcut {
     val existingConfigOpt = existingConfigs.find(config => config.getName == simpleName)
     val config = existingConfigOpt match {
                    case Some(existingConfig) => existingConfig
-                   case None => 
+                   case None =>
                      val wc = configType.newInstance(null, getLaunchManager.generateLaunchConfigurationName(simpleName.replaceAll(":", "-").replaceAll("\"", "'")))
                      val project = packageFragment.getJavaProject.getProject
-                     val scProject = ScalaPlugin.plugin.getScalaProject(project)
                      wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, simpleName)
                      wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, project.getName)
                      wc.setAttribute(SCALATEST_LAUNCH_TYPE_NAME, TYPE_PACKAGE)
@@ -325,7 +321,7 @@ object ScalaTestLaunchShortcut {
                    }
     DebugUITools.launch(config, mode)
   }
-  
+
   def launchSuite(classElement: ScalaClassElement, mode: String) {
     val configType = getLaunchManager.getLaunchConfigurationType("scala.scalatest")
     val existingConfigs = getLaunchManager.getLaunchConfigurations(configType)
@@ -333,10 +329,9 @@ object ScalaTestLaunchShortcut {
     val existingConfigOpt = existingConfigs.find(config => config.getName == simpleName)
     val config = existingConfigOpt match {
                    case Some(existingConfig) => existingConfig
-                   case None => 
+                   case None =>
                      val wc = configType.newInstance(null, getLaunchManager.generateLaunchConfigurationName(simpleName.replaceAll(":", "-").replaceAll("\"", "'")))
                      val project = classElement.getJavaProject.getProject
-                     val scProject = ScalaPlugin.plugin.getScalaProject(project)
                      wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, classElement.getFullyQualifiedName)
                      wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, project.getName)
                      wc.setAttribute(SCALATEST_LAUNCH_TYPE_NAME, TYPE_SUITE)
@@ -346,7 +341,7 @@ object ScalaTestLaunchShortcut {
                  }
     DebugUITools.launch(config, mode)
   }
-  
+
   def launchTests(project: IProject, className: String, displayName: String, testNames: Array[String], mode: String) {
     val configType = getLaunchManager.getLaunchConfigurationType("scala.scalatest")
     val existingConfigs = getLaunchManager.getLaunchConfigurations(configType)
@@ -354,9 +349,8 @@ object ScalaTestLaunchShortcut {
     val existingConfigOpt = existingConfigs.find(config => config.getName == simpleName)
     val config = existingConfigOpt match {
                    case Some(existingConfig) => existingConfig
-                   case None => 
+                   case None =>
                      val wc = configType.newInstance(null, getLaunchManager.generateLaunchConfigurationName(simpleName.replaceAll(":", "-").replaceAll("\"", "'").replaceAll(">", "-").replaceAll("<", "-")))
-                     val scProject = ScalaPlugin.plugin.getScalaProject(project)
                      wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, className)
                      wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, project.getName)
                      wc.setAttribute(SCALATEST_LAUNCH_TYPE_NAME, TYPE_SUITE)
