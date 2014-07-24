@@ -50,7 +50,7 @@ rm org.scala-ide.sdt.scalatest.source.feature/feature.xml.original
 rm org.scala-ide.sdt.scalatest.tests/META-INF/MANIFEST.MF.original
 rm org.scala-ide.sdt.scalatest/META-INF/MANIFEST.MF.original
 git checkout 2.11
-build scala-ide-3.0-2_11 http://download.scala-ide.org/sdk/next/helium/e38/scala211/stable/site/ 2.11.1 e38-scala211-3.0 http://download.eclipse.org/releases/juno/
+build scala-ide-3.0-2_11 http://download.scala-ide.org/sdk/next/helium/e38/scala211/stable/site/ 2.11.2 e38-scala211-3.0 http://download.eclipse.org/releases/juno/
 git checkout .
 rm org.scala-ide.sdt.scalatest.feature/feature.xml.original
 rm org.scala-ide.sdt.scalatest.source.feature/feature.xml.original
