@@ -45,7 +45,7 @@
     <repo.ajdt>${repo.ajdt.indigo}</repo.ajdt>
 
     <!-- some default values, can be overwritten by profiles -->
-    <scala.version>2.11.1</scala.version>
+    <scala.version>2.11.2</scala.version>
     <version.suffix>2_11</version.suffix>
     <scala.version.short>2.11</scala.version.short>
     <version.tag>local</version.tag>
@@ -110,7 +110,7 @@
     <profile>
       <id>scala-ide-4.0-2_11-luna</id>
       <properties>
-        <scala.version>2.11.1</scala.version>
+        <scala.version>2.11.2</scala.version>
         <version.suffix>2_11</version.suffix>
         <scala.version.short>2.11</scala.version.short>
         <version.tag>v-4</version.tag>
