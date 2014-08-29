@@ -242,7 +242,7 @@ class ScalaTestLaunchDelegate extends AbstractJavaLaunchConfigurationDelegate {
     require(configuration != null)
     
     val launchType = configuration.getAttribute(SCALATEST_LAUNCH_TYPE_NAME, TYPE_SUITE)
-    val outputDir = getClasspath(configuration).foldLeft("")((acc, act) => acc + " " + escapeScalaTestClasspathComponent(act)).trim
+    val outputDir = getClasspath(configuration).filter(!_.endsWith(".jar")).foldLeft("")((acc, act) => acc + " " + escapeScalaTestClasspathComponent(act)).trim
     launchType match {
       case TYPE_SUITE => 
         val suiteClass = configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, "")
