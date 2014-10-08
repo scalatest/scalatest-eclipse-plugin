@@ -77,7 +77,7 @@ import com.ibm.icu.text.MessageFormat
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants
 import org.eclipse.core.runtime.CoreException
-import org.scalaide.core.ScalaPlugin
+import org.scalaide.core.IScalaPlugin
 import org.eclipse.core.runtime.IAdaptable
 import org.scalaide.core.internal.jdt.model.ScalaSourceFile
 import org.eclipse.ui.dialogs.FilteredResourcesSelectionDialog
@@ -96,6 +96,7 @@ import org.eclipse.jface.viewers.TableViewerColumn
 import org.eclipse.swt.widgets.TableItem
 import org.eclipse.swt.custom.TableEditor
 import org.eclipse.swt.events.SelectionAdapter
+import org.scalaide.core.IScalaProject
 
 class ScalaTestMainTab extends SharedJavaMainTab {
   // UI widgets
@@ -267,7 +268,7 @@ class ScalaTestMainTab extends SharedJavaMainTab {
       val model = JavaCore.create(ResourcesPlugin.getWorkspace.getRoot)
       if (model != null) {
         try {
-          projects = model.getJavaProjects.filter(proj => ScalaPlugin.plugin.isScalaProject(proj))
+          projects = model.getJavaProjects.filter {jp: IJavaProject => IScalaPlugin().getScalaProject(jp.getProject()).hasScalaNature }
         }
         catch { case e: JavaModelException => JDIDebugUIPlugin.log(e) }
       }
@@ -282,7 +283,7 @@ class ScalaTestMainTab extends SharedJavaMainTab {
     if (fSuiteRadioButton.getSelection) {
       val types: Array[IType] = 
         projects.flatMap { proj =>
-          for (file <- ScalaPlugin.plugin.getScalaProject(proj.getProject).allSourceFiles;
+          for (file <- IScalaPlugin().getScalaProject(proj.getProject).allSourceFiles;
             val ssf = ScalaSourceFile.createFromPath(file.getFullPath.toString); 
             if ssf.isDefined;
             iType <- ssf.get.getAllTypes;
@@ -304,7 +305,7 @@ class ScalaTestMainTab extends SharedJavaMainTab {
     else if (fFileRadioButton.getSelection) {
       val files = 
         projects.flatMap { proj =>
-          for (file <- ScalaPlugin.plugin.getScalaProject(proj.getProject).allSourceFiles;
+          for (file <- IScalaPlugin().getScalaProject(proj.getProject).allSourceFiles;
             val ssf = ScalaSourceFile.createFromPath(file.getFullPath.toString); 
             if ssf.isDefined && ScalaTestLaunchShortcut.containsScalaTestSuite(ssf.get)) yield file.asInstanceOf[IResource]
         }
@@ -325,7 +326,7 @@ class ScalaTestMainTab extends SharedJavaMainTab {
       case class PackageOption(name: String, project: IJavaProject)
       val packageSet = 
         projects.flatMap { proj =>
-          for (file <- ScalaPlugin.plugin.getScalaProject(proj.getProject).allSourceFiles;
+          for (file <- IScalaPlugin().getScalaProject(proj.getProject).allSourceFiles;
             val ssf = ScalaSourceFile.createFromPath(file.getFullPath.toString); 
             if ssf.isDefined;
             iType <- ssf.get.getAllTypes;

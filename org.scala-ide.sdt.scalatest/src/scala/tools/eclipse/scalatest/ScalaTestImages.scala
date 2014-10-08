@@ -37,7 +37,7 @@
 package scala.tools.eclipse.scalatest
 
 import java.net.MalformedURLException
-import org.scalaide.ui.internal.ScalaImages
+import org.scalaide.ui.ScalaImages
 import org.eclipse.jface.resource.ImageDescriptor
 import org.eclipse.core.runtime.Platform
 import java.net.URL

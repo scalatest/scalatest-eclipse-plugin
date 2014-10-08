@@ -36,22 +36,22 @@
 
 package scala.tools.eclipse.scalatest.launching
 
-import org.scalaide.core.compiler.ScalaPresentationCompiler
+import org.scalaide.core.compiler.IScalaPresentationCompiler
+import org.scalaide.core.compiler.IScalaPresentationCompiler.Implicits._
 import org.scalatest.finders.AstNode
 import scala.annotation.tailrec
 import org.eclipse.jdt.core.IJavaElement
 import org.scalaide.core.internal.jdt.model.ScalaClassElement
 import org.scalaide.core.internal.jdt.model.ScalaElement
-import org.scalaide.core.ScalaPlugin
+import org.scalaide.core.IScalaPlugin
 import org.eclipse.core.resources.IProject
 import org.scalaide.core.internal.jdt.model.ScalaCompilationUnit
 import scala.reflect.internal.util.OffsetPosition
 import org.eclipse.jface.text.ITextSelection
 import org.scalatest.finders.Selection
 import scala.reflect.internal.util.BatchSourceFile
-import org.scalaide.core.compiler.ScalaPresentationCompilerProxy
 
-class ScalaTestFinder(compiler: ScalaPresentationCompiler, loader: ClassLoader) {
+class ScalaTestFinder(compiler: IScalaPresentationCompiler, loader: ClassLoader) {
 
   import compiler._
 
@@ -284,7 +284,7 @@ class ScalaTestFinder(compiler: ScalaPresentationCompiler, loader: ClassLoader) 
         // Some approaches used before
         // param types: " + defDefSym.info.paramTypes.map(t => t.typeSymbol.fullName)
         // param types: " + defDef.vparamss.flatten.toList.map(valDef => valDef.tpt.symbol.fullName)
-        val args = compiler.askOption[List[String]](() => defDefSym.info.paramTypes.map(t => t.typeSymbol.fullName)).getOrElse(List.empty)
+        val args = compiler.asyncExec{defDefSym.info.paramTypes.map(t => t.typeSymbol.fullName)}.getOrElse(List.empty)()
         Some(new MethodDefinition(className, rootTree, selectedTree, defDefSym.decodedName, args: _*))
       case applyImplicitView: ApplyImplicitView =>
         None
@@ -352,7 +352,7 @@ class ScalaTestFinder(compiler: ScalaPresentationCompiler, loader: ClassLoader) 
     }
 
   private def getFinderClassNames(annotations: List[AnnotationInfo]): Array[String] = {
-    val finderClassNames = compiler.askOption[Array[String]](() => getFinderByFindersAnnotation(annotations)).getOrElse(Array.empty[String])
+    val finderClassNames = compiler.asyncExec{getFinderByFindersAnnotation(annotations)}.getOrElse(Array.empty[String])()
     if (finderClassNames.size > 0)
       finderClassNames
     else {
@@ -397,7 +397,7 @@ class ScalaTestFinder(compiler: ScalaPresentationCompiler, loader: ClassLoader) 
                       }
                     case None =>
                       // No @WrapWith found, will lookup the @Style from super classes in linearized order
-                      val linearizedBaseClasses = compiler.askOption[List[Symbol]](() => classDef.symbol.info.baseClasses).getOrElse(List.empty)
+                      val linearizedBaseClasses = compiler.asyncExec{classDef.symbol.info.baseClasses}.getOrElse(List.empty)()
                       getFinderClassNames(linearizedBaseClasses.flatMap(_.annotations))
                   }
 

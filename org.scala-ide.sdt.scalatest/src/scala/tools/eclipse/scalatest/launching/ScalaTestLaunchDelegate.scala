@@ -38,7 +38,7 @@ package scala.tools.eclipse.scalatest.launching
 
 import org.eclipse.jdt.launching.{AbstractJavaLaunchConfigurationDelegate, JavaRuntime,
 	                                IRuntimeClasspathEntry, VMRunnerConfiguration, ExecutionArguments}
-import org.scalaide.core.ScalaPlugin
+import org.scalaide.core.IScalaPlugin
 import java.io.{File, FileWriter, PrintWriter}
 import com.ibm.icu.text.MessageFormat
 import org.eclipse.core.runtime.{Path, CoreException, IProgressMonitor, NullProgressMonitor}
@@ -60,6 +60,7 @@ import scala.tools.eclipse.scalatest.ui.TestStatus
 import scala.annotation.tailrec
 import org.eclipse.core.runtime.FileLocator
 import org.eclipse.core.runtime.Platform
+import org.scalaide.core.SdtConstants
 
 class ScalaTestLaunchDelegate extends AbstractJavaLaunchConfigurationDelegate {
 
@@ -219,7 +220,7 @@ class ScalaTestLaunchDelegate extends AbstractJavaLaunchConfigurationDelegate {
 
   private def missingScalaLibraries(included: List[String], configuration: ILaunchConfiguration): List[String] =  {
     val entries = JavaRuntime.computeUnresolvedRuntimeClasspath(configuration).toList
-    val libid = Path.fromPortableString(ScalaPlugin.plugin.scalaLibId)
+    val libid = Path.fromPortableString(SdtConstants.ScalaLibContId)
     val found = entries.find(e => e.getClasspathEntry != null && e.getClasspathEntry.getPath == libid)
     found match {
       case Some(e) =>
