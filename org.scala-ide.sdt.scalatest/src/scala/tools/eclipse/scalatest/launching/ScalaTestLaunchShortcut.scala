@@ -51,7 +51,7 @@ import org.eclipse.jface.text.ITextSelection
 import org.eclipse.jdt.internal.ui.actions.SelectionConverter
 import org.eclipse.jdt.ui.JavaUI
 import org.eclipse.ui.IFileEditorInput
-import org.scalaide.core.ScalaPlugin
+import org.scalaide.core.IScalaPlugin
 import org.scalaide.core.internal.jdt.model.ScalaElement
 import org.scalaide.core.internal.jdt.model.ScalaCompilationUnit
 import org.scalaide.core.internal.jdt.model.ScalaClassElement
@@ -73,7 +73,8 @@ import ScalaTestLaunchShortcut._
 import org.eclipse.ui.IEditorSite
 import org.eclipse.ui.IEditorInput
 import scala.reflect.NameTransformer
-import org.scalaide.core.compiler.ScalaPresentationCompiler
+import org.scalaide.core.compiler.IScalaPresentationCompiler
+import org.scalaide.core.compiler.IScalaPresentationCompiler.Implicits._
 import scala.reflect.internal.util.BatchSourceFile
 
 class ScalaTestFileLaunchShortcut extends ILaunchShortcut {
@@ -184,7 +185,7 @@ object ScalaTestLaunchShortcut {
   def isScalaTestSuite(iType: IType): Boolean = {
     if (iType.isClass) {
       val project = iType.getJavaProject.getProject
-      val scProject = ScalaPlugin.plugin.getScalaProject(project)
+      val scProject = IScalaPlugin().getScalaProject(project)
       scProject.presentationCompiler { compiler =>
         import compiler._
 
@@ -195,7 +196,7 @@ object ScalaTestLaunchShortcut {
           case Left(tree) =>
             tree.children.find {
               case classDef: ClassDef if classDef.symbol.fullName == iType.getFullyQualifiedName =>
-                val linearizedBaseClasses = compiler.askOption[List[compiler.Symbol]](() => classDef.symbol.info.baseClasses).getOrElse(List.empty)
+                val linearizedBaseClasses = compiler.asyncExec{classDef.symbol.info.baseClasses}.getOrElse(List.empty)()
                 linearizedBaseClasses.find { baseClass =>
                   baseClass.fullName == "org.scalatest.Suite"
                 } match {
@@ -250,7 +251,7 @@ object ScalaTestLaunchShortcut {
       val textSelection:ITextSelection = selection.asInstanceOf[ITextSelection]
       val element = SelectionConverter.getElementAtOffset(typeRoot, selection.asInstanceOf[ITextSelection])
       val project = typeRoot.getJavaProject.getProject
-      val scProject = ScalaPlugin.plugin.getScalaProject(project)
+      val scProject = IScalaPlugin().getScalaProject(project)
       val loaderUrls = scProject.scalaClasspath.fullClasspath.map { cp => cp.toURI.toURL }
       val loader:ClassLoader = new URLClassLoader(loaderUrls.toArray, getClass.getClassLoader)
 

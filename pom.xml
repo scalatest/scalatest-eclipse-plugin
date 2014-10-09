@@ -27,6 +27,7 @@
     <repo.eclipse.kepler>http://download.eclipse.org/releases/kepler/</repo.eclipse.kepler>
     <repo.eclipse.luna>http://download.eclipse.org/releases/luna/</repo.eclipse.luna>
     <repo.ajdt.indigo>http://download.eclipse.org/tools/ajdt/37/dev/update</repo.ajdt.indigo>
+    <repo.ajdt.kepler>http://download.eclipse.org/tools/ajdt/43/update</repo.ajdt.kepler>
     <repo.scala-ide.root>http://download.scala-ide.org</repo.scala-ide.root>
 
     <!-- fixed versions -->
@@ -41,8 +42,8 @@
     <tycho.test.jvmArgs>-Xmx800m -XX:MaxPermSize=256m -Dsdtcore.headless ${tycho.test.weaving} ${tycho.test.OSspecific}</tycho.test.jvmArgs>
 
     <!-- dependencies repos -->
-    <repo.eclipse>${repo.eclipse.indigo}</repo.eclipse>
-    <repo.ajdt>${repo.ajdt.indigo}</repo.ajdt>
+    <repo.eclipse>${repo.eclipse.kepler}</repo.eclipse>
+    <repo.ajdt>${repo.ajdt.kepler}</repo.ajdt>
 
     <!-- some default values, can be overwritten by profiles -->
     <scala.version>2.11.2</scala.version>
@@ -255,7 +256,7 @@
       <url>${repo.scala-ide}</url>
       <snapshots><enabled>false</enabled></snapshots>
     </repository>
-    <repository>
+<!--    <repository>
       <id>Indigo</id>
       <name>Eclipse Indigo p2 repository</name>
       <layout>p2</layout>
@@ -268,7 +269,7 @@
       <layout>p2</layout>
       <url>${repo.eclipse.juno}</url>
       <snapshots><enabled>false</enabled></snapshots>
-    </repository>
+    </repository>-->
     <repository>
       <id>Kepler</id>
       <name>Eclipse Kepler p2 repository</name>
@@ -276,13 +277,13 @@
       <url>${repo.eclipse.kepler}</url>
       <snapshots><enabled>false</enabled></snapshots>
     </repository>
-    <repository>
+<!--    <repository>
       <id>Luna</id>
       <name>Eclipse Luna p2 repository</name>
       <layout>p2</layout>
       <url>${repo.eclipse.luna}</url>
       <snapshots><enabled>false</enabled></snapshots>
-    </repository>
+    </repository>-->
     <repository>
       <id>ajdt-indigo</id>
       <name>AJDT for Eclipse Indigo p2 repository</name>
