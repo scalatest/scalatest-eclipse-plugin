@@ -277,13 +277,13 @@
       <url>${repo.eclipse.kepler}</url>
       <snapshots><enabled>false</enabled></snapshots>
     </repository>
-<!--    <repository>
+    <repository>
       <id>Luna</id>
       <name>Eclipse Luna p2 repository</name>
       <layout>p2</layout>
       <url>${repo.eclipse.luna}</url>
       <snapshots><enabled>false</enabled></snapshots>
-    </repository>-->
+    </repository>
     <repository>
       <id>ajdt-indigo</id>
       <name>AJDT for Eclipse Indigo p2 repository</name>
