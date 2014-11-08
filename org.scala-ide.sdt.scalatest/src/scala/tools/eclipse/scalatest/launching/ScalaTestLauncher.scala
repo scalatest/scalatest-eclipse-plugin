@@ -46,13 +46,11 @@ object ScalaTestLauncher {
     try {
       val cpFilePath = args(0)
       val classpath = Source.fromFile(args(0)).getLines()
-    
-      val loader = ClassLoader.getSystemClassLoader
-      val method= classOf[URLClassLoader].getDeclaredMethod("addURL", classOf[URL]); //$NON-NLS-1$
-      method.setAccessible(true);
-      classpath.foreach(cp => method.invoke(loader, new File(cp.toString).toURI.toURL))
-    
-      val runnerClass = Class.forName("org.scalatest.tools.Runner")
+
+      val urls = classpath.map { cp => new File(cp.toString).toURI.toURL }.toArray
+      val loader = new URLClassLoader(urls, ClassLoader.getSystemClassLoader)
+
+      val runnerClass =  loader.loadClass("org.scalatest.tools.Runner")
       val mainMethod = runnerClass.getMethod("main", args.getClass()) //$NON-NLS-1$
       mainMethod.setAccessible(true)
       mainMethod.invoke(null, Source.fromFile(args(1)).getLines().toArray)
@@ -67,5 +65,4 @@ object ScalaTestLauncher {
       argsFile.delete()
     }
   }
-  
 }
