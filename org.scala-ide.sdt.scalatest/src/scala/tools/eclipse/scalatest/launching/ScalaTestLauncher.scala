@@ -12,6 +12,8 @@ object ScalaTestLauncher {
       val urls = classpath.map { cp => new File(cp.toString).toURI.toURL }.toArray
       val loader = new URLClassLoader(urls, ClassLoader.getSystemClassLoader)
 
+      Thread.currentThread().setContextClassLoader(loader)
+      
       val runnerClass =  loader.loadClass("org.scalatest.tools.Runner")
       val mainMethod = runnerClass.getMethod("main", args.getClass()) //$NON-NLS-1$
       mainMethod.setAccessible(true)
