@@ -10,11 +10,11 @@ Building
 
 Maven is used to manage the build process.  You can build the project for Scala IDE nightly releases.
 
-For Scala IDE 3.0.x (Stable) releases, we recommend you to install from update sites listed here:-
+For stable release of Scala IDE, we recommend you to install from update sites listed here:-
 
 *   http://scala-ide.org/download/current.html
 
-For Scala IDE 4.0 (Milestones) releases, we recommend you to install from update sites listed here:-
+For milestones release of Scala IDE, we recommend you to install from update sites listed here:-
 
 *   http://scala-ide.org/download/milestone.html
 
