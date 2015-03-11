@@ -76,6 +76,7 @@ import scala.reflect.NameTransformer
 import org.scalaide.core.compiler.IScalaPresentationCompiler
 import org.scalaide.core.compiler.IScalaPresentationCompiler.Implicits._
 import scala.reflect.internal.util.BatchSourceFile
+import scala.concurrent.duration._
 
 class ScalaTestFileLaunchShortcut extends ILaunchShortcut {
 
@@ -203,7 +204,9 @@ object ScalaTestLaunchShortcut {
                   case Some(_) =>
                     true
                   case None =>
-                    classDef.symbol.annotations.exists(aInfo => aInfo.atp.toString == "org.scalatest.WrapWith")
+                    compiler.asyncExec {
+                      classDef.symbol.annotations.exists(aInfo => aInfo.atp.toString == "org.scalatest.WrapWith")
+                    }.getOrElse(false)(500.millis)
                 }
               case _ => false
             } match {
