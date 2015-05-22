@@ -917,7 +917,8 @@ class ScalaTestRunnerViewPart extends ViewPart with Observer {
     override def run() {
       val launch = session.fLaunch
       val delegate = new ScalaTestLaunchDelegate()
-      val stArgs = delegate.getScalaTestArgsForFailedTests(session.rootNode)
+      import ScalaTestLaunchDelegate._
+      val stArgs = getScalaTestArgsForFailedTests(session.rootNode)
       val buildBeforeLaunch = DebugUIPlugin.getDefault().getPreferenceStore().getBoolean(IDebugUIConstants.PREF_BUILD_BEFORE_LAUNCH)
       if (buildBeforeLaunch)
         ScalaTestPlugin.doBuild()

@@ -51,9 +51,9 @@ class ScalaTestLaunchTest {
 
   import ScalaTestProject._
 
-  private def launch(launchName: String) {
+  private def launch(launchName: String, mode: String = ILaunchManager.RUN_MODE) {
     val launchConfig = DebugPlugin.getDefault.getLaunchManager.getLaunchConfiguration(file(launchName + ".launch"))
-    launchConfig.launch(ILaunchManager.RUN_MODE, null)
+    launchConfig.launch(mode, null)
   }
 
   @Test
@@ -124,6 +124,146 @@ class ScalaTestLaunchTest {
   @Test
   def `testLaunchConfigcom.test.TestingFunSuite-'test2'`() {
     launch("com.test.TestingFunSuite-'test2'")
+  }
+
+  @Test
+  def testLaunchComTestPackageWithScalaRunner() {
+    launch("com.test.scalarunner")
+  }
+
+  @Test
+  def testLaunchComTestPackageWithScalaDebugger() {
+    launch("com.test.scalarunner", ILaunchManager.DEBUG_MODE)
+  }
+
+  @Test
+  def testLaunchSingleSpecFileWithScalaRunner() {
+    launch("SingleSpec.scala.scalarunner")
+  }
+
+  @Test
+  def testLaunchSingleSpecFileWithScalaDebugger() {
+    launch("SingleSpec.scala.scalarunner", ILaunchManager.DEBUG_MODE)
+  }
+
+  @Test
+  def testLaunchMultiSpecFileWithScalaRunner() {
+    launch("MultiSpec.scala.scalarunner")
+  }
+
+  @Test
+  def testLaunchMultiSpecFileWithScalaDebugger() {
+    launch("MultiSpec.scala.scalarunner", ILaunchManager.DEBUG_MODE)
+  }
+
+  @Test
+  def testLaunchSingleSpecWithScalaRunner() {
+    launch("SingleSpec.scalarunner")
+  }
+
+  @Test
+  def testLaunchSingleSpecWithScalaDebugger() {
+    launch("SingleSpec.scalarunner", ILaunchManager.DEBUG_MODE)
+  }
+
+  @Test
+  def testLaunchStackSpec2WithScalaRunner() {
+    launch("StackSpec2.scalarunner")
+  }
+
+  @Test
+  def testLaunchStackSpec2WithScalaDebugger() {
+    launch("StackSpec2.scalarunner", ILaunchManager.DEBUG_MODE)
+  }
+
+  @Test
+  def testLaunchTestingFreeSpecWithScalaRunner() {
+    launch("TestingFreeSpec.scalarunner")
+  }
+
+  @Test
+  def testLaunchTestingFreeSpecWithScalaDebugger() {
+    launch("TestingFreeSpec.scalarunner", ILaunchManager.DEBUG_MODE)
+  }
+
+  @Test
+  def testLaunchTestingFunSuiteWithScalaRunner() {
+    launch("TestingFunSuite.scalarunner")
+  }
+
+  @Test
+  def testLaunchTestingFunSuiteWithScalaDebugger() {
+    launch("TestingFunSuite.scalarunner", ILaunchManager.DEBUG_MODE)
+  }
+
+  @Test
+  def testLaunchConfigAStackshouldtastelikepeanutbutterWithScalaRunner() {
+    launch("AStackshouldtastelikepeanutbutter.scalarunner")
+  }
+
+  @Test
+  def testLaunchConfigAStackshouldtastelikepeanutbutterWithScalaDebugger() {
+    launch("AStackshouldtastelikepeanutbutter.scalarunner", ILaunchManager.DEBUG_MODE)
+  }
+
+  @Test
+  def testLaunchConfigAStackwhenemptyshouldcomplainonpopWithScalaRunner() {
+    launch("AStackwhenemptyshouldcomplainonpop.scalarunner")
+  }
+
+  @Test
+  def testLaunchConfigAStackwhenemptyshouldcomplainonpopWithScalaDebugger() {
+    launch("AStackwhenemptyshouldcomplainonpop.scalarunner", ILaunchManager.DEBUG_MODE)
+  }
+
+  @Test
+  def testLaunchConfigAStackwhenfullWithScalaRunner() {
+    launch("AStackwhenfull.scalarunner")
+  }
+
+  @Test
+  def testLaunchConfigAStackwhenfullWithScalaDebugger() {
+    launch("AStackwhenfull.scalarunner", ILaunchManager.DEBUG_MODE)
+  }
+
+  @Test
+  def testLaunchConfigAStackwheneveritisemptycertainlyoughttocomplainonpeekWithScalaRunner() {
+    launch("AStackwheneveritisemptycertainlyoughttocomplainonpeek.scalarunner")
+  }
+
+  @Test
+  def testLaunchConfigAStackwheneveritisemptycertainlyoughttocomplainonpeekWithScalaDebugger() {
+    launch("AStackwheneveritisemptycertainlyoughttocomplainonpeek.scalarunner", ILaunchManager.DEBUG_MODE)
+  }
+
+  @Test
+  def testLaunchConfigAStackwheneveritisemptyWithScalaRunner() {
+    launch("AStackwheneveritisempty.scalarunner")
+  }
+
+  @Test
+  def testLaunchConfigAStackwheneveritisemptyWithScalaDebugger() {
+    launch("AStackwheneveritisempty.scalarunner", ILaunchManager.DEBUG_MODE)
+  }
+
+  @Test
+  def testLaunchConfigAStackWithScalaRunner() {
+    launch("AStack.scalarunner")
+  }
+
+  @Test
+  def testLaunchConfigAStackWithScalaDebugger() {
+    launch("AStack.scalarunner", ILaunchManager.DEBUG_MODE)
+  }
+
+  @Test
+  def `testLaunchConfigcom.test.TestingFunSuite-'test2'WithScalaRunner`() {
+    launch("com.test.TestingFunSuite-'test2'.scalarunner")
+  }
+
+  @Test
+  def `testLaunchConfigcom.test.TestingFunSuite-'test2'WithScalaDebugger`() {
+    launch("com.test.TestingFunSuite-'test2'.scalarunner", ILaunchManager.DEBUG_MODE)
   }
 
   @Ignore

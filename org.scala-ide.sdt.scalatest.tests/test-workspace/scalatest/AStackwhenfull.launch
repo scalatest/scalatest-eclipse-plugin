@@ -12,6 +12,10 @@
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
 <listEntry value="1"/>
 </listAttribute>
+<mapAttribute key="org.eclipse.debug.core.preferred_launchers">
+<mapEntry key="[run]" value="scala.scalatest.javarunner"/>
+<mapEntry key="[debug]" value="scala.scalatest.javarunner"/>
+</mapAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="com.test.StackSpec2"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="scalatest"/>
 </launchConfiguration>

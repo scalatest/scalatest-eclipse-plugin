@@ -736,7 +736,7 @@ private class RerunSuiteAction(actionName: String, fTestRunnerPart: ScalaTestRun
                                suiteId: String) extends Action(actionName) {
   override def run() {
     val delegate = new ScalaTestLaunchDelegate()
-    val stArgs = delegate.getScalaTestArgsForSuite(suiteClassName, suiteId)
+    val stArgs = ScalaTestLaunchDelegate.getScalaTestArgsForSuite(suiteClassName, suiteId)
     rerun(fTestRunnerPart, delegate, stArgs)
   }
 }
@@ -745,7 +745,7 @@ private class RerunTestAction(actionName: String, fTestRunnerPart: ScalaTestRunn
                                suiteId: String, testName: String) extends Action(actionName) {
   override def run() {
     val delegate = new ScalaTestLaunchDelegate()
-    val stArgs = delegate.getScalaTestArgsForTest(suiteClassName, suiteId, testName)
+    val stArgs = ScalaTestLaunchDelegate.getScalaTestArgsForTest(suiteClassName, suiteId, testName)
     rerun(fTestRunnerPart, delegate, stArgs)
   }
 }
