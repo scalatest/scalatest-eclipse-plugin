@@ -30,7 +30,7 @@ You then clone and checkout master trunk:-
     
     `$ cd scalatest-eclipse-plugin`
 
-    `$ git checkout kepler-nightly-2.11`
+    `$ git checkout nightly`
 
 Finally use the following commands to build for Scala IDE nightly: 
 
