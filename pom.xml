@@ -46,11 +46,11 @@
     <repo.ajdt>${repo.ajdt.kepler}</repo.ajdt>
 
     <!-- some default values, can be overwritten by profiles -->
-    <scala.version>2.11.2</scala.version>
+    <scala.version>2.11.6</scala.version>
     <version.suffix>2_11</version.suffix>
     <scala.version.short>2.11</scala.version.short>
     <version.tag>local</version.tag>
-    <repo.scala-ide>${repo.scala-ide.root}/nightly-scala-ide-4.0.x-211x</repo.scala-ide>
+    <repo.scala-ide>${repo.scala-ide.root}/nightly-scala-ide-luna-211x</repo.scala-ide>
     <mockito.version>1.9.0</mockito.version>
    </properties>
 
@@ -111,11 +111,11 @@
     <profile>
       <id>scala-ide-4.0-2_11-luna</id>
       <properties>
-        <scala.version>2.11.2</scala.version>
+        <scala.version>2.11.6</scala.version>
         <version.suffix>2_11</version.suffix>
         <scala.version.short>2.11</scala.version.short>
         <version.tag>v-4</version.tag>
-        <repo.scala-ide>${repo.scala-ide.root}/sdk/lithium/e44/scala211/dev/site</repo.scala-ide>
+        <repo.scala-ide>${repo.scala-ide.root}/sdk/lithium/e44/scala211/stable/site</repo.scala-ide>
       </properties>
     </profile>
     <profile>
