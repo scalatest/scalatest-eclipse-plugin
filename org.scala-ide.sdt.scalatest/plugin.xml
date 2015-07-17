@@ -8,14 +8,27 @@
            id="scala.scalatest"
            delegate="scala.tools.eclipse.scalatest.launching.ScalaTestLaunchDelegate"
            delegateDescription="The ScalaTest Launcher supports running and debugging tests written in ScalaTest."
-           delegateName="ScalaTest Launcher"
+           name="ScalaTest (java runner)"
            modes="run, debug"
-           name="ScalaTest"
-           public="true"
            sourceLocatorId="org.eclipse.jdt.launching.sourceLocator.JavaSourceLookupDirector"
            sourcePathComputerId="org.eclipse.jdt.launching.sourceLookup.javaSourcePathComputer">
     </launchConfigurationType>
   
+  </extension>
+  
+  <extension point="org.eclipse.debug.core.launchDelegates">
+  
+    <launchDelegate
+           id="scala.scalatest.scalarunner"
+           delegate="scala.tools.eclipse.scalatest.launching.ScalaTestScalaLaunchDelegate"
+           delegateDescription="The ScalaTest Launcher supports running and debugging tests written in ScalaTest with Scala Expression Evaluator."
+           name="ScalaTest (scala runner)"
+           modes="debug"
+           sourceLocatorId="org.eclipse.jdt.launching.sourceLocator.JavaSourceLookupDirector"
+           sourcePathComputerId="org.eclipse.jdt.launching.sourceLookup.javaSourcePathComputer"
+           type="scala.scalatest">
+    </launchDelegate>
+    
   </extension>
   
   <extension point="org.eclipse.debug.ui.launchConfigurationTypeImages">
@@ -35,7 +48,7 @@
         class="scala.tools.eclipse.scalatest.launching.ScalaTestTabGroup"
         id="scala.scalatest.tabGroup">
     </launchConfigurationTabGroup>
-    
+   
   </extension>
   
   <extension point="org.eclipse.core.expressions.propertyTesters">

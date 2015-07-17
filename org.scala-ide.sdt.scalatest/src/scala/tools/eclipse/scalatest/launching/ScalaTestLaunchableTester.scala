@@ -78,7 +78,7 @@ class ScalaTestTestTester extends PropertyTester {
           }
         }
         catch {
-          case _ => false
+          case _: Throwable => false
         }
       case _ =>
         false
@@ -120,7 +120,7 @@ class ScalaTestSuiteTester extends PropertyTester {
       }
     }
     catch {
-      case _ => false
+      case _: Throwable => false
     }
   }
 }
@@ -147,7 +147,7 @@ class ScalaTestFileTester extends PropertyTester {
       }
     }
     catch {
-      case _ => false
+      case _: Throwable => false
     }
   }
 }

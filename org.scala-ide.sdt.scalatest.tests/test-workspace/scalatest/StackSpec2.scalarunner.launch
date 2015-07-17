@@ -4,15 +4,15 @@
 <setAttribute key="SCALATEST_LAUNCH_TESTS_NAME"/>
 <stringAttribute key="SCALATEST_LAUNCH_TYPE" value="SUITE"/>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
-<listEntry value="/scalatest/src/com/test/StringSpecification.scala"/>
+<listEntry value="/scalatest/src/com/test/MultiSpec.scala"/>
 </listAttribute>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
 <listEntry value="1"/>
 </listAttribute>
 <mapAttribute key="org.eclipse.debug.core.preferred_launchers">
-<mapEntry key="[run]" value="scala.scalatest.javarunner"/>
-<mapEntry key="[debug]" value="scala.scalatest.javarunner"/>
+<mapEntry key="[run]" value="scala.scalatest.scalarunner"/>
+<mapEntry key="[debug]" value="scala.scalatest.scalarunner"/>
 </mapAttribute>
-<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="com.test.StringSpecification"/>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="com.test.StackSpec2"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="scalatest"/>
 </launchConfiguration>

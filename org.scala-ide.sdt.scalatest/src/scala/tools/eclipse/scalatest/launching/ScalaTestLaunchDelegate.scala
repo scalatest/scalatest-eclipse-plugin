@@ -36,13 +36,18 @@
 
 package scala.tools.eclipse.scalatest.launching
 
-import org.eclipse.jdt.launching.{AbstractJavaLaunchConfigurationDelegate, JavaRuntime,
-	                                IRuntimeClasspathEntry, VMRunnerConfiguration, ExecutionArguments}
+import org.eclipse.jdt.launching.{
+  AbstractJavaLaunchConfigurationDelegate,
+  JavaRuntime,
+  IRuntimeClasspathEntry,
+  VMRunnerConfiguration,
+  ExecutionArguments
+}
 import org.scalaide.core.IScalaPlugin
-import java.io.{File, FileWriter, PrintWriter}
+import java.io.{ File, FileWriter, PrintWriter }
 import com.ibm.icu.text.MessageFormat
-import org.eclipse.core.runtime.{Path, CoreException, IProgressMonitor, NullProgressMonitor}
-import org.eclipse.debug.core.{ILaunch, ILaunchConfiguration}
+import org.eclipse.core.runtime.{ Path, CoreException, IProgressMonitor, NullProgressMonitor }
+import org.eclipse.debug.core.{ ILaunch, ILaunchConfiguration }
 import org.eclipse.jdt.internal.launching.LaunchingMessages
 import scala.collection.JavaConversions._
 import scala.collection.mutable
@@ -61,8 +66,9 @@ import scala.annotation.tailrec
 import org.eclipse.core.runtime.FileLocator
 import org.eclipse.core.runtime.Platform
 import org.scalaide.core.SdtConstants
+import org.scalaide.core.internal.launching.ClasspathGetterForLaunchDelegate
 
-class ScalaTestLaunchDelegate extends AbstractJavaLaunchConfigurationDelegate {
+class ScalaTestLaunchDelegate extends AbstractJavaLaunchConfigurationDelegate with ClasspathGetterForLaunchDelegate {
 
   def launchScalaTest(configuration: ILaunchConfiguration, mode: String, launch: ILaunch, monitor0: IProgressMonitor, stArgs: String) {
     val monitor = if (monitor0 == null) new NullProgressMonitor() else monitor0
@@ -88,18 +94,13 @@ class ScalaTestLaunchDelegate extends AbstractJavaLaunchConfigurationDelegate {
       val vmAttributesMap = getVMSpecificAttributesMap(configuration)
 
       val modifiedAttrMap: mutable.Map[String, Array[String]] =
-        if (vmAttributesMap == null) mutable.Map() else vmAttributesMap.asInstanceOf[java.util.Map[String,Array[String]]]
-      val classpath0 = getClasspath(configuration)
-      val missingScalaLibraries = toInclude(modifiedAttrMap,
-					classpath0.toList, configuration)
-      // Classpath
-      // Add scala libraries that were missed in VM attributes
-      val classpath = (classpath0.toList):::missingScalaLibraries
+        if (vmAttributesMap == null) mutable.Map() else vmAttributesMap.asInstanceOf[java.util.Map[String, Array[String]]]
+      val classpath = getClasspath(configuration).toList
 
       // Program & VM arguments
       val vmArgs = getVMArguments(configuration)
 
-      val loaderUrls = classpath.map{ cp => new File(cp).toURI.toURL }
+      val loaderUrls = classpath.map { cp => new File(cp).toURI.toURL }
 
       val bootClassPath = getBootpath(configuration)
 
@@ -110,18 +111,16 @@ class ScalaTestLaunchDelegate extends AbstractJavaLaunchConfigurationDelegate {
         new URLClassLoader(loaderUrls.toArray, bootClassLoader)
       }
 
-
       val pgmArgs =
-      try {
-        loader.loadClass("org.scalatest.tools.SocketReporter")
-        ScalaTestPlugin.asyncShowTestRunnerViewPart(launch, configuration.getName, configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, ""))
-        val port = ScalaTestPlugin.listener.getPort
-        getProgramArguments(configuration) + " " + stArgs.replaceAll("-p ", "-R ") + " -oW -k localhost " + port  // replace all -p with -R if it is ScalaTest 2.0+
-      }
-      catch {
-        case e: Throwable =>
-          getProgramArguments(configuration) + " " + stArgs + " -oW -g"
-      }
+        try {
+          loader.loadClass("org.scalatest.tools.SocketReporter")
+          ScalaTestPlugin.asyncShowTestRunnerViewPart(launch, configuration.getName, configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, ""))
+          val port = ScalaTestPlugin.listener.getPort
+          getProgramArguments(configuration) + " " + stArgs.replaceAll("-p ", "-R ") + " -oW -k localhost " + port // replace all -p with -R if it is ScalaTest 2.0+
+        } catch {
+          case e: Throwable =>
+            getProgramArguments(configuration) + " " + stArgs + " -oW -g"
+        }
 
       // In 2.11, XML classes has been modularized into its own jar, and by default Scala IDE does not include it.
       // We'll include it automatically in boot class path so that our XmlSocketReporter still works.
@@ -129,8 +128,7 @@ class ScalaTestLaunchDelegate extends AbstractJavaLaunchConfigurationDelegate {
         try {
           loader.loadClass("scala.xml.Elem")
           List.empty[String]
-        }
-        catch {
+        } catch {
           case e: Throwable =>
             val codeSource = Class.forName("scala.xml.Elem").getProtectionDomain.getCodeSource
             if (codeSource != null) // code source could be null
@@ -150,14 +148,13 @@ class ScalaTestLaunchDelegate extends AbstractJavaLaunchConfigurationDelegate {
             targetClasses.getCanonicalPath
           else
             bundleFile.getCanonicalPath
-        }
-        else
+        } else
           bundleFile.getCanonicalPath
 
       // Create classpath file
       val cpFile = File.createTempFile("st-launch", ".classpath")
       val cpFileOut = new PrintWriter(new FileWriter(cpFile))
-      (classpath ::: missingScalaXml).map{ cp => cpFileOut.println(new File(cp).getCanonicalPath) }
+      (classpath ::: missingScalaXml).map { cp => cpFileOut.println(new File(cp).getCanonicalPath) }
       cpFileOut.flush()
       cpFileOut.close()
 
@@ -170,7 +167,7 @@ class ScalaTestLaunchDelegate extends AbstractJavaLaunchConfigurationDelegate {
 
       // Create VM config
       //val runConfig = new VMRunnerConfiguration(mainTypeName, (classpath ::: missingScalaXml).toArray)
-      val runConfig = new VMRunnerConfiguration(mainTypeName, Array(bundlePath))
+      val runConfig = new VMRunnerConfiguration(mainTypeName, bundlePath +: addToVmRunnerClasspath(classpath ::: missingScalaXml))
       //runConfig.setProgramArguments(execArgs.getProgramArgumentsArray())
       runConfig.setProgramArguments(Array(cpFile.getAbsolutePath, argsFile.getAbsolutePath))
       runConfig.setEnvironment(envp)
@@ -202,38 +199,17 @@ class ScalaTestLaunchDelegate extends AbstractJavaLaunchConfigurationDelegate {
       // check for cancellation
       if (monitor.isCanceled())
         return
-      }
-      finally {
-        monitor.done()
-      }
+    } finally {
+      monitor.done()
+    }
   }
+
+  protected def addToVmRunnerClasspath(classpath: Seq[String]): Array[String] = Array.empty[String]
 
   def launch(configuration: ILaunchConfiguration, mode: String, launch: ILaunch, monitor0: IProgressMonitor) {
     // Test Class
     val stArgs = getScalaTestArgs(configuration)
     launchScalaTest(configuration, mode, launch, monitor0, stArgs)
-  }
-
-  private def toInclude(vmMap: mutable.Map[String, Array[String]], classpath: List[String],
-			          configuration: ILaunchConfiguration): List[String] =
-    missingScalaLibraries((vmMap.values.flatten.toList) ::: classpath, configuration)
-
-  private def missingScalaLibraries(included: List[String], configuration: ILaunchConfiguration): List[String] =  {
-    val entries = JavaRuntime.computeUnresolvedRuntimeClasspath(configuration).toList
-    val libid = Path.fromPortableString(SdtConstants.ScalaLibContId)
-    val found = entries.find(e => e.getClasspathEntry != null && e.getClasspathEntry.getPath == libid)
-    found match {
-      case Some(e) =>
-        val scalaLibs = resolveClasspath(e, configuration)
-        scalaLibs.diff(included)
-      case None =>
-        List()
-    }
-  }
-
-  private def resolveClasspath(a: IRuntimeClasspathEntry, configuration: ILaunchConfiguration): List[String] = {
-    val bootEntry = JavaRuntime.resolveRuntimeClasspath(Array(a), configuration)
-    bootEntry.toList.map(_.getLocation())
   }
 
   // TODO Needs an expert's review
@@ -262,7 +238,7 @@ class ScalaTestLaunchDelegate extends AbstractJavaLaunchConfigurationDelegate {
           scSrcFileOpt match {
             case Some(scSrcFile) =>
               "-p \"" + outputDir + "\" " +
-              scSrcFile.getTypes
+                scSrcFile.getTypes
                 .filter(ScalaTestLaunchShortcut.isScalaTestSuite(_))
                 .map(iType => "-s " + iType.getFullyQualifiedName)
                 .mkString(" ")
@@ -270,8 +246,7 @@ class ScalaTestLaunchDelegate extends AbstractJavaLaunchConfigurationDelegate {
               MessageDialog.openError(null, "Error", "File '" + filePortablePath + "' not found.")
               ""
           }
-        }
-        else
+        } else
           ""
       case TYPE_PACKAGE =>
         val packageName = configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, "")
@@ -281,14 +256,15 @@ class ScalaTestLaunchDelegate extends AbstractJavaLaunchConfigurationDelegate {
             "-p \"" + outputDir + "\" -w " + packageName
           else
             "-p \"" + outputDir + "\" -m " + packageName
-        }
-        else
+        } else
           ""
       case _ =>
         ""
     }
   }
+}
 
+object ScalaTestLaunchDelegate {
   def getScalaTestArgsForSuite(suiteClassName: String, suiteId: String) = {
     if (suiteClassName == suiteId)
       "-s " + suiteClassName
